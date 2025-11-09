@@ -12,13 +12,13 @@ public class Artist extends User {
     private String firstName;
     private String lastName;
     private String city;
-    private String type;
+    private String typeOfArt;
 
     @Lob
     private String biography;
 
     @OneToMany(mappedBy = "artist")
-    List<Artwork> portfolio;
+    private List<Artwork> portfolio;
 
     // Getters & setters
     public String getFirstName() {
@@ -45,12 +45,12 @@ public class Artist extends User {
         this.city = city;
     }
 
-    public String getType() {
-        return type;
+    public String getTypeOfArt() {
+        return typeOfArt;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypeOfArt(String typeOfArt) {
+        this.typeOfArt = typeOfArt;
     }
 
     public String getBiography() {

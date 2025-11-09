@@ -1,8 +1,9 @@
 package nl.novi.endassignment.pocbackend.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,11 @@ public abstract class User {
 
     private String username;
     private String email;
-    private Date dateOfRegistration;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDate dateOfRegistration;
+
     private String profilePicture;
 
     @ManyToMany
@@ -51,11 +56,11 @@ public abstract class User {
         this.email = email;
     }
 
-    public Date getDateOfRegistration() {
+    public LocalDate getDateOfRegistration() {
         return dateOfRegistration;
     }
 
-    public void setDateOfRegistration(Date dateOfRegistration) {
+    public void setDateOfRegistration(LocalDate dateOfRegistration) {
         this.dateOfRegistration = dateOfRegistration;
     }
 
