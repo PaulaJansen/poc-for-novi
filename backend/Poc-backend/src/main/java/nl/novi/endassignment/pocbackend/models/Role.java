@@ -14,7 +14,7 @@ public class Role {
     private long id;
 
     @Enumerated(EnumType.STRING)
-    private RoleType roleType;
+    private RoleType roleName;
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
@@ -29,12 +29,12 @@ public class Role {
         this.id = id;
     }
 
-    public RoleType getRoleType() {
-        return roleType;
+    public RoleType getRoleName() {
+        return roleName;
     }
 
-    public void setRoleType(RoleType roleType) {
-        this.roleType = roleType;
+    public void setRoleName(RoleType roleType) {
+        this.roleName = roleType;
     }
 
     public List<User> getUsers() {

@@ -6,12 +6,20 @@ import nl.novi.endassignment.pocbackend.models.Role;
 import nl.novi.endassignment.pocbackend.models.RoleType;
 import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserMapperInherited {
 
-    public static void mapUserFieldsToDto(User user, UserResponseDto userResponseDto) {
+    private final RoleRepository roleRepository;
+
+    public UserMapperInherited(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+
+    public void mapUserFieldsToDto(User user, UserResponseDto userResponseDto) {
         userResponseDto.setId(user.getId());
         userResponseDto.setUsername(user.getUsername());
         userResponseDto.setEmail(user.getEmail());
@@ -20,12 +28,12 @@ public class UserMapperInherited {
 
         List<String> roleTitles = user.getRoles()
                 .stream()
-                .map(role -> role.getRoleType().name())
+                .map(role -> role.getRoleName().name())
                 .toList();
         userResponseDto.setRoleNames(roleTitles);
     }
 
-    public static void mapUserFieldsToEntity(User user, UserInputDto userInputDto, RoleRepository roleRepository) {
+    public void mapUserFieldsToEntity(User user, UserInputDto userInputDto) {
         user.setUsername(userInputDto.getUsername());
         user.setEmail(userInputDto.getEmail());
         user.setProfilePicture(userInputDto.getProfilePicture());
