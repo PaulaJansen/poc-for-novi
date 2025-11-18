@@ -23,6 +23,7 @@ public class Artwork {
             joinColumns = @JoinColumn(name = "artwork_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+
     List<Genre> genres;
 
     private BigDecimal price;
