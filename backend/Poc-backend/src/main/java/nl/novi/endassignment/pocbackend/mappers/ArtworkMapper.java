@@ -6,17 +6,23 @@ import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.models.Genre;
 import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
+import nl.novi.endassignment.pocbackend.services.GenreService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class ArtworkMapper {
 
     private final GenreRepository genreRepository;
+    private final GenreService genreService;
+    private final ArtworkMapper artworkMapper;
 
-    public ArtworkMapper(GenreRepository genreRepository) {
+    public ArtworkMapper(GenreRepository genreRepository, GenreService genreService, ArtworkMapper artworkMapper) {
         this.genreRepository = genreRepository;
+        this.genreService = genreService;
+        this.artworkMapper = artworkMapper;
     }
 
     public ArtworkResponseDto toDto(Artwork artwork) {
@@ -29,9 +35,7 @@ public class ArtworkMapper {
         artworkResponseDto.setWidthInCm(artwork.getWidthInCm());
         artworkResponseDto.setLengthInCm(artwork.getLengthInCm());
         artworkResponseDto.setHeightInCm(artwork.getHeightInCm());
-
-        String artistName = artwork.getArtist().getFirstName() + " " + artwork.getArtist().getLastName();
-        artworkResponseDto.setArtistName(artistName);
+        artworkResponseDto.setArtistName(artwork.getArtist().getFirstName() + " " + artwork.getArtist().getLastName());
 
         artworkResponseDto.setGenreNames(
                 artwork.getGenres()
@@ -56,14 +60,6 @@ public class ArtworkMapper {
             artwork.setAvailability(AvailabilityType.valueOf(artworkInputDto.getAvailability().toUpperCase()));
         }
 
-        artwork.setGenres(artworkInputDto.getGenreNames()
-                .stream()
-                .map(String::toUpperCase)
-                .map(name -> genreRepository.findByName(name)
-                        .orElseThrow(() -> new RuntimeException("Genre not found: " + name)))
-                .collect(Collectors.toList())
-        );
-
         return artwork;
     }
 
@@ -77,5 +73,9 @@ public class ArtworkMapper {
         Artwork artwork = new Artwork();
         artwork.setTitle(title);
         return artwork;
+    }
+
+    public List<ArtworkResponseDto> toDtoList(List<Artwork> artworks) {
+        return artworks.stream().map(artworkMapper::toDto).toList();
     }
 }

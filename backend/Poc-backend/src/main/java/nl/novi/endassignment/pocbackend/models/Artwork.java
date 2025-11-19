@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Table(name = "artworks")
+@Table(name = "artworkTitles")
 
 public class Artwork {
 
@@ -23,7 +23,6 @@ public class Artwork {
             joinColumns = @JoinColumn(name = "artwork_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-
     List<Genre> genres;
 
     private BigDecimal price;
