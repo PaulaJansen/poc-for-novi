@@ -24,7 +24,7 @@ public abstract class User {
 
     private String profilePicture;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),

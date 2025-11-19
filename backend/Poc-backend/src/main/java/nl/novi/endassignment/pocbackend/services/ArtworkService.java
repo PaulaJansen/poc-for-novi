@@ -96,6 +96,36 @@ public class ArtworkService {
         return artworkMapper.toDtoList(artworkRepository.findByAvailability(availabilityType));
     }
 
-    // toevoegen: updateArtwork en deleteArtwork
+    @Transactional
+    public ArtworkResponseDto updateArtwork(long id, ArtworkInputDto artworkInputDto) {
+        Artwork existingArtwork = artworkRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!"));
+
+        existingArtwork.setTitle(artworkInputDto.getTitle());
+        existingArtwork.setImages(artworkInputDto.getImages());
+        existingArtwork.setPrice(artworkInputDto.getPrice());
+        existingArtwork.setWidthInCm(artworkInputDto.getWidthInCm());
+        existingArtwork.setLengthInCm(artworkInputDto.getLengthInCm());
+        existingArtwork.setHeightInCm(artworkInputDto.getHeightInCm());
+        existingArtwork.setAvailability(AvailabilityType.valueOf(artworkInputDto.getAvailability().toUpperCase()));
+
+
+        List<Genre> genres = artworkInputDto.getGenreNames()
+                .stream()
+                .map(GenreInputDto::new)
+                .map(genreService::findOrCreate)
+                .toList();
+        existingArtwork.setGenres(genres);
+
+        return artworkMapper.toDto(artworkRepository.save(existingArtwork));
+    }
+
+    @Transactional
+    public String deleteArtwork(long id) {
+        Artwork existingArtwork = artworkRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!"));
+        artworkRepository.delete(existingArtwork);
+        return ("Kunstwerk met id " + id + " is verwijderd.");
+    }
 
 }

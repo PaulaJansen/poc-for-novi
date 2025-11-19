@@ -20,7 +20,7 @@ public class VisitorMapper {
 
         VisitorResponseDto visitorResponseDto = new VisitorResponseDto();
 
-        userMapperInherited.mapUserFieldsToDto(visitor, visitorResponseDto);
+        userMapperInherited.mapUserFieldsToDto(visitor);
 
         visitorResponseDto.setName(visitor.getName());
         visitorResponseDto.setFavoritesTitles(

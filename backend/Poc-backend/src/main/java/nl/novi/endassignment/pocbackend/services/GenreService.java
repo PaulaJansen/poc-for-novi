@@ -1,5 +1,6 @@
 package nl.novi.endassignment.pocbackend.services;
 
+import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.GenreInputDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.models.Artwork;
@@ -33,6 +34,7 @@ public class GenreService {
         return genre.getArtworks();
     }
 
+    @Transactional
     public Genre findOrCreate(GenreInputDto genreInputDto) {
         String normalized = genreInputDto.getName().trim().toUpperCase();
 
@@ -43,9 +45,4 @@ public class GenreService {
                     return genreRepository.save(newGenre);
                 });
     }
-
-
-
-
-
 }

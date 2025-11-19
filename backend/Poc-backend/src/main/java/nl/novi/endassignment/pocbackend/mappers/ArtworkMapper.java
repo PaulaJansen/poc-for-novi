@@ -5,23 +5,16 @@ import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.models.Genre;
-import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
-import nl.novi.endassignment.pocbackend.services.GenreService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class ArtworkMapper {
 
-    private final GenreRepository genreRepository;
-    private final GenreService genreService;
     private final ArtworkMapper artworkMapper;
 
-    public ArtworkMapper(GenreRepository genreRepository, GenreService genreService, ArtworkMapper artworkMapper) {
-        this.genreRepository = genreRepository;
-        this.genreService = genreService;
+    public ArtworkMapper(ArtworkMapper artworkMapper) {
         this.artworkMapper = artworkMapper;
     }
 

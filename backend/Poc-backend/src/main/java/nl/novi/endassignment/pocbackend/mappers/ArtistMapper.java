@@ -20,7 +20,7 @@ public class ArtistMapper {
 
         ArtistResponseDto artistResponseDto = new ArtistResponseDto();
 
-        userMapperInherited.mapUserFieldsToDto(artist, artistResponseDto);
+        userMapperInherited.mapUserFieldsToDto(artist);
 
         artistResponseDto.setFirstName(artist.getFirstName());
         artistResponseDto.setLastName(artist.getLastName());
@@ -47,15 +47,6 @@ public class ArtistMapper {
         artist.setLastName(artistInputDto.getLastName());
         artist.setCity(artistInputDto.getCity());
         artist.setTypeOfArt(artistInputDto.getTypeOfArt());
-
-        if (artistInputDto.getPortfolioTitles() != null) {
-            artist.setPortfolio(
-                    artistInputDto.getPortfolioTitles()
-                            .stream()
-                            .map(artworkMapper::fromTitle)
-                            .toList()
-            );
-        }
 
         return artist;
     }

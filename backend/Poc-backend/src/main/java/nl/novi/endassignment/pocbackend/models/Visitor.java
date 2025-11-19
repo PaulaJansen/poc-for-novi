@@ -11,7 +11,7 @@ public class Visitor extends User {
 
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "visitor_favorites",
             joinColumns = @JoinColumn(name = "visitor_id"),
