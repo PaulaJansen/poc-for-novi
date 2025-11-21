@@ -17,6 +17,4 @@ public class VisitorInputDto extends UserInputDto {
 
     @NotBlank(message = "Vul je naam in")
     private String name;
-
-    private List<String> favoritesTitles;
 }

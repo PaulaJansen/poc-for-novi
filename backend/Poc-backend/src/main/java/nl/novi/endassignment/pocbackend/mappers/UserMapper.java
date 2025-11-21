@@ -19,15 +19,15 @@ public class UserMapper {
         this.artistMapper = artistMapper;
     }
 
-    public UserResponseDto toDto (User user) {
+    public UserResponseDto toDto(User user) {
         if (user instanceof Artist artist) {
             return artistMapper.toDto(artist);
         } else if (user instanceof Visitor visitor) {
             return visitorMapper.toDto(visitor);
         } else {
 
-            // fallback
             UserResponseDto userResponseDto = new UserResponseDto();
+
             userResponseDto.setId(user.getId());
             userResponseDto.setUsername(user.getUsername());
             userResponseDto.setEmail(user.getEmail());
@@ -43,4 +43,11 @@ public class UserMapper {
             return userResponseDto;
         }
     }
+
+    public List<UserResponseDto> toDtoList(List<User> users) {
+        return users.stream()
+                .map(this::toDto)
+                .toList();
+    }
+
 }

@@ -17,7 +17,7 @@ public class Artist extends User {
     @Lob
     private String biography;
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Artwork> portfolio;
 
     // Getters & setters

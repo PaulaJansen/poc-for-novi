@@ -20,5 +20,4 @@ public class UserInputDto {
     private String email;
 
     private String profilePicture;
-    private List<String> roles;
 }

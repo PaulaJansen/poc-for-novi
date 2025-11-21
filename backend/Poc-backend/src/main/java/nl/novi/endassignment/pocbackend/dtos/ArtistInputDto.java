@@ -31,6 +31,4 @@ public class ArtistInputDto extends UserInputDto{
     @NotBlank(message = "Laat weten wie je bent!")
     @Size(min=20, max=250)
     private String biography;
-
-    private List<String> portfolioTitles;
 }

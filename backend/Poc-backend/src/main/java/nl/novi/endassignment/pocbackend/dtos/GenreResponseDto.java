@@ -13,5 +13,5 @@ public class GenreResponseDto {
 
     private long id;
     private String name;
-    List<ArtworkResponseDto> artworks;
+    List<String> artworkTitles;
 }
