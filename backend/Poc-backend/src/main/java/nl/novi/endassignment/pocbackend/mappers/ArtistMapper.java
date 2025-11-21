@@ -2,25 +2,30 @@ package nl.novi.endassignment.pocbackend.mappers;
 
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.models.Artist;
+import nl.novi.endassignment.pocbackend.models.Artwork;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ArtistMapper {
 
     private final UserMapperInherited userMapperInherited;
     private final ArtworkMapper artworkMapper;
+    private final ArtistMapper artistMapper;
 
-    public ArtistMapper(UserMapperInherited userMapperInherited, ArtworkMapper artworkMapper) {
+    public ArtistMapper(UserMapperInherited userMapperInherited, ArtworkMapper artworkMapper, ArtistMapper artistMapper) {
         this.userMapperInherited = userMapperInherited;
         this.artworkMapper = artworkMapper;
+        this.artistMapper = artistMapper;
     }
 
     public ArtistResponseDto toDto(Artist artist) {
 
         ArtistResponseDto artistResponseDto = new ArtistResponseDto();
-
-        userMapperInherited.mapUserFieldsToDto(artist);
+        artistResponseDto = (ArtistResponseDto) userMapperInherited.mapUserFieldsToDto(artist, artistResponseDto);
 
         artistResponseDto.setFirstName(artist.getFirstName());
         artistResponseDto.setLastName(artist.getLastName());
@@ -49,5 +54,9 @@ public class ArtistMapper {
         artist.setTypeOfArt(artistInputDto.getTypeOfArt());
 
         return artist;
+    }
+
+    public List<ArtistResponseDto> toDtoList(List<Artist> artists) {
+        return artists.stream().map(artistMapper::toDto).toList();
     }
 }

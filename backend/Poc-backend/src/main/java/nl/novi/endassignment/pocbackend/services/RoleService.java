@@ -2,6 +2,7 @@ package nl.novi.endassignment.pocbackend.services;
 
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.models.Role;
+import nl.novi.endassignment.pocbackend.models.RoleType;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class RoleService {
         return roleRepository.findAll();
     }
 
-    public Role getRoleByName(String roleName) {
+    public Role getRoleByName(RoleType roleName) {
         return roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RecordNotFoundException("Rol met naam " + roleName + " niet gevonden!"));
     }

@@ -9,12 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class GenreMapper {
 
-    private final ArtworkMapper artworkMapper;
-
-    public GenreMapper(ArtworkMapper artworkMapper) {
-        this.artworkMapper = artworkMapper;
-    }
-
     public GenreResponseDto toDto(Genre genre) {
         GenreResponseDto genreResponseDto = new GenreResponseDto();
         genreResponseDto.setName(genre.getName());

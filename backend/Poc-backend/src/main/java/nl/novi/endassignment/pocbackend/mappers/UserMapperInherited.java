@@ -10,8 +10,10 @@ import java.util.List;
 @Component
 public class UserMapperInherited {
 
-    public UserResponseDto mapUserFieldsToDto(User user) {
-        UserResponseDto userResponseDto = new UserResponseDto();
+    public UserResponseDto mapUserFieldsToDto(User user, UserResponseDto userResponseDto) {
+        if (userResponseDto == null) {
+            userResponseDto = new UserResponseDto();
+        }
 
         userResponseDto.setId(user.getId());
         userResponseDto.setUsername(user.getUsername());
@@ -36,7 +38,7 @@ public class UserMapperInherited {
 
     public List<UserResponseDto> toDtoList(List<User> users) {
         return users.stream()
-                .map(this::mapUserFieldsToDto)
+                .map(user -> mapUserFieldsToDto(user, null))
                 .toList();
     }
 }
