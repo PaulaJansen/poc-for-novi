@@ -12,6 +12,7 @@ import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.models.Genre;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
+import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,14 @@ public class ArtworkService {
     private final ArtistRepository artistRepository;
     private final GenreService genreService;
     private final ArtworkMapper artworkMapper;
+    private final GenreRepository genreRepository;
 
-    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper) {
+    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, GenreRepository genreRepository) {
         this.artworkRepository = artworkRepository;
         this.artistRepository = artistRepository;
         this.genreService = genreService;
         this.artworkMapper = artworkMapper;
+        this.genreRepository = genreRepository;
     }
 
     @Transactional
@@ -88,7 +91,8 @@ public class ArtworkService {
     }
 
     public List<ArtworkResponseDto> getArtworksByGenre(String genreName) {
-        Genre genre = genreService.getGenre(genreName);
+        Genre genre = genreRepository.findByName(genreName.toUpperCase())
+                .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + genreName + " niet gevonden!"));
         return artworkMapper.toDtoList(genre.getArtworks());
     }
 

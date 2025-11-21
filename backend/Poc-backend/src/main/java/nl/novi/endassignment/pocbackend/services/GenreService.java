@@ -2,8 +2,9 @@ package nl.novi.endassignment.pocbackend.services;
 
 import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.GenreInputDto;
+import nl.novi.endassignment.pocbackend.dtos.GenreResponseDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
-import nl.novi.endassignment.pocbackend.models.Artwork;
+import nl.novi.endassignment.pocbackend.mappers.GenreMapper;
 import nl.novi.endassignment.pocbackend.models.Genre;
 import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
 import org.springframework.stereotype.Service;
@@ -14,24 +15,20 @@ import java.util.List;
 public class GenreService {
 
     private final GenreRepository genreRepository;
+    private final GenreMapper genreMapper;
 
-    public GenreService(GenreRepository genreRepository) {
+    public GenreService(GenreRepository genreRepository, GenreMapper genreMapper) {
         this.genreRepository = genreRepository;
+        this.genreMapper = genreMapper;
     }
 
-    public List<Genre> getAllGenres() {
-        return genreRepository.findAll();
+    public List<GenreResponseDto> getAllGenres() {
+        return genreMapper.toDtoList(genreRepository.findAll());
     }
 
-    public Genre getGenre(String name) {
-        return genreRepository.findByName(name.toUpperCase())
-                .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!"));
-    }
-
-    public List<Artwork> getArtworksWithGenre(String name) {
-        Genre genre = genreRepository.findByName(name.toUpperCase())
-                .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!"));
-        return genre.getArtworks();
+    public GenreResponseDto getGenre(String name) {
+        return genreMapper.toDto(genreRepository.findByName(name.toUpperCase())
+                .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!")));
     }
 
     @Transactional
