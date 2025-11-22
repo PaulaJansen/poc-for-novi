@@ -6,6 +6,8 @@ import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.Genre;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class GenreMapper {
 
@@ -29,5 +31,11 @@ public class GenreMapper {
         genre.setName(genreInputDto.getName().trim().toUpperCase());
 
         return genre;
+    }
+
+    public List<GenreResponseDto> toDtoList(List<Genre> genres) {
+        return genres.stream()
+                .map(this::toDto)
+                .toList();
     }
 }

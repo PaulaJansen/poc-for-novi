@@ -41,6 +41,4 @@ public class UserService {
                 .orElseThrow(() -> new RecordNotFoundException("Gebruiker met e-mailadres " + email + " niet gevonden!"));
         return userMapper.toDto(user);
     }
-
-
 }

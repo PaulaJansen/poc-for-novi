@@ -14,12 +14,10 @@ public class ArtistMapper {
 
     private final UserMapperInherited userMapperInherited;
     private final ArtworkMapper artworkMapper;
-    private final ArtistMapper artistMapper;
 
-    public ArtistMapper(UserMapperInherited userMapperInherited, ArtworkMapper artworkMapper, ArtistMapper artistMapper) {
+    public ArtistMapper(UserMapperInherited userMapperInherited, ArtworkMapper artworkMapper) {
         this.userMapperInherited = userMapperInherited;
         this.artworkMapper = artworkMapper;
-        this.artistMapper = artistMapper;
     }
 
     public ArtistResponseDto toDto(Artist artist) {
@@ -57,6 +55,6 @@ public class ArtistMapper {
     }
 
     public List<ArtistResponseDto> toDtoList(List<Artist> artists) {
-        return artists.stream().map(artistMapper::toDto).toList();
+        return artists.stream().map(this::toDto).toList();
     }
 }

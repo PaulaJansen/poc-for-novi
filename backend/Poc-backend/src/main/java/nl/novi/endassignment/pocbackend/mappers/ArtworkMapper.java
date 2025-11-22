@@ -12,12 +12,6 @@ import java.util.List;
 @Component
 public class ArtworkMapper {
 
-    private final ArtworkMapper artworkMapper;
-
-    public ArtworkMapper(ArtworkMapper artworkMapper) {
-        this.artworkMapper = artworkMapper;
-    }
-
     public ArtworkResponseDto toDto(Artwork artwork) {
         ArtworkResponseDto artworkResponseDto = new ArtworkResponseDto();
         artworkResponseDto.setId(artwork.getId());
@@ -69,6 +63,6 @@ public class ArtworkMapper {
     }
 
     public List<ArtworkResponseDto> toDtoList(List<Artwork> artworks) {
-        return artworks.stream().map(artworkMapper::toDto).toList();
+        return artworks.stream().map(this::toDto).toList();
     }
 }
