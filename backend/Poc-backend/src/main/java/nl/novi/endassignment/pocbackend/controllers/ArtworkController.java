@@ -51,20 +51,20 @@ public class ArtworkController {
 
     @PostMapping
     public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @RequestBody ArtworkInputDto artworkInputDto) {
-        ArtworkResponseDto artwork = artworkService.createArtwork(artworkInputDto);
-        return new ResponseEntity<>(artwork,HttpStatus.CREATED);
+        ArtworkResponseDto newArtwork = artworkService.createArtwork(artworkInputDto);
+        return new ResponseEntity<>(newArtwork,HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ArtworkResponseDto> updateArtwork(@Valid @PathVariable long id, @RequestBody ArtworkInputDto artworkInputDto) {
-        ArtworkResponseDto artwork = artworkService.updateArtwork(id, artworkInputDto);
-        return ResponseEntity.ok(artwork);
+        ArtworkResponseDto updatedArtwork = artworkService.updateArtwork(id, artworkInputDto);
+        return ResponseEntity.ok(updatedArtwork);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ArtworkResponseDto> patchArtwork(@PathVariable long id, @RequestBody ArtworkInputDto artworkInputDto) {
-        ArtworkResponseDto artwork = artworkService.patchArtwork(id, artworkInputDto);
-        return ResponseEntity.ok(artwork);
+        ArtworkResponseDto updatedArtwork = artworkService.patchArtwork(id, artworkInputDto);
+        return ResponseEntity.ok(updatedArtwork);
     }
 
     @DeleteMapping("/{id}")

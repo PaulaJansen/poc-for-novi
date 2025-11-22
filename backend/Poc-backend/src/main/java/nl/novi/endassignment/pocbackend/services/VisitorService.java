@@ -1,9 +1,11 @@
 package nl.novi.endassignment.pocbackend.services;
 
 import jakarta.transaction.Transactional;
+import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorResponseDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
+import nl.novi.endassignment.pocbackend.mappers.ArtworkMapper;
 import nl.novi.endassignment.pocbackend.mappers.VisitorMapper;
 import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.Visitor;
@@ -11,21 +13,25 @@ import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.models.RoleType;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class VisitorService {
 
     private final VisitorRepository visitorRepository;
     private final VisitorMapper visitorMapper;
     private final RoleRepository roleRepository;
     private final ArtworkRepository artworkRepository;
+    private final ArtworkMapper artworkMapper;
 
-    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository) {
+    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository, ArtworkMapper artworkMapper) {
         this.visitorRepository = visitorRepository;
         this.visitorMapper = visitorMapper;
         this.roleRepository = roleRepository;
         this.artworkRepository = artworkRepository;
+        this.artworkMapper = artworkMapper;
     }
 
     public List<VisitorResponseDto> getAllVisitors() {
@@ -37,9 +43,8 @@ public class VisitorService {
                 .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!")));
     }
 
-    public VisitorResponseDto getVisitorByName(String name) {
-        return visitorMapper.toDto(visitorRepository.findByName(name)
-                .orElseThrow(() -> new RecordNotFoundException("Bezoeker " + name + " niet gevonden!")));
+    public List<VisitorResponseDto> getVisitorByName(String name) {
+        return visitorMapper.toDtoList(visitorRepository.findByName(name));
     }
 
     @Transactional
@@ -67,11 +72,24 @@ public class VisitorService {
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
 
-    public List<Artwork> getFavorites(long id) {
+    @Transactional
+    public VisitorResponseDto patchVisitor(long id, VisitorInputDto visitorInputDto) {
+        Visitor existingVisitor = visitorRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
+
+        if (visitorInputDto.getName() != null) existingVisitor.setName(visitorInputDto.getName());
+        if (visitorInputDto.getEmail() != null) existingVisitor.setEmail(visitorInputDto.getEmail());
+        if (visitorInputDto.getUsername() != null) existingVisitor.setUsername(visitorInputDto.getUsername());
+        if (visitorInputDto.getProfilePicture() != null) existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
+
+        return visitorMapper.toDto(visitorRepository.save(existingVisitor));
+    }
+
+    public List<ArtworkResponseDto> getFavorites(long id) {
         Visitor visitor = visitorRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
 
-        return visitor.getFavorites();
+        return artworkMapper.toDtoList(visitor.getFavorites());
 
     }
 

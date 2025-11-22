@@ -3,19 +3,17 @@ package nl.novi.endassignment.pocbackend.services;
 import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
-import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
-import nl.novi.endassignment.pocbackend.dtos.VisitorResponseDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtistMapper;
 import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.RoleType;
-import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
-import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ArtistService {
 
     private final ArtistRepository artistRepository;
@@ -37,9 +35,8 @@ public class ArtistService {
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!")));
     }
 
-    public ArtistResponseDto getArtistByName(String name) {
-        return artistMapper.toDto(artistRepository.findByName(name)
-                .orElseThrow(() -> new RecordNotFoundException("Kunstenaar " + name + " niet gevonden!")));
+    public List<ArtistResponseDto> getArtistByName(String name) {
+        return artistMapper.toDtoList(artistRepository.findByName(name));
     }
 
     @Transactional
@@ -67,6 +64,23 @@ public class ArtistService {
         existingArtist.setCity(artistInputDto.getCity());
         existingArtist.setTypeOfArt(artistInputDto.getTypeOfArt());
         existingArtist.setBiography(artistInputDto.getBiography());
+
+        return artistMapper.toDto(artistRepository.save(existingArtist));
+    }
+
+    @Transactional
+    public ArtistResponseDto patchArtist(long id, ArtistInputDto artistInputDto) {
+        Artist existingArtist = artistRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
+
+        if (artistInputDto.getFirstName() != null) existingArtist.setFirstName(artistInputDto.getFirstName());
+        if (artistInputDto.getLastName() != null) existingArtist.setLastName(artistInputDto.getLastName());
+        if (artistInputDto.getEmail() != null) existingArtist.setEmail(artistInputDto.getEmail());
+        if (artistInputDto.getUsername() != null) existingArtist.setUsername(artistInputDto.getUsername());
+        if (artistInputDto.getProfilePicture() != null) existingArtist.setProfilePicture(artistInputDto.getProfilePicture());
+        if (artistInputDto.getCity() != null) existingArtist.setCity(artistInputDto.getCity());
+        if (artistInputDto.getTypeOfArt() != null) existingArtist.setTypeOfArt(artistInputDto.getTypeOfArt());
+        if (artistInputDto.getBiography() != null) existingArtist.setBiography(artistInputDto.getBiography());
 
         return artistMapper.toDto(artistRepository.save(existingArtist));
     }
