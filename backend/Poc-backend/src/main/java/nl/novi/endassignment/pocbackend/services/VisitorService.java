@@ -15,6 +15,7 @@ import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.models.RoleType;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -80,7 +81,8 @@ public class VisitorService {
         if (visitorInputDto.getName() != null) existingVisitor.setName(visitorInputDto.getName());
         if (visitorInputDto.getEmail() != null) existingVisitor.setEmail(visitorInputDto.getEmail());
         if (visitorInputDto.getUsername() != null) existingVisitor.setUsername(visitorInputDto.getUsername());
-        if (visitorInputDto.getProfilePicture() != null) existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
+        if (visitorInputDto.getProfilePicture() != null)
+            existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
 
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
@@ -122,9 +124,14 @@ public class VisitorService {
     }
 
     @Transactional
-    public String deleteVisitor(long id) {
+    public String deleteVisitor(long id, String currentUsername) throws AccessDeniedException {
         Visitor existingVisitor = visitorRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
+
+        if (!existingVisitor.getUsername().equals(currentUsername)) {
+            throw new AccessDeniedException("Je mag alleen je eigen account verwijderen");
+        }
+
         visitorRepository.delete(existingVisitor);
         return ("Bezoeker met id " + id + " is verwijderd.");
     }
