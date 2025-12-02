@@ -9,6 +9,7 @@ import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.RoleType;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public class ArtistService {
         return artistMapper.toDto(artistRepository.save(artist));
     }
 
+    @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
     public ArtistResponseDto updateArtist(long id, ArtistInputDto artistInputDto) {
         Artist existingArtist = artistRepository.findById(id)
@@ -68,6 +70,7 @@ public class ArtistService {
         return artistMapper.toDto(artistRepository.save(existingArtist));
     }
 
+    @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
     public ArtistResponseDto patchArtist(long id, ArtistInputDto artistInputDto) {
         Artist existingArtist = artistRepository.findById(id)
@@ -85,6 +88,7 @@ public class ArtistService {
         return artistMapper.toDto(artistRepository.save(existingArtist));
     }
 
+    @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
     public String deleteArtist(long id) {
         Artist existingArtist = artistRepository.findById(id)

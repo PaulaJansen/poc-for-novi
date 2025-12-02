@@ -21,6 +21,8 @@ public abstract class User {
     @Column(unique = true)
     private String email;
 
+    private String password;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDate dateOfRegistration;
@@ -80,4 +82,8 @@ public abstract class User {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+
+    public String getPassword() { return password; }
+
+    public void setPassword(String password) { this.password = password; }
 }

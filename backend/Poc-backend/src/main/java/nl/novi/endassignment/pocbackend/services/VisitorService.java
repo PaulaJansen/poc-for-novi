@@ -13,6 +13,7 @@ import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.models.RoleType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,6 +60,7 @@ public class VisitorService {
         return visitorMapper.toDto(visitorRepository.save(visitor));
     }
 
+    @PreAuthorize("@visitorSecurity.isOwner(#id)")
     @Transactional
     public VisitorResponseDto updateVisitor(long id, VisitorInputDto visitorInputDto) {
         Visitor existingVisitor = visitorRepository.findById(id)
@@ -72,6 +74,7 @@ public class VisitorService {
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
 
+    @PreAuthorize("@visitorSecurity.isOwner(#id)")
     @Transactional
     public VisitorResponseDto patchVisitor(long id, VisitorInputDto visitorInputDto) {
         Visitor existingVisitor = visitorRepository.findById(id)
@@ -80,7 +83,8 @@ public class VisitorService {
         if (visitorInputDto.getName() != null) existingVisitor.setName(visitorInputDto.getName());
         if (visitorInputDto.getEmail() != null) existingVisitor.setEmail(visitorInputDto.getEmail());
         if (visitorInputDto.getUsername() != null) existingVisitor.setUsername(visitorInputDto.getUsername());
-        if (visitorInputDto.getProfilePicture() != null) existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
+        if (visitorInputDto.getProfilePicture() != null)
+            existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
 
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
@@ -93,6 +97,7 @@ public class VisitorService {
 
     }
 
+    @PreAuthorize("@visitorSecurity.isOwner(#id)")
     @Transactional
     public VisitorResponseDto addFavorites(long id, long artworkId) {
         Visitor existingVisitor = visitorRepository.findById(id)
@@ -108,6 +113,7 @@ public class VisitorService {
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
 
+    @PreAuthorize("@visitorSecurity.isOwner(#id)")
     @Transactional
     public VisitorResponseDto removeFavorites(long id, long artworkId) {
         Visitor existingVisitor = visitorRepository.findById(id)
@@ -121,10 +127,12 @@ public class VisitorService {
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
 
+    @PreAuthorize("@visitorSecurity.isOwner(#id)")
     @Transactional
     public String deleteVisitor(long id) {
         Visitor existingVisitor = visitorRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
+
         visitorRepository.delete(existingVisitor);
         return ("Bezoeker met id " + id + " is verwijderd.");
     }

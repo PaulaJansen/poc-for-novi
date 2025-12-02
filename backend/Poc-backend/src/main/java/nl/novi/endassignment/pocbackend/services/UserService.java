@@ -2,6 +2,7 @@ package nl.novi.endassignment.pocbackend.services;
 
 import nl.novi.endassignment.pocbackend.dtos.UserResponseDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
+import nl.novi.endassignment.pocbackend.exceptions.UsernameNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.UserMapper;
 import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.repositories.UserRepository;
@@ -32,7 +33,7 @@ public class UserService {
 
     public UserResponseDto getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RecordNotFoundException("Gebruiker met gebruikersnaam " + username + " niey gevonden!"));
+                .orElseThrow(() -> new UsernameNotFoundException(username));
         return userMapper.toDto(user);
     }
 
