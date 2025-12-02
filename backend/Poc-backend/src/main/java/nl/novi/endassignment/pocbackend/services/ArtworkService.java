@@ -14,6 +14,7 @@ import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
 import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -112,6 +113,7 @@ public class ArtworkService {
         return artworkMapper.toDtoList(artworks);
     }
 
+    @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
     public ArtworkResponseDto updateArtwork(long id, ArtworkInputDto artworkInputDto) {
         Artwork existingArtwork = artworkRepository.findById(id)
@@ -136,6 +138,7 @@ public class ArtworkService {
         return artworkMapper.toDto(artworkRepository.save(existingArtwork));
     }
 
+    @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
     public ArtworkResponseDto patchArtwork(long id, ArtworkInputDto artworkInputDto) {
         Artwork existingArtwork = artworkRepository.findById(id)
@@ -162,6 +165,7 @@ public class ArtworkService {
         return artworkMapper.toDto(artworkRepository.save(existingArtwork));
     }
 
+    @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
     public String deleteArtwork(long id) {
         Artwork existingArtwork = artworkRepository.findById(id)
@@ -169,5 +173,4 @@ public class ArtworkService {
         artworkRepository.delete(existingArtwork);
         return ("Kunstwerk met id " + id + " is verwijderd.");
     }
-
 }

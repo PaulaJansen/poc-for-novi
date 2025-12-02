@@ -8,6 +8,6 @@ public class UsernameNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public UsernameNotFoundException(String username) {
-        super("Gebruiker met username "+ username + "niet gevonden!");
+        super("Gebruiker met username " + username + "niet gevonden!");
     }
 }

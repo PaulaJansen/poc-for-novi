@@ -79,11 +79,8 @@ public class VisitorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteVisitor(@PathVariable long id) throws AccessDeniedException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = auth.getName();
-
-        String message = visitorService.deleteVisitor(id, currentUsername);
+    public ResponseEntity<String> deleteVisitor(@PathVariable long id) {
+        String message = visitorService.deleteVisitor(id);
         return ResponseEntity.ok(message);
     }
 }
