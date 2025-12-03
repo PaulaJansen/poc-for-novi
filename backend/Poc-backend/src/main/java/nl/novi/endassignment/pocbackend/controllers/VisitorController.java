@@ -36,7 +36,7 @@ public class VisitorController {
         return ResponseEntity.ok(visitor);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<List<VisitorResponseDto>> getVisitorByName(@RequestParam String name) {
         List<VisitorResponseDto> visitors = visitorService.getVisitorByName(name);
         return ResponseEntity.ok(visitors);
@@ -66,13 +66,13 @@ public class VisitorController {
         return ResponseEntity.ok(favorites);
     }
 
-    @PatchMapping("/{id}/favorites/{artworkId}")
+    @PatchMapping("/{id}/favorites/{artworkId}/add")
     public ResponseEntity<VisitorResponseDto> addFavorites(@PathVariable long id, @PathVariable long artworkId) {
         VisitorResponseDto updatedVisitor = visitorService.addFavorites(id, artworkId);
         return ResponseEntity.ok(updatedVisitor);
     }
 
-    @PatchMapping("/{id}/favorites/{artworkId}")
+    @PatchMapping("/{id}/favorites/{artworkId}/remove")
     public ResponseEntity<VisitorResponseDto> removeFavorites(@PathVariable long id, @PathVariable long artworkId) {
         VisitorResponseDto updatedVisitor = visitorService.removeFavorites(id, artworkId);
         return ResponseEntity.ok(updatedVisitor);

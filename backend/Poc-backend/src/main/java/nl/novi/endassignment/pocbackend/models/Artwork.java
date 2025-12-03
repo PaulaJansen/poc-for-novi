@@ -38,7 +38,7 @@ public class Artwork {
     private int lengthInCm;
     private int heightInCm;
 
-    @ManyToMany(mappedBy = "artwork")
+    @ManyToMany(mappedBy = "favorites")
     private List<Visitor> favoriteOf;
 
     // Getters & setters

@@ -46,7 +46,7 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/visitors/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "artworks/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/artworks/**").authenticated()
 
                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()

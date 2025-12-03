@@ -53,7 +53,7 @@ public class VisitorService {
         Visitor visitor = visitorMapper.toEntity(visitorInputDto);
 
         if (visitor.getRoles() == null || visitor.getRoles().isEmpty()) {
-            roleRepository.findByName(RoleType.VISITOR)
+            roleRepository.findByRoleName(RoleType.VISITOR)
                     .ifPresent(role -> visitor.getRoles().add(role));
         }
 
