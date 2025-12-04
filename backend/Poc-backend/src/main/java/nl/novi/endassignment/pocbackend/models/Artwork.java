@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Table(name = "artworkTitles")
+@Table(name = "artworks")
 
 public class Artwork {
 
@@ -15,6 +15,13 @@ public class Artwork {
     private long id;
 
     private String title;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "artwork_images",
+            joinColumns = @JoinColumn(name = "artwork_id")
+    )
+    @Column(name = "image")
     private List<String> images;
 
     @ManyToMany

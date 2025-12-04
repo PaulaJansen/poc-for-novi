@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
@@ -37,11 +37,15 @@ public abstract class User {
     )
     private List<Role> roles;
 
+    // Getters & setters
+
     public long getId() {
         return id;
     }
 
-    public void setId(long id) { this.id = id; }
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -83,7 +87,11 @@ public abstract class User {
         this.roles = roles;
     }
 
-    public String getPassword() { return password; }
+    public String getPassword() {
+        return password;
+    }
 
-    public void setPassword(String password) { this.password = password; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
