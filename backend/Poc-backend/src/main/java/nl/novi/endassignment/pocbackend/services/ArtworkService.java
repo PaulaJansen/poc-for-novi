@@ -100,7 +100,7 @@ public class ArtworkService {
         }
 
         if (genreName != null) {
-            Genre genre = genreRepository.findByName(genreName.toUpperCase())
+            Genre genre = genreRepository.findByNameIgnoreCase(genreName)
                     .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + genreName + " niet gevonden!"));
             specification = specification.and((root, query, cb) -> cb.isMember(genre, root.get("genres")));
         }

@@ -52,6 +52,11 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
 
+                        // Normaal alleen voor adminrol, maar gezien die er nog niet is voor nu open om te kunnen testen
+                        .requestMatchers("/roles/**").permitAll()
+                        .requestMatchers("/genres/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+
                         .anyRequest().denyAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

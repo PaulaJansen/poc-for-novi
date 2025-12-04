@@ -14,7 +14,6 @@ public class Artist extends User {
     private String city;
     private String typeOfArt;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String biography;
 
