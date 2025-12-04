@@ -45,7 +45,8 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/artists/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/visitors/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
+                        // Normaal mag niet iedereen alle visitors opvragen, maar voor testen alles opgezet
+                        // .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/artworks/**").authenticated()
 
                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()
@@ -56,6 +57,7 @@ public class MySecurityConfig {
                         .requestMatchers("/roles/**").permitAll()
                         .requestMatchers("/genres/**").permitAll()
                         .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/visitors/**").permitAll()
 
                         .anyRequest().denyAll()
                 )
