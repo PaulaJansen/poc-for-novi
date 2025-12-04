@@ -32,9 +32,9 @@ public class ArtistController {
         return ResponseEntity.ok(artist);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ArtistResponseDto>> getArtistByName(@RequestParam String name) {
-        List<ArtistResponseDto> artist = artistService.getArtistByName(name);
+    @GetMapping("/search")
+    public ResponseEntity<List<ArtistResponseDto>> getArtistByName(@RequestParam String firstName, String lastName) {
+        List<ArtistResponseDto> artist = artistService.getArtistByName(firstName, lastName);
         return ResponseEntity.ok(artist);
     }
 

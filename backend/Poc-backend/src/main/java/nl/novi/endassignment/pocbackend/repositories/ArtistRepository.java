@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
-    List<Artist> findByName(String artistName);
+    List<Artist> findByFirstNameAndLastName(String firstName, String lastName);
     Optional<Artist> findByUsername(String username);
 }

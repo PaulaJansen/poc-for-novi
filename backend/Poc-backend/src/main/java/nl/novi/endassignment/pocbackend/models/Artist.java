@@ -14,7 +14,7 @@ public class Artist extends User {
     private String city;
     private String typeOfArt;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String biography;
 
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

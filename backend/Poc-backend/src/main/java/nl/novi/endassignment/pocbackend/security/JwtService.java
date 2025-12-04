@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static nl.novi.endassignment.pocbackend.utils.RandomStringGenerator.random;
-
 @Service
 public class JwtService {
-    private final static String SECRET_KEY = random(62);
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

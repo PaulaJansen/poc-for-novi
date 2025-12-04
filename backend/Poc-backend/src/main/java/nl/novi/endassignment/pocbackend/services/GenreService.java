@@ -27,7 +27,7 @@ public class GenreService {
     }
 
     public GenreResponseDto getGenre(String name) {
-        return genreMapper.toDto(genreRepository.findByName(name.toUpperCase())
+        return genreMapper.toDto(genreRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!")));
     }
 
@@ -35,7 +35,7 @@ public class GenreService {
     public Genre findOrCreate(GenreInputDto genreInputDto) {
         String normalized = genreInputDto.getName().trim().toUpperCase();
 
-        return genreRepository.findByName(normalized)
+        return genreRepository.findByNameIgnoreCase(normalized)
                 .orElseGet(() -> {
                     Genre newGenre = new Genre();
                     newGenre.setName(normalized);

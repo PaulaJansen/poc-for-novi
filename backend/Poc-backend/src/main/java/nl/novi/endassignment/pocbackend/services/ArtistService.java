@@ -36,8 +36,8 @@ public class ArtistService {
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!")));
     }
 
-    public List<ArtistResponseDto> getArtistByName(String name) {
-        return artistMapper.toDtoList(artistRepository.findByName(name));
+    public List<ArtistResponseDto> getArtistByName(String firstName, String lastName) {
+        return artistMapper.toDtoList(artistRepository.findByFirstNameAndLastName(firstName, lastName));
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class ArtistService {
         Artist artist = artistMapper.toEntity(artistInputDto);
 
         if (artist.getRoles() == null || artist.getRoles().isEmpty()) {
-            roleRepository.findByName(RoleType.ARTIST)
+            roleRepository.findByRoleName(RoleType.ARTIST)
                     .ifPresent(role -> artist.getRoles().add(role));
         }
 

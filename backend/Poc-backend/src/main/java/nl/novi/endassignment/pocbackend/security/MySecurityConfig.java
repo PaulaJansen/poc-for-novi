@@ -46,11 +46,16 @@ public class MySecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/visitors/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "artworks/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/artworks/**").authenticated()
 
                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
+
+                        // Normaal alleen voor adminrol, maar gezien die er nog niet is voor nu open om te kunnen testen
+                        .requestMatchers("/roles/**").permitAll()
+                        .requestMatchers("/genres/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
 
                         .anyRequest().denyAll()
                 )
