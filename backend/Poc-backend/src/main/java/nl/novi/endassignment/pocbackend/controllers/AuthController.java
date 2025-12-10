@@ -1,6 +1,7 @@
 package nl.novi.endassignment.pocbackend.controllers;
 
 import nl.novi.endassignment.pocbackend.dtos.AuthDto;
+import nl.novi.endassignment.pocbackend.repositories.UserRepository;
 import nl.novi.endassignment.pocbackend.security.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +21,14 @@ public class AuthController {
 
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager man, JwtService service) {
+    public AuthController(AuthenticationManager man, JwtService service, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.authManager = man;
         this.jwtService = service;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/auth")

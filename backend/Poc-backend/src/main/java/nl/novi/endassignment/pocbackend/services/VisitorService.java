@@ -14,9 +14,16 @@ import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.models.RoleType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class VisitorService {
@@ -26,13 +33,17 @@ public class VisitorService {
     private final RoleRepository roleRepository;
     private final ArtworkRepository artworkRepository;
     private final ArtworkMapper artworkMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final Path uploadDirectory;
 
-    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository, ArtworkMapper artworkMapper) {
+    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository, ArtworkMapper artworkMapper, PasswordEncoder passwordEncoder, Path uploadDirectory) {
         this.visitorRepository = visitorRepository;
         this.visitorMapper = visitorMapper;
         this.roleRepository = roleRepository;
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.uploadDirectory = uploadDirectory;
     }
 
     public List<VisitorResponseDto> getAllVisitors() {
@@ -49,15 +60,43 @@ public class VisitorService {
     }
 
     @Transactional
-    public VisitorResponseDto createVisitor(VisitorInputDto visitorInputDto) {
+    public VisitorResponseDto createVisitor(VisitorInputDto visitorInputDto) throws IOException {
+
+        if (visitorInputDto.getPassword() == null || visitorInputDto.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Wachtwoord mag niet leeg zijn!");
+        }
+
         Visitor visitor = visitorMapper.toEntity(visitorInputDto);
+
+        visitor.setPassword(passwordEncoder.encode(visitorInputDto.getPassword()));
 
         if (visitor.getRoles() == null || visitor.getRoles().isEmpty()) {
             roleRepository.findByRoleName(RoleType.VISITOR)
-                    .ifPresent(role -> visitor.getRoles().add(role));
+                    .ifPresent(role -> {
+                        if (visitor.getRoles() == null) {
+                            visitor.setRoles(new ArrayList<>());
+                        }
+                        visitor.getRoles().add(role);
+                    });
         }
 
-        return visitorMapper.toDto(visitorRepository.save(visitor));
+        if (visitorInputDto.getProfilePictureFile() != null && !visitorInputDto.getProfilePictureFile().isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + visitorInputDto.getProfilePictureFile().getOriginalFilename();
+
+            Path path = uploadDirectory.resolve(fileName);
+
+            visitorInputDto.getProfilePictureFile().transferTo(path.toFile());
+
+            visitor.setProfilePicture(fileName);
+        }
+
+        Visitor savedVisitor = visitorRepository.save(visitor);
+        VisitorResponseDto visitorResponseDto = visitorMapper.toDto(savedVisitor);
+        if (savedVisitor.getProfilePicture() != null) {
+            visitorResponseDto.setProfilePicture("/uploads/" + savedVisitor.getProfilePicture());
+        }
+
+        return visitorResponseDto;
     }
 
     @PreAuthorize("@visitorSecurity.isOwner(#id)")
@@ -66,25 +105,23 @@ public class VisitorService {
         Visitor existingVisitor = visitorRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
 
-        existingVisitor.setName(visitorInputDto.getName());
-        existingVisitor.setEmail(visitorInputDto.getEmail());
-        existingVisitor.setUsername(visitorInputDto.getUsername());
-        existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
-
-        return visitorMapper.toDto(visitorRepository.save(existingVisitor));
-    }
-
-    @PreAuthorize("@visitorSecurity.isOwner(#id)")
-    @Transactional
-    public VisitorResponseDto patchVisitor(long id, VisitorInputDto visitorInputDto) {
-        Visitor existingVisitor = visitorRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Bezoeker met id " + id + " niet gevonden!"));
-
         if (visitorInputDto.getName() != null) existingVisitor.setName(visitorInputDto.getName());
         if (visitorInputDto.getEmail() != null) existingVisitor.setEmail(visitorInputDto.getEmail());
         if (visitorInputDto.getUsername() != null) existingVisitor.setUsername(visitorInputDto.getUsername());
-        if (visitorInputDto.getProfilePicture() != null)
-            existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
+
+        if (visitorInputDto.getProfilePicture() != null) {
+            String oldPicture = existingVisitor.getProfilePicture();
+            if (oldPicture != null) {
+                Path oldFilePath = uploadDirectory.resolve(oldPicture);
+                try {
+                    Files.deleteIfExists(oldFilePath);
+                } catch (IOException e) {
+                        System.out.println("Kon oude profielfoto niet verwijderen.");
+                        e.printStackTrace();
+                }
+            }
+        }
+        existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
 
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }

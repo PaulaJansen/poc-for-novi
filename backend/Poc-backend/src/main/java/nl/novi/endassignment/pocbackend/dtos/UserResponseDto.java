@@ -22,4 +22,10 @@ public class UserResponseDto {
 
     private String profilePicture;
     private List<String> roleNames;
+
+    // Voor frontend
+    public String getProfilePictureUrl() {
+        if (profilePicture == null) return null;
+        return "/uploads/" + profilePicture;
+    }
 }
