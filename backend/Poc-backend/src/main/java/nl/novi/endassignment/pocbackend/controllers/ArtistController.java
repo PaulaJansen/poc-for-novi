@@ -5,6 +5,7 @@ import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
 import nl.novi.endassignment.pocbackend.services.ArtistService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,21 +40,15 @@ public class ArtistController {
         return ResponseEntity.ok(artist);
     }
 
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ArtistResponseDto> createArtist(@Valid @ModelAttribute ArtistInputDto artistInputDto) throws IOException {
         ArtistResponseDto newArtist = artistService.createArtist(artistInputDto);
         return new ResponseEntity<>(newArtist, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ArtistResponseDto> updateArtist(@Valid @PathVariable long id, @RequestBody ArtistInputDto artistInputDto) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ArtistResponseDto> updateArtist(@PathVariable long id, @ModelAttribute ArtistInputDto artistInputDto) {
         ArtistResponseDto updatedArtist = artistService.updateArtist(id, artistInputDto);
-        return ResponseEntity.ok(updatedArtist);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ArtistResponseDto> patchArtist(@PathVariable long id, @RequestBody ArtistInputDto artistInputDto) {
-        ArtistResponseDto updatedArtist = artistService.patchArtist(id, artistInputDto);
         return ResponseEntity.ok(updatedArtist);
     }
 

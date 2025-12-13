@@ -7,6 +7,7 @@ import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtistMapper;
 import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.RoleType;
+import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,11 +52,15 @@ public class ArtistService {
 
     @Transactional
     public ArtistResponseDto createArtist(ArtistInputDto artistInputDto) throws IOException {
+
+        if (artistInputDto.getPassword() == null || artistInputDto.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Wachtwoord mag niet leeg zijn!");
+        }
+
         Artist artist = artistMapper.toEntity(artistInputDto);
 
-        if (artist.getPassword() != null) {
-            artist.setPassword(passwordEncoder.encode(artist.getPassword()));
-        }
+        artist.setPassword(passwordEncoder.encode(artistInputDto.getPassword()));
+
 
         if (artist.getRoles() == null || artist.getRoles().isEmpty()) {
             roleRepository.findByRoleName(RoleType.ARTIST)
@@ -89,24 +94,6 @@ public class ArtistService {
     @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
     public ArtistResponseDto updateArtist(long id, ArtistInputDto artistInputDto) {
-        Artist existingArtist = artistRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
-
-        existingArtist.setFirstName(artistInputDto.getFirstName());
-        existingArtist.setLastName(artistInputDto.getLastName());
-        existingArtist.setEmail(artistInputDto.getEmail());
-        existingArtist.setUsername(artistInputDto.getUsername());
-        existingArtist.setProfilePicture(artistInputDto.getProfilePicture());
-        existingArtist.setCity(artistInputDto.getCity());
-        existingArtist.setTypeOfArt(artistInputDto.getTypeOfArt());
-        existingArtist.setBiography(artistInputDto.getBiography());
-
-        return artistMapper.toDto(artistRepository.save(existingArtist));
-    }
-
-    @PreAuthorize("@artistSecurity.isOwner(#id)")
-    @Transactional
-    public ArtistResponseDto patchArtist(long id, ArtistInputDto artistInputDto) {
         Artist existingArtist = artistRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
 

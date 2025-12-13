@@ -2,7 +2,6 @@ package nl.novi.endassignment.pocbackend.security;
 
 import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

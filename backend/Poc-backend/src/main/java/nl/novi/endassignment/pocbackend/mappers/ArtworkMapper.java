@@ -34,10 +34,10 @@ public class ArtworkMapper {
         return artworkResponseDto;
     }
 
-    public Artwork toEntity(ArtworkInputDto artworkInputDto) {
+    public Artwork toEntity(ArtworkInputDto artworkInputDto, List<String> fileNames) {
         Artwork artwork = new Artwork();
         artwork.setTitle(artworkInputDto.getTitle());
-        artwork.setImages(artworkInputDto.getImages());
+        artwork.setImages(fileNames);
         artwork.setPrice(artworkInputDto.getPrice());
         artwork.setWidthInCm(artworkInputDto.getWidthInCm());
         artwork.setLengthInCm(artworkInputDto.getLengthInCm());

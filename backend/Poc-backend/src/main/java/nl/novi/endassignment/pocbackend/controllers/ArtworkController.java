@@ -3,10 +3,9 @@ package nl.novi.endassignment.pocbackend.controllers;
 import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
-import nl.novi.endassignment.pocbackend.models.Artist;
-import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.services.ArtworkService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,28 +41,22 @@ public class ArtworkController {
             @RequestParam(required = false) String artistLastName,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) String genre,
-            @RequestParam(required = false) AvailabilityType availability) {
+            @RequestParam(required = false) List <String> genres,
+            @RequestParam(required = false) List <String> availabilities) {
 
-        List<ArtworkResponseDto> artworks = artworkService.filterArtworks(title, artistFirstName, artistLastName, minPrice, maxPrice, genre, availability);
+        List<ArtworkResponseDto> artworks = artworkService.filterArtworks(title, artistFirstName, artistLastName, minPrice, maxPrice, genres, availabilities);
         return ResponseEntity.ok(artworks);
     }
 
-    @PostMapping
-    public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @RequestBody ArtworkInputDto artworkInputDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @ModelAttribute ArtworkInputDto artworkInputDto) {
         ArtworkResponseDto newArtwork = artworkService.createArtwork(artworkInputDto);
         return new ResponseEntity<>(newArtwork,HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ArtworkResponseDto> updateArtwork(@Valid @PathVariable long id, @RequestBody ArtworkInputDto artworkInputDto) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ArtworkResponseDto> updateArtwork(@PathVariable long id, @ModelAttribute ArtworkInputDto artworkInputDto) {
         ArtworkResponseDto updatedArtwork = artworkService.updateArtwork(id, artworkInputDto);
-        return ResponseEntity.ok(updatedArtwork);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<ArtworkResponseDto> patchArtwork(@PathVariable long id, @RequestBody ArtworkInputDto artworkInputDto) {
-        ArtworkResponseDto updatedArtwork = artworkService.patchArtwork(id, artworkInputDto);
         return ResponseEntity.ok(updatedArtwork);
     }
 

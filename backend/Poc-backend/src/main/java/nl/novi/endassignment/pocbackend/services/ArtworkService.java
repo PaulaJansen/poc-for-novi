@@ -1,5 +1,7 @@
 package nl.novi.endassignment.pocbackend.services;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
@@ -18,8 +20,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,22 +37,36 @@ public class ArtworkService {
     private final GenreService genreService;
     private final ArtworkMapper artworkMapper;
     private final GenreRepository genreRepository;
+    private final Path uploadDirectory;
 
-    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, GenreRepository genreRepository) {
+    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, GenreRepository genreRepository, Path uploadDirectory) {
         this.artworkRepository = artworkRepository;
         this.artistRepository = artistRepository;
         this.genreService = genreService;
         this.artworkMapper = artworkMapper;
         this.genreRepository = genreRepository;
+        this.uploadDirectory = uploadDirectory;
     }
 
     @Transactional
     public ArtworkResponseDto createArtwork(ArtworkInputDto artworkInputDto) {
-        Artwork artwork = artworkMapper.toEntity(artworkInputDto);
+        List<String> fileNames = new ArrayList<>();
+
+        for (MultipartFile file : artworkInputDto.getImages()) {
+            try {
+                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path filePath = uploadDirectory.resolve(filename);
+                Files.copy(file.getInputStream(), filePath);
+                fileNames.add(filename);
+            } catch (IOException e) {
+                throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
+            }
+        }
+
+        Artwork artwork = artworkMapper.toEntity(artworkInputDto, fileNames);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = (auth.getName());
-
         Artist artist = artistRepository.findByUsername(username)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar niet gevonden!"));
         artwork.setArtist(artist);
@@ -57,7 +78,16 @@ public class ArtworkService {
                 .toList();
         artwork.setGenres(genres);
 
-        return artworkMapper.toDto(artworkRepository.save(artwork));
+        artworkRepository.save(artwork);
+
+        List<String> imageUrls = fileNames.stream()
+                .map(name -> "/uploads/" + name)
+                .toList();
+
+        ArtworkResponseDto artworkResponseDto = artworkMapper.toDto(artwork);
+        artworkResponseDto.setImages(imageUrls);
+
+        return artworkResponseDto;
     }
 
     public List<ArtworkResponseDto> getAllArtworks() {
@@ -75,20 +105,30 @@ public class ArtworkService {
             String artistLastName,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            String genreName,
-            AvailabilityType availability) {
+            List<String> genreNames,
+            List<String> availabilityNames) {
 
         Specification<Artwork> specification = (root, query, cb) -> cb.conjunction();
 
-        if (title != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(root.get("title"), title));
+        if (title != null && !title.isBlank()) {
+            specification = specification.and((root, query, cb) -> cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
         }
 
-        if (artistFirstName != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(root.get("firstName"), artistFirstName));
-        }
-        if (artistLastName != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(root.get("lastName"), artistLastName));
+        if (artistFirstName != null || artistLastName != null) {
+            specification = specification.and((root, query, cb) -> {
+
+                Join<Artwork, Artist> artistJoin = root.join("artist");
+
+                Predicate p = cb.conjunction();
+
+                if (artistFirstName != null && !artistFirstName.isBlank()) {
+                    p = cb.and(p, cb.like(cb.lower(artistJoin.get("firstName")), "%" + artistFirstName.toLowerCase() + "%"));
+                }
+                if (artistLastName != null && !artistLastName.isBlank()) {
+                    p = cb.and(p, cb.like(cb.lower(artistJoin.get("lastName")), "%" + artistLastName.toLowerCase() + "%"));
+                }
+                return p;
+            });
         }
 
         if (minPrice != null && maxPrice != null) {
@@ -99,14 +139,28 @@ public class ArtworkService {
             specification = specification.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("price"), maxPrice));
         }
 
-        if (genreName != null) {
-            Genre genre = genreRepository.findByNameIgnoreCase(genreName)
-                    .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + genreName + " niet gevonden!"));
-            specification = specification.and((root, query, cb) -> cb.isMember(genre, root.get("genres")));
+        if (genreNames != null && !genreNames.isEmpty()) {
+            List<Genre> genres = genreNames.stream()
+                    .map(name -> genreRepository.findByNameIgnoreCase(name)
+                            .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!")
+                            )
+                    )
+                    .toList();
+
+            specification = specification.and((root, query, cb) -> {
+                Join<Artwork, Genre> genreJoin = root.join("genres");
+                return genreJoin.in(genres);
+            });
         }
 
-        if (availability != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(root.get("availability"), availability));
+        if (availabilityNames != null && !availabilityNames.isEmpty()) {
+            List<AvailabilityType> availabilities = availabilityNames.stream()
+                    .map(s -> AvailabilityType.valueOf(s.toUpperCase()))
+                    .toList();
+
+            specification = specification.and(
+                    (root, query, cb) -> root.get("availability").in(availabilities)
+            );
         }
 
         List<Artwork> artworks = artworkRepository.findAll(specification);
@@ -117,35 +171,34 @@ public class ArtworkService {
     @Transactional
     public ArtworkResponseDto updateArtwork(long id, ArtworkInputDto artworkInputDto) {
         Artwork existingArtwork = artworkRepository.findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!"));
-
-        existingArtwork.setTitle(artworkInputDto.getTitle());
-        existingArtwork.setImages(artworkInputDto.getImages());
-        existingArtwork.setPrice(artworkInputDto.getPrice());
-        existingArtwork.setWidthInCm(artworkInputDto.getWidthInCm());
-        existingArtwork.setLengthInCm(artworkInputDto.getLengthInCm());
-        existingArtwork.setHeightInCm(artworkInputDto.getHeightInCm());
-        existingArtwork.setAvailability(AvailabilityType.valueOf(artworkInputDto.getAvailability().toUpperCase()));
-
-
-        List<Genre> genres = artworkInputDto.getGenreNames()
-                .stream()
-                .map(GenreInputDto::new)
-                .map(genreService::findOrCreate)
-                .toList();
-        existingArtwork.setGenres(genres);
-
-        return artworkMapper.toDto(artworkRepository.save(existingArtwork));
-    }
-
-    @PreAuthorize("@artworkSecurity.isOwner(#id)")
-    @Transactional
-    public ArtworkResponseDto patchArtwork(long id, ArtworkInputDto artworkInputDto) {
-        Artwork existingArtwork = artworkRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstwerk niet gevonden"));
 
         if (artworkInputDto.getTitle() != null) existingArtwork.setTitle(artworkInputDto.getTitle());
-        if (artworkInputDto.getImages() != null) existingArtwork.setImages(artworkInputDto.getImages());
+
+        if (artworkInputDto.getRemoveImages() != null) {
+            for (String oldImage : artworkInputDto.getRemoveImages()) {
+                existingArtwork.getImages().remove(oldImage);
+                try {
+                    Files.deleteIfExists(uploadDirectory.resolve(oldImage));
+                } catch (IOException e) {
+                    System.err.println("Kon oude afbeelding niet verwijderen: " + oldImage);
+                }
+            }
+        }
+
+        if (artworkInputDto.getImages() != null && !artworkInputDto.getImages().isEmpty()) {
+            for (MultipartFile file : artworkInputDto.getImages()) {
+                try {
+                    String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                    Path filePath = uploadDirectory.resolve(filename);
+                    Files.copy(file.getInputStream(), filePath);
+                    existingArtwork.getImages().add(filename);
+                } catch (IOException e) {
+                    throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
+                }
+            }
+        }
+
         if (artworkInputDto.getPrice() != null) existingArtwork.setPrice(artworkInputDto.getPrice());
         if (artworkInputDto.getWidthInCm() != 0) existingArtwork.setWidthInCm(artworkInputDto.getWidthInCm());
         if (artworkInputDto.getLengthInCm() != 0) existingArtwork.setLengthInCm(artworkInputDto.getLengthInCm());
@@ -162,7 +215,16 @@ public class ArtworkService {
             existingArtwork.setGenres(genres);
         }
 
-        return artworkMapper.toDto(artworkRepository.save(existingArtwork));
+        artworkRepository.save(existingArtwork);
+
+        List<String> imageUrls = existingArtwork.getImages().stream()
+                .map(name -> "/uploads/" + name)
+                .toList();
+
+        ArtworkResponseDto artworkResponseDto = artworkMapper.toDto(existingArtwork);
+        artworkResponseDto.setImages(imageUrls);
+
+        return artworkResponseDto;
     }
 
     @PreAuthorize("@artworkSecurity.isOwner(#id)")
