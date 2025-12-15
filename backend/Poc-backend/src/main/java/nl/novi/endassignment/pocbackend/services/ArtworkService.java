@@ -181,7 +181,7 @@ public class ArtworkService {
                 try {
                     Files.deleteIfExists(uploadDirectory.resolve(oldImage));
                 } catch (IOException e) {
-                    System.err.println("Kon oude afbeelding niet verwijderen: " + oldImage);
+                    System.err.println("Kon afbeelding niet verwijderen: " + oldImage);
                 }
             }
         }
@@ -212,7 +212,8 @@ public class ArtworkService {
                     .map(GenreInputDto::new)
                     .map(genreService::findOrCreate)
                     .toList();
-            existingArtwork.setGenres(genres);
+            existingArtwork.getGenres().clear();
+            existingArtwork.getGenres().addAll(genres);
         }
 
         artworkRepository.save(existingArtwork);

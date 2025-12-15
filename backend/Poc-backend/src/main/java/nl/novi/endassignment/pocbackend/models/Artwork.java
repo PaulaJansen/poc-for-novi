@@ -3,6 +3,7 @@ package nl.novi.endassignment.pocbackend.models;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class Artwork {
             joinColumns = @JoinColumn(name = "artwork_id")
     )
     @Column(name = "image")
-    private List<String> images;
+    private List<String> images = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

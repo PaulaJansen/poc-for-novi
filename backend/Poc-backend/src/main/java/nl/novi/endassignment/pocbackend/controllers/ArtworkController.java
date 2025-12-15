@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,8 +42,8 @@ public class ArtworkController {
             @RequestParam(required = false) String artistLastName,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) List <String> genres,
-            @RequestParam(required = false) List <String> availabilities) {
+            @RequestParam(required = false) List<String> genres,
+            @RequestParam(required = false) List<String> availabilities) {
 
         List<ArtworkResponseDto> artworks = artworkService.filterArtworks(title, artistFirstName, artistLastName, minPrice, maxPrice, genres, availabilities);
         return ResponseEntity.ok(artworks);
@@ -51,7 +52,7 @@ public class ArtworkController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @ModelAttribute ArtworkInputDto artworkInputDto) {
         ArtworkResponseDto newArtwork = artworkService.createArtwork(artworkInputDto);
-        return new ResponseEntity<>(newArtwork,HttpStatus.CREATED);
+        return new ResponseEntity<>(newArtwork, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
