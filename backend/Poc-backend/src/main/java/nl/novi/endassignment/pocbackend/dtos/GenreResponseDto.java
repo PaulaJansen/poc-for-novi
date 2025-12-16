@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,5 +14,9 @@ public class GenreResponseDto {
 
     private long id;
     private String name;
-    List<String> artworkTitles;
+    List<String> artworkTitles = new ArrayList<>();
+
+    public GenreResponseDto(String name) {
+        this.name = name;
+    }
 }

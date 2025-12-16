@@ -5,14 +5,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class VisitorResponseDto extends UserResponseDto {
 
     private String name;
-    private List<String> favoritesTitles;
+    private List<String> favoritesTitles = new ArrayList<>();
+
+    public VisitorResponseDto(String username, String email, String name) {
+        super(username, email);
+        this.name = name;
+    }
 }

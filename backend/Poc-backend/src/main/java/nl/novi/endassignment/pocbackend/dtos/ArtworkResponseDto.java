@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,12 +15,22 @@ public class ArtworkResponseDto {
 
     private Long id;
     private String title;
-    private List<String> images;
-    private List<String> genreNames;
+    private List<String> images = new ArrayList<>();
+    private List<String> genreNames = new ArrayList<>();
     private BigDecimal price;
     private String availability;
     private String artistName;
     private int widthInCm;
     private int lengthInCm;
     private int heightInCm;
+
+    public ArtworkResponseDto(String title, BigDecimal price, String availability, String artistName, int widthInCm, int lengthInCm, int heightInCm) {
+        this.title = title;
+        this.price = price;
+        this.availability = availability;
+        this.artistName = artistName;
+        this.widthInCm = widthInCm;
+        this.lengthInCm = lengthInCm;
+        this.heightInCm = heightInCm;
+    }
 }

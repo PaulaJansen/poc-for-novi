@@ -1,11 +1,17 @@
 package nl.novi.endassignment.pocbackend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "artworks")
 
@@ -13,6 +19,7 @@ public class Artwork {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private long id;
 
     private String title;
@@ -49,92 +56,17 @@ public class Artwork {
     @ManyToMany(mappedBy = "favorites")
     private List<Visitor> favoriteOf;
 
-    // Getters & setters
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
+    // Domain constructor
+    public Artwork(String title, BigDecimal price, AvailabilityType availability, Artist artist, int widthInCm, int lengthInCm, int heightInCm) {
         this.title = title;
-    }
-
-    public List<String> getImages() {
-        return images;
-    }
-
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-
-    public List<Genre> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public AvailabilityType getAvailability() {
-        return availability;
-    }
-
-    public void setAvailability(AvailabilityType availability) {
         this.availability = availability;
-    }
-
-    public Artist getArtist() {
-        return artist;
-    }
-
-    public void setArtist(Artist artist) {
         this.artist = artist;
-    }
-
-    public int getWidthInCm() {
-        return widthInCm;
-    }
-
-    public void setWidthInCm(int widthInCm) {
         this.widthInCm = widthInCm;
-    }
-
-    public int getLengthInCm() {
-        return lengthInCm;
-    }
-
-    public void setLengthInCm(int lengthInCm) {
         this.lengthInCm = lengthInCm;
-    }
-
-    public int getHeightInCm() {
-        return heightInCm;
-    }
-
-    public void setHeightInCm(int heightInCm) {
         this.heightInCm = heightInCm;
-    }
-
-    public List<Visitor> getFavoriteOf() {
-        return favoriteOf;
-    }
-
-    public void setFavoriteOf(List<Visitor> favoriteOf) {
-        this.favoriteOf = favoriteOf;
+        this.images = new ArrayList<>();
+        this.genres = new ArrayList<>();
+        this.favoriteOf = new ArrayList<>();
     }
 }

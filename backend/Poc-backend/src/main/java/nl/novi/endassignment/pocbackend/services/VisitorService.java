@@ -115,12 +115,12 @@ public class VisitorService {
                 try {
                     Files.deleteIfExists(oldFilePath);
                 } catch (IOException e) {
-                        System.out.println("Kon oude profielfoto niet verwijderen.");
-                        e.printStackTrace();
+                    System.out.println("Kon oude profielfoto niet verwijderen.");
+                    e.printStackTrace();
                 }
             }
+            existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
         }
-        existingVisitor.setProfilePicture(visitorInputDto.getProfilePicture());
 
         return visitorMapper.toDto(visitorRepository.save(existingVisitor));
     }
