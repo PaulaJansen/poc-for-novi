@@ -336,7 +336,7 @@ class VisitorServiceTest {
     }
 
     @Test
-    @DisplayName("Should create visitor without profile picture (False)")
+    @DisplayName("Should create visitor without profile picture (false)")
     void test13() throws IOException {
 
         VisitorInputDto visitorInputDto = new VisitorInputDto();
