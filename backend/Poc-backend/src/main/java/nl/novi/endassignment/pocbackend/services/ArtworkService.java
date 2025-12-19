@@ -99,6 +99,35 @@ public class ArtworkService {
                 .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!")));
     }
 
+    public Specification<Artwork> buildArtistSpecification(String artistFirstName, String artistLastName) {
+        return (root, query, cb) -> {
+
+            Join<Artwork, Artist> artistJoin = root.join("artist");
+            Predicate p = cb.conjunction();
+
+            if (artistFirstName != null && !artistFirstName.isBlank()) {
+                p = cb.and(p, cb.like(cb.lower(artistJoin.get("firstName")),
+                        "%" + artistFirstName.toLowerCase() + "%"));
+            }
+            if (artistLastName != null && !artistLastName.isBlank()) {
+                p = cb.and(p, cb.like(cb.lower(artistJoin.get("lastName")),
+                        "%" + artistLastName.toLowerCase() + "%"));
+            }
+            return p;
+        };
+    }
+
+    public Specification<Artwork> buildGenreSpecification(List<Genre> genres) {
+        return (root, query, cb) -> {
+            Join<Artwork, Genre> genreJoin = root.join("genres");
+            return genreJoin.in(genres);
+        };
+    }
+
+    public Specification<Artwork> buildAvailabilitySpecification(List<AvailabilityType> availabilities) {
+        return (root, query, cb) -> root.get("availability").in(availabilities);
+    }
+
     public List<ArtworkResponseDto> filterArtworks(
             String title,
             String artistFirstName,
@@ -115,20 +144,9 @@ public class ArtworkService {
         }
 
         if (artistFirstName != null || artistLastName != null) {
-            specification = specification.and((root, query, cb) -> {
-
-                Join<Artwork, Artist> artistJoin = root.join("artist");
-
-                Predicate p = cb.conjunction();
-
-                if (artistFirstName != null && !artistFirstName.isBlank()) {
-                    p = cb.and(p, cb.like(cb.lower(artistJoin.get("firstName")), "%" + artistFirstName.toLowerCase() + "%"));
-                }
-                if (artistLastName != null && !artistLastName.isBlank()) {
-                    p = cb.and(p, cb.like(cb.lower(artistJoin.get("lastName")), "%" + artistLastName.toLowerCase() + "%"));
-                }
-                return p;
-            });
+            specification = specification.and(
+                    buildArtistSpecification(artistFirstName, artistLastName)
+            );
         }
 
         if (minPrice != null && maxPrice != null) {
@@ -147,10 +165,9 @@ public class ArtworkService {
                     )
                     .toList();
 
-            specification = specification.and((root, query, cb) -> {
-                Join<Artwork, Genre> genreJoin = root.join("genres");
-                return genreJoin.in(genres);
-            });
+            specification = specification.and(
+                    buildGenreSpecification(genres)
+            );
         }
 
         if (availabilityNames != null && !availabilityNames.isEmpty()) {
@@ -159,7 +176,7 @@ public class ArtworkService {
                     .toList();
 
             specification = specification.and(
-                    (root, query, cb) -> root.get("availability").in(availabilities)
+                    buildAvailabilitySpecification(availabilities)
             );
         }
 
