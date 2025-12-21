@@ -8,6 +8,7 @@ import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.models.Visitor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -36,10 +37,11 @@ public class UserMapper {
             userResponseDto.setProfilePicture(user.getProfilePicture());
             userResponseDto.setDateOfRegistration(user.getDateOfRegistration());
 
-            List<String> roleNames = user.getRoles()
-                    .stream()
-                    .map(role -> role.getRoleName().name())
-                    .toList();
+            List<String> roleNames = user.getRoles() == null ? new ArrayList<>() :
+                    user.getRoles()
+                            .stream()
+                            .map(role -> role.getRoleName().name())
+                            .toList();
             userResponseDto.setRoleNames(roleNames);
 
             return userResponseDto;
