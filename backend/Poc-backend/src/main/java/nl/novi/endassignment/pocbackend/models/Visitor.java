@@ -1,9 +1,15 @@
 package nl.novi.endassignment.pocbackend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Entity
 @Table(name="visitors")
 
@@ -19,21 +25,9 @@ public class Visitor extends User {
     )
     private List<Artwork> favorites;
 
-    // Getters & setters
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Artwork> getFavorites() {
-        return favorites;
-    }
-
-    public void setFavorites(List<Artwork> favorites) {
-        this.favorites = favorites;
+    // Domain constructor
+    public Visitor(String username, String email, String password, String name) {
+        super(username, email, password);
+        this.setName(name);
     }
 }

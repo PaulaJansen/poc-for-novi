@@ -30,12 +30,15 @@ public class ArtistMapper {
         artistResponseDto.setCity(artist.getCity());
         artistResponseDto.setTypeOfArt(artist.getTypeOfArt());
         artistResponseDto.setBiography(artist.getBiography());
-        artistResponseDto.setPortfolioTitles(
-                artist.getPortfolio()
-                        .stream()
-                        .map(artworkMapper::toTitle)
-                        .toList()
-        );
+
+        if (artist.getPortfolio() != null) {
+            artistResponseDto.setPortfolioTitles(
+                    artist.getPortfolio()
+                            .stream()
+                            .map(artworkMapper::toTitle)
+                            .toList()
+            );
+        }
 
         return artistResponseDto;
     }
@@ -50,6 +53,7 @@ public class ArtistMapper {
         artist.setLastName(artistInputDto.getLastName());
         artist.setCity(artistInputDto.getCity());
         artist.setTypeOfArt(artistInputDto.getTypeOfArt());
+        artist.setBiography(artistInputDto.getBiography());
 
         return artist;
     }

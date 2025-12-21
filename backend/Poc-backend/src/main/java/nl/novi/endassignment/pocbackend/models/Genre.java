@@ -1,10 +1,15 @@
 package nl.novi.endassignment.pocbackend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "genres")
 
@@ -12,6 +17,7 @@ public class Genre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private long id;
 
     private String name;
@@ -19,28 +25,8 @@ public class Genre {
     @ManyToMany(mappedBy = "genres")
     private List<Artwork> artworks;
 
-    // Getters & setters
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    // Domain constructor
+    public Genre(String name) {
         this.name = name;
-    }
-
-    public List<Artwork> getArtworks() {
-        return artworks;
-    }
-
-    public void setArtworks(List<Artwork> artworks) {
-        this.artworks = artworks;
     }
 }

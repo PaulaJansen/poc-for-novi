@@ -11,4 +11,8 @@ public class RoleResponseDto {
 
     private long id;
     private String roleName;
+
+    public RoleResponseDto(String roleName) {
+        this.roleName = roleName;
+    }
 }

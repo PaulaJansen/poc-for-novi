@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,5 +22,17 @@ public class UserResponseDto {
     private LocalDate dateOfRegistration;
 
     private String profilePicture;
-    private List<String> roleNames;
+    private List<String> roleNames = new ArrayList<>();
+
+    public UserResponseDto(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.roleNames = new ArrayList<>();
+    }
+
+    // Voor frontend
+    public String getProfilePictureUrl() {
+        if (profilePicture == null) return null;
+        return "/uploads/" + profilePicture;
+    }
 }

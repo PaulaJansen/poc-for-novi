@@ -1,9 +1,15 @@
 package nl.novi.endassignment.pocbackend.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "artists")
 
@@ -20,52 +26,13 @@ public class Artist extends User {
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Artwork> portfolio;
 
-    // Getters & setters
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
+    // Domain constructor
+    public Artist(String username, String email, String password, String firstName, String lastName, String city, String typeOfArt, String biography) {
+        super(username, email, password);
         this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getTypeOfArt() {
-        return typeOfArt;
-    }
-
-    public void setTypeOfArt(String typeOfArt) {
         this.typeOfArt = typeOfArt;
-    }
-
-    public String getBiography() {
-        return biography;
-    }
-
-    public void setBiography(String biography) {
         this.biography = biography;
-    }
-
-    public List<Artwork> getPortfolio() {
-        return portfolio;
-    }
-
-    public void setPortfolio(List<Artwork> portfolio) {
-        this.portfolio = portfolio;
     }
 }

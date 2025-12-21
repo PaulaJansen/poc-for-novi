@@ -6,12 +6,11 @@ import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorResponseDto;
 import nl.novi.endassignment.pocbackend.services.VisitorService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -42,21 +41,15 @@ public class VisitorController {
         return ResponseEntity.ok(visitors);
     }
 
-    @PostMapping
-    public ResponseEntity<VisitorResponseDto> createVisitor(@Valid @RequestBody VisitorInputDto visitorInputDto) {
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<VisitorResponseDto> createVisitor(@Valid @ModelAttribute VisitorInputDto visitorInputDto) throws IOException {
         VisitorResponseDto newVisitor = visitorService.createVisitor(visitorInputDto);
         return new ResponseEntity<>(newVisitor, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<VisitorResponseDto> updateVisitor(@Valid @PathVariable long id, @RequestBody VisitorInputDto visitorInputDto) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<VisitorResponseDto> updateVisitor(@PathVariable long id, @ModelAttribute VisitorInputDto visitorInputDto) {
         VisitorResponseDto updatedVisitor = visitorService.updateVisitor(id, visitorInputDto);
-        return ResponseEntity.ok(updatedVisitor);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<VisitorResponseDto> patchVisitor(@PathVariable long id, @RequestBody VisitorInputDto visitorInputDto) {
-        VisitorResponseDto updatedVisitor = visitorService.patchVisitor(id, visitorInputDto);
         return ResponseEntity.ok(updatedVisitor);
     }
 

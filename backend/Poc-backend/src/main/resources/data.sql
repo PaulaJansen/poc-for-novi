@@ -5,36 +5,36 @@ VALUES (1, 'VISITOR'),
 
 -- Artists
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('henkie123', 'henkie@example.com', 'password123', CURRENT_DATE, 'profile/henkie.jpg');
+VALUES ('henkie123', 'henkie@example.com', '$2a$10$5o//Br13HThXamXA7W93Nu0Ey5EtaKkFzvVy0EEqBmg8tZ8DLQYG2', CURRENT_DATE, 'profile/henkie.jpg');
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
 VALUES (1, 'Henkie', 'Jansen', 'Amsterdam', 'Schilderijen',
         'Hallo, Henkie hier. Ik ben net begonnen als abstracte schilder en doe ook commissies!');
 
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('anne123', 'anne@example.com', 'password456', CURRENT_DATE, 'profile/anne.jpg');
+VALUES ('anne123', 'anne@example.com', '$2a$10$o2.a9U2vLLkJ5l8UvGcKZu3thpjyGxHpO0ZxUvgjHEWeqDPYoSATO', CURRENT_DATE, 'profile/anne.jpg');
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
 VALUES (2, 'Anne', 'de Vries', 'Rotterdam', 'Fotografie',
         'Ik ben Anne en ik fotografeer al 10 jaar. Ik maak vooral portretten van mens en dier.');
 
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('claudia123', 'claudia@example.com', 'password789', CURRENT_DATE, 'profile/claudia.jpg');
+VALUES ('claudia123', 'claudia@example.com', '$2a$10$QBIQ/J/vhp1prik.SXKprOE9CS.oQutZEwEavjnR8Igr.jhTIQus6', CURRENT_DATE, 'profile/claudia.jpg');
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
 VALUES (3, 'Claudia', 'Bos', 'Utrecht', 'Beeldhouwen',
         'Als beeldhouwer breng ik de wereld tot leven in marmer en zeepsteen.');
 
 -- Visitors
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('pietjelovesart', 'pietje@example.com', 'wachtwoord123', CURRENT_DATE, 'profile/pietje.jpg');
+VALUES ('pietjelovesart', 'pietje@example.com', '$2a$10$IGvGc9xnZ38nYp/gJhFIF.wmIIirkFiKR6dA9cuW5GKNW4nxH1i4C', CURRENT_DATE, 'profile/pietje.jpg');
 INSERT INTO visitors (id, name)
 VALUES (4, 'Pietje');
 
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('artlover', 'susan@example.com', 'wachtwoord456', CURRENT_DATE, 'profile/susan.jpg');
+VALUES ('artlover', 'susan@example.com', '$2a$10$yA60NwrZjzkt8.gG9RDI..6GpWfVC0gsEy5oZpMX7IX89/C9f6aaK', CURRENT_DATE, 'profile/susan.jpg');
 INSERT INTO visitors (id, name)
 VALUES (5, 'Susan');
 
 INSERT INTO users (username, email, password, date_of_registration, profile_picture)
-VALUES ('jaapiejaap', 'jaap@example.com', 'wachtwoord789', CURRENT_DATE, 'profile/jaap.jpg');
+VALUES ('jaapiejaap', 'jaap@example.com', '$2a$10$A67gTJBDB0SCgsrrA5LwpOKLVbkTikSw5QYrcuCKTcL7pRoQn4CL6', CURRENT_DATE, 'profile/jaap.jpg');
 INSERT INTO visitors (id, name)
 VALUES (6, 'Jaap');
 

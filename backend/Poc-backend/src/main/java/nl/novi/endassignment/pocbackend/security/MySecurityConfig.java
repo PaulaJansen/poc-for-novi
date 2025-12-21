@@ -13,16 +13,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableMethodSecurity
 @Configuration
 public class MySecurityConfig {
-    private final DataSource dataSource;
+    private final MyUserDetailsService myUserDetailsService;
 
-    public MySecurityConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public MySecurityConfig(MyUserDetailsService myUserDetailsService) {
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     @Bean
@@ -31,7 +30,7 @@ public class MySecurityConfig {
     }
 
     @Bean
-    protected SecurityFilterChain filter(HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filter(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -39,13 +38,15 @@ public class MySecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/artworks/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/artists/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/artists/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/visitors/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
+                        // Normaal mag niet iedereen alle visitors opvragen, maar voor testen alles open gezet
+                        // .requestMatchers(HttpMethod.GET, "/visitors/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/artworks/**").authenticated()
 
                         .requestMatchers(HttpMethod.PUT, "/**").authenticated()
@@ -56,12 +57,11 @@ public class MySecurityConfig {
                         .requestMatchers("/roles/**").permitAll()
                         .requestMatchers("/genres/**").permitAll()
                         .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/visitors/**").permitAll()
 
                         .anyRequest().denyAll()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
-                )
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
@@ -71,14 +71,10 @@ public class MySecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.jdbcAuthentication().dataSource(dataSource)
-                .usersByUsernameQuery("SELECT username, password, enabled" +
-                        " FROM users" +
-                        " WHERE username=?")
-                .authoritiesByUsernameQuery("SELECT username, authority" +
-                        " FROM authorities " +
-                        " WHERE username=?");
-        return authenticationManagerBuilder.build();
+        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authBuilder.userDetailsService(myUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+
+        return authBuilder.build();
     }
 }
