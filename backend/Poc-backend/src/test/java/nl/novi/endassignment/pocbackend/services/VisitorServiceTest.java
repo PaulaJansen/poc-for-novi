@@ -64,6 +64,7 @@ class VisitorServiceTest {
 
     private Visitor visitor;
     private VisitorResponseDto visitorDto;
+    private VisitorInputDto visitorInputDto;
     private Path testUploadDirectory;
 
     @BeforeEach
@@ -71,6 +72,7 @@ class VisitorServiceTest {
         testUploadDirectory = Files.createTempDirectory("test-uploads");
         visitor = new Visitor("John", "john@test.nl", "Password@123", "John Doe");
         visitor.setFavorites(new ArrayList<>());
+        visitorInputDto = new VisitorInputDto();
         visitorDto = new VisitorResponseDto("John", "john@test.nl", "John Doe");
         visitorService = new VisitorService(visitorRepository, visitorMapper, roleRepository, artworkRepository, artworkMapper, passwordEncoder, testUploadDirectory);
     }
@@ -169,7 +171,6 @@ class VisitorServiceTest {
                 "mock content".getBytes()
         );
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setUsername("John");
         visitorInputDto.setEmail("john@test.nl");
         visitorInputDto.setPassword("Password@123");
@@ -216,7 +217,6 @@ class VisitorServiceTest {
     @DisplayName("Should throw exception when password is null")
     public void test6() {
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword(null);
 
         assertThrows(IllegalArgumentException.class, () -> visitorService.createVisitor(visitorInputDto));
@@ -226,7 +226,6 @@ class VisitorServiceTest {
     @DisplayName("Should throw exception when password is empty")
     public void test7() {
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword("");
 
         assertThrows(IllegalArgumentException.class, () -> visitorService.createVisitor(visitorInputDto));
@@ -237,8 +236,6 @@ class VisitorServiceTest {
     public void test8() throws IOException {
 
         visitor.setRoles(List.of(new Role(RoleType.VISITOR)));
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword("Password@123");
 
         when(visitorMapper.toEntity(visitorInputDto)).thenReturn(visitor);
@@ -256,8 +253,6 @@ class VisitorServiceTest {
     public void test9() throws IOException {
 
         visitor.setRoles(List.of(new Role(RoleType.VISITOR)));
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword("Password@123");
 
         when(visitorMapper.toEntity(visitorInputDto)).thenReturn(visitor);
@@ -275,8 +270,6 @@ class VisitorServiceTest {
     public void test10() throws IOException {
 
         visitor.setRoles(null);
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword("Password@123");
 
         Role visitorRole = new Role(RoleType.VISITOR);
@@ -297,7 +290,6 @@ class VisitorServiceTest {
     @DisplayName("Should not create visitor without profile picture")
     public void test11() throws IOException {
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setPassword("Password@123");
 
         when(visitorMapper.toEntity(visitorInputDto)).thenReturn(visitor);
@@ -315,8 +307,6 @@ class VisitorServiceTest {
     public void test12() throws IOException {
 
         visitor.setRoles(new ArrayList<>());
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setUsername("John");
         visitorInputDto.setEmail("john@test.nl");
         visitorInputDto.setPassword("Password@123");
@@ -339,7 +329,6 @@ class VisitorServiceTest {
     @DisplayName("Should create visitor without profile picture (false)")
     void test13() throws IOException {
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setUsername("John");
         visitorInputDto.setEmail("john@test.nl");
         visitorInputDto.setPassword("Password@123");
@@ -382,7 +371,6 @@ class VisitorServiceTest {
         Path oldFilePath = testUploadDirectory.resolve("oldpicture.png");
         Files.writeString(oldFilePath, "dummy content");
 
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setUsername("Jane");
         visitorInputDto.setEmail("jane@test.nl");
         visitorInputDto.setName("Jane Doe");
@@ -413,12 +401,10 @@ class VisitorServiceTest {
     @DisplayName("Should throw exception when updating non-existing visitor")
     public void test15() {
 
-        VisitorInputDto inputDto = new VisitorInputDto();
-
         when(visitorRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(RecordNotFoundException.class,
-                () -> visitorService.updateVisitor(1L, inputDto));
+                () -> visitorService.updateVisitor(1L, visitorInputDto));
     }
 
     @Test
@@ -426,8 +412,6 @@ class VisitorServiceTest {
     public void test16() {
 
         visitor.setProfilePicture(null);
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setProfilePicture("newpicture.png");
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
@@ -444,8 +428,6 @@ class VisitorServiceTest {
     public void test17() {
 
         visitor.setProfilePicture("oldpicture.png");
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setProfilePicture("newpicture.png");
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
@@ -470,8 +452,6 @@ class VisitorServiceTest {
     public void test18() {
 
         visitor.setProfilePicture("existingpicture.png");
-
-        VisitorInputDto visitorInputDto = new VisitorInputDto();
         visitorInputDto.setUsername("Jane");
         visitorInputDto.setEmail("jane@test.nl");
         visitorInputDto.setName("Jane Doe");

@@ -98,12 +98,13 @@ class ArtworkServiceTest {
     @DisplayName("Should create new artwork")
     public void test1() throws IOException {
 
-        when(artworkInputDto.getGenreNames()).thenReturn(List.of("PAINTING"));
-        when(artworkInputDto.getImages()).thenReturn(List.of(multipartFile));
+        artworkInputDto.setGenreNames(List.of("PAINTING"));
+        artworkInputDto.setImages(List.of(multipartFile));
+
         when(genreService.findOrCreate(any())).thenReturn(new Genre("PAINTING"));
         when(multipartFile.getOriginalFilename()).thenReturn("image.png");
         when(multipartFile.getInputStream()).thenReturn(new ByteArrayInputStream("test".getBytes()));
-        when(artworkMapper.toEntity(any(), any())).thenReturn(artwork);
+        when(artworkMapper.toEntity(eq(artworkInputDto), any())).thenReturn(artwork);
 
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("John Doe");
@@ -134,8 +135,9 @@ class ArtworkServiceTest {
     @DisplayName("Should throw exception when file upload fails")
     public void test2() throws IOException {
 
+        artworkInputDto.setImages(List.of(multipartFile));
+
         when(multipartFile.getInputStream()).thenThrow(new IOException("Er is iets mis"));
-        when(artworkInputDto.getImages()).thenReturn(List.of(multipartFile));
 
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> artworkService.createArtwork(artworkInputDto)
@@ -150,10 +152,11 @@ class ArtworkServiceTest {
     @DisplayName("Should throw exception when artist not found")
     public void test3() throws IOException {
 
+        artworkInputDto.setImages(List.of(multipartFile));
+
         when(multipartFile.getOriginalFilename()).thenReturn("image.png");
         when(multipartFile.getInputStream()).thenReturn(new ByteArrayInputStream("test".getBytes()));
         when(artworkMapper.toEntity(any(), any())).thenReturn(artwork);
-        when(artworkInputDto.getImages()).thenReturn(List.of(multipartFile));
 
         Authentication auth = mock(Authentication.class);
         when(auth.getName()).thenReturn("John");
@@ -677,7 +680,7 @@ class ArtworkServiceTest {
         ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
 
         assertEquals(AvailabilityType.SOLD, artwork.getAvailability());
-        assertEquals(AvailabilityType.SOLD, result.getAvailability());
+        assertEquals("SOLD", result.getAvailability());
 
         verify(artworkRepository).save(artwork);
         verify(artworkMapper).toDto(artwork);
@@ -690,14 +693,25 @@ class ArtworkServiceTest {
         artworkInputDto.setGenreNames(List.of("Impressionisme"));
 
         Genre genre = new Genre();
+        genre.setName("Impressionisme");
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
-        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
         when(genreService.findOrCreate(any())).thenReturn(genre);
+        when(artworkMapper.toDto(any(Artwork.class))).thenAnswer(invocation -> {
+            Artwork a = invocation.getArgument(0);
+            ArtworkResponseDto artworkResponseDto = new ArtworkResponseDto();
+            artworkResponseDto.setGenreNames(a.getGenres()
+                    .stream()
+                    .map(Genre::getName)
+                    .toList()
+            );
+            return artworkResponseDto;
+        });
 
-        artworkService.updateArtwork(1L, artworkInputDto);
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
 
         assertTrue(artwork.getGenres().contains(genre));
+        assertTrue(result.getGenreNames().contains("Impressionisme"));
 
         verify(artworkRepository).save(artwork);
         verify(artworkMapper).toDto(artwork);
@@ -705,17 +719,80 @@ class ArtworkServiceTest {
     }
 
     @Test
-    @DisplayName("Should remove images if artwork")
-    public void testUpdateArtwork_RemoveImages() {
+    @DisplayName("Should handle genreNames is null without error")
+    public void test30() {
+
+        artworkInputDto.setGenreNames(null);
+
+        when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
+
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
+
+        assertNotNull(result);
+        assertTrue(true);
+
+        verify(artworkRepository).save(artwork);
+        verify(artworkMapper).toDto(artwork);
+    }
+
+    @Test
+    @DisplayName("Should handle genreNames is empty without error")
+    public void test31() {
+
+        artworkInputDto.setGenreNames(List.of());
+
+        when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
+
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
+
+        assertNotNull(result);
+        assertTrue(artwork.getGenres().isEmpty());
+
+        verify(artworkRepository).save(artwork);
+        verify(artworkMapper).toDto(artwork);
+    }
+
+    @Test
+    @DisplayName("Should remove images of artwork")
+    public void test32() {
 
         artwork.getImages().add("old.png");
 
         artworkInputDto.setRemoveImages(List.of("old.png"));
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(artworkMapper.toDto(any(Artwork.class))).thenAnswer(invocation -> {
+            Artwork a = invocation.getArgument(0);
+            ArtworkResponseDto artworkResponseDto = new ArtworkResponseDto();
+            artworkResponseDto.setImages(a.getImages());
+            return artworkResponseDto;
+        });
+
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
+
+        assertFalse(artwork.getImages().contains("old.png"));
+
+        verify(artworkRepository).save(artwork);
+        verify(artworkMapper).toDto(artwork);
+    }
+
+    @Test
+    @DisplayName("Should swallow exception when deleting image fails")
+    public void test33() throws IOException {
+
+        artwork.getImages().add("old.png");
+        artworkInputDto.setRemoveImages(List.of("old.png"));
+
+        when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
         when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
 
-        artworkService.updateArtwork(1L, artworkInputDto);
+        ArtworkService spyService = spy(artworkService);
+
+        doThrow(new IOException("simulated error")).when(spyService).deleteFile("old.png");
+
+        ArtworkResponseDto result = spyService.updateArtwork(1L, artworkInputDto);
 
         assertFalse(artwork.getImages().contains("old.png"));
 
@@ -725,7 +802,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should add images to artwork")
-    public void testUpdateArtwork_AddImages() {
+    public void test34() {
 
         MockMultipartFile file = new MockMultipartFile("file", "new.png",
                 "image/png", "content".getBytes());
@@ -733,11 +810,21 @@ class ArtworkServiceTest {
         artworkInputDto.setImages(List.of(file));
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
-        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
+        when(artworkMapper.toDto(any(Artwork.class))).thenAnswer(invocation -> {
+            Artwork a = invocation.getArgument(0);
+            ArtworkResponseDto artworkResponseDto = new ArtworkResponseDto();
+            artworkResponseDto.setImages(a.getImages()
+                    .stream()
+                    .map(name -> "/uploads/" + name)
+                    .toList()
+            );
+            return artworkResponseDto;
+        });
 
         ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
 
         assertEquals(1, artwork.getImages().size());
+        assertTrue(result.getImages().getFirst().startsWith("/uploads/"));
         assertTrue(result.getImages().getFirst().contains("new.png"));
 
         verify(artworkRepository).save(artwork);
@@ -746,7 +833,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw exception when images cannot be added")
-    public void testUpdateArtwork_AddImages_IOException() throws IOException {
+    public void test35() throws IOException {
 
         MultipartFile file = mock(MultipartFile.class);
 
@@ -759,12 +846,52 @@ class ArtworkServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> artworkService.updateArtwork(1L, artworkInputDto));
-        assertTrue(ex.getMessage().contains("Kan bestand niet opslaan"));
+
+        assertTrue(ex.getMessage().contains("slechte.png"));
+        assertTrue((ex.getMessage().startsWith("Kan bestand niet opslaan")));
+
+        verify(artworkRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should handle images is null without error")
+    public void test36() {
+
+        artworkInputDto.setImages(null);
+
+        when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
+
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
+
+        assertNotNull(result);
+        assertTrue(result.getImages() == null || result.getImages().isEmpty());
+
+        verify(artworkRepository).save(artwork);
+        verify(artworkMapper).toDto(artwork);
+    }
+
+    @Test
+    @DisplayName("Should handle images is empty without error")
+    public void test37() {
+
+        artworkInputDto.setImages(List.of());
+
+        when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(artworkMapper.toDto(any(Artwork.class))).thenReturn(artworkDto);
+
+        ArtworkResponseDto result = artworkService.updateArtwork(1L, artworkInputDto);
+
+        assertNotNull(result);
+        assertTrue(result.getImages() == null || result.getImages().isEmpty());
+
+        verify(artworkRepository).save(artwork);
+        verify(artworkMapper).toDto(artwork);
     }
 
     @Test
     @DisplayName("Should delete artwork")
-    public void deleteArtwork() {
+    public void test38() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
 
@@ -777,7 +904,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw exception when deleting non-existing artwork")
-    public void test200() {
+    public void test39() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.empty());
 

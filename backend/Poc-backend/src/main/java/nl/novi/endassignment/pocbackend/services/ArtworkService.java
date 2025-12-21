@@ -184,6 +184,18 @@ public class ArtworkService {
         return artworkMapper.toDtoList(artworks);
     }
 
+    void deleteImageFile(String oldImage) {
+        try {
+            deleteFile(oldImage);
+        } catch (IOException e) {
+            System.err.println("Kon afbeelding niet verwijderen: " + oldImage);
+        }
+    }
+
+    void deleteFile(String oldImage) throws IOException {
+        Files.deleteIfExists(uploadDirectory.resolve(oldImage));
+    }
+
     @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
     public ArtworkResponseDto updateArtwork(long id, ArtworkInputDto artworkInputDto) {
@@ -195,11 +207,7 @@ public class ArtworkService {
         if (artworkInputDto.getRemoveImages() != null) {
             for (String oldImage : artworkInputDto.getRemoveImages()) {
                 existingArtwork.getImages().remove(oldImage);
-                try {
-                    Files.deleteIfExists(uploadDirectory.resolve(oldImage));
-                } catch (IOException e) {
-                    System.err.println("Kon afbeelding niet verwijderen: " + oldImage);
-                }
+                deleteImageFile(oldImage);
             }
         }
 
