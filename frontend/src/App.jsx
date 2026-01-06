@@ -25,7 +25,6 @@ function App() {
                     <NavLinkItem to={"/profile"} icon={profile} alt="profile"/>
                 </ul>
             </nav>
-            <div className="circle"></div>
             <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/overview" element={<Overview/>}/>
