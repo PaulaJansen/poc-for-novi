@@ -1,0 +1,10 @@
+.circle {
+    width: 40vw;
+    height: 40vw;
+    background: linear-gradient(180deg, var(--color-tertiary) 52%, var(--color-white) 77%);
+    border-bottom: 2px solid var(--color-quaternary);
+    border-radius: 50%;
+    position: relative;
+    top: -10rem;
+    left: 30vw;
+}
