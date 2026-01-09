@@ -47,11 +47,30 @@ h2 {
 }
 
 h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  padding: 0 0 0 1rem;
+}
 
+h4 {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .error-message {
   color: red;
+  text-align: center;
+  font-weight: 600;
+}
+
+button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 

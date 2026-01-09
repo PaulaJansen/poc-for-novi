@@ -12,7 +12,11 @@ function FavoriteButton({isFavorite, onToggle}) {
                 }
                 aria-pressed={isFavorite}
         >
-            {isFavorite ? favorite : noFavorite}
+            <img
+                src={isFavorite ? favorite : noFavorite}
+                alt={isFavorite ? "Favoriet" : "Niet favoriet"}
+                className="favorite-icon"
+            />
         </button>
     );
 }
