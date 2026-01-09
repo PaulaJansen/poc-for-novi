@@ -1,6 +1,6 @@
-import 'FavoriteButton.css';
-import {ReactComponent as favorite} from '../../assets/heart-fill.svg';
-import {ReactComponent as noFavorite} from '../../assets/heart-thin.svg';
+import "./FavoriteButton.css";
+import favorite from "../../assets/heart-fill.svg";
+import noFavorite from "../../assets/heart-thin.svg";
 
 function FavoriteButton({isFavorite, onToggle}) {
     return (

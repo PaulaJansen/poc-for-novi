@@ -10,14 +10,14 @@ function HighlightSection({title, items, loading}) {
             ? items.slice(0, 5)
             : Array.from({ length: 5 }).map((_, idx) => ({
                 id: `placeholder-${idx}`,
-                image: {defaultImage},
+                image: defaultImage,
                 alt: "Placeholder artwork",
                 title: "---",
                 price: "€-,-",
             }));
 
     return (
-        <div  className="highlight-section-wrapper">
+        <div className="highlight-section-wrapper">
             <h3>{title}</h3>
             {loading && (
                 <div className="spinner-overlay">
@@ -30,6 +30,7 @@ function HighlightSection({title, items, loading}) {
                 {displayItems.map((item) => (
                     <ArtworkCard
                         key={item.id}
+                        id={item.id}
                         image={item.image}
                         alt={item.title || item.title}
                         title={item.title}

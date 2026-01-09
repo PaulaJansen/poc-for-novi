@@ -1,8 +1,7 @@
 import "./Home.css";
 import {useEffect, useState} from "react";
-import Spinner from "../../components/spinner/Spinner.jsx";
 import axios from "axios";
-import HighlightSection from "../../components/highlightSection/HighlightSection.js";
+import HighlightSection from "../../components/highlightSection/HighlightSection.jsx";
 
 function Home() {
 
@@ -24,6 +23,9 @@ function Home() {
                 setPhotos(data.filter(a => a.category === "photography"));
             } catch (e) {
                 setError("Kunstwerken ophalen mislukt :(")
+                setArtworks([]);
+                setPaintings([]);
+                setPhotos([]);
             } finally {
                 setLoadingArtworks(false);
                 setLoadingPaintings(false);
@@ -34,18 +36,15 @@ function Home() {
         fetchData();
     }, [])
 
-    if (error) {
-        return <p className="error-message">{error}</p>;
-    }
-
     return (
+
         <>
             <div className="circle"></div>
             <section className="home-wrapper">
+                {error && <p className="error-message">{error}</p>}
                 <HighlightSection title="Uitgelichte schilderijen" items={paintings} loading={loadingPaintings} />
                 <HighlightSection title="Uitgelichte fotografie" items={photos} loading={loadingPhotos} />
                 <HighlightSection title="Uitgelicht" items={artworks} loading={loadingArtworks} />
-                {error}
             </section>
         </>
     )
