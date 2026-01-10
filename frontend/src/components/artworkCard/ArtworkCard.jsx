@@ -2,7 +2,7 @@ import "./ArtworkCard.css";
 import FavoriteButton from "../favoriteButton/FavoriteButton.jsx";
 import {useFavorites} from "../../context/FavoritesProvider.jsx";
 
-function ArtworkCard({id, title, image, alt, price}) {
+function ArtworkCard({id, title, image, alt, price, isPlaceholder}) {
 
     const {favoriteIds, toggleFavorite} = useFavorites()
     const isFavorite = favoriteIds.includes(id);
@@ -10,10 +10,12 @@ function ArtworkCard({id, title, image, alt, price}) {
     return (
         <div className="card-wrapper">
             <img className="card-image" src={image} alt={alt || "Geen afbeelding beschikbaar"}/>
-            <FavoriteButton
-                isFavorite={isFavorite}
-                onToggle={() => toggleFavorite(id)}
-            />
+            {!isPlaceholder && (
+                <FavoriteButton
+                    isFavorite={isFavorite}
+                    onToggle={() => toggleFavorite(id)}
+                />
+            )}
             <div className="card-text-wrapper">
                 <h4>{title || "Titel onbekend"}</h4>
                 <p>{price ? `€{price}` : "Prijs onbekend"}</p>

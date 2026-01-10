@@ -9,13 +9,19 @@ function HighlightSection({title, items, loading}) {
 
     const displayItems =
         items && items.length > 0
-            ? items.slice(0, 5)
+            ? items.slice(0, 5).map(item => ({
+                ...item,
+                key: `real-${item.id}`,
+                isPlaceholder: false
+            }))
             : Array.from({length: 5}).map((_, idx) => ({
+                key: `placeholder-${idx}`,
                 id: `placeholder-${idx}`,
                 image: defaultImage,
                 alt: "Placeholder artwork",
                 title: "---",
                 price: "€-,-",
+                isPlaceholder: true
             }));
 
     return (
@@ -37,6 +43,7 @@ function HighlightSection({title, items, loading}) {
                         alt={item.title || item.title}
                         title={item.title}
                         price={item.price}
+                        isPlaceholder={item.isPlaceholder}
                     />
                 ))}
                 <Link to="/overview">
