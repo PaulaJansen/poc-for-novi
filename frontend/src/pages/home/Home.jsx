@@ -41,10 +41,12 @@ function Home() {
         <>
             <div className="circle"></div>
             <section className="home-wrapper">
-                {error && <p className="error-message">{error}</p>}
-                <HighlightSection title="Uitgelichte schilderijen" items={paintings} loading={loadingPaintings} />
-                <HighlightSection title="Uitgelichte fotografie" items={photos} loading={loadingPhotos} />
-                <HighlightSection title="Uitgelicht" items={artworks} loading={loadingArtworks} />
+                <div className="error-wrapper">
+                    {error && <p className="error-message">{error}</p>}
+                </div>
+                <HighlightSection title="Uitgelichte schilderijen" items={paintings} loading={loadingPaintings}/>
+                <HighlightSection title="Uitgelichte fotografie" items={photos} loading={loadingPhotos}/>
+                <HighlightSection title="Uitgelicht" items={artworks} loading={loadingArtworks}/>
             </section>
         </>
     )

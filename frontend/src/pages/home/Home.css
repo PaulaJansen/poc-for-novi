@@ -1,12 +1,18 @@
 .circle {
-    width: 40vw;
-    height: 40vw;
-    background: linear-gradient(180deg, var(--color-tertiary) 52%, var(--color-white) 77%);
-    border-bottom: 2px solid var(--color-quaternary);
+    width: 30vw;
+    height: 30vw;
+    background: linear-gradient(180deg, rgba(39, 151, 168, 0.55) 35%, var(--color-quaternary) 61%);
+    border: 2px solid var(--color-quaternary);
     border-radius: 50%;
     position: relative;
-    top: -10rem;
-    left: 30vw;
+    top: -8rem;
+    left: 35vw;
+}
+
+.error-wrapper {
+    position: relative;
+    left: -32rem;
+
 }
 
 .home-wrapper {
@@ -19,5 +25,5 @@
     gap: 1rem;
     z-index: 5;
     position: relative;
-    top: -32rem;
+    top: -26rem;
 }
