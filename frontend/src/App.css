@@ -21,4 +21,38 @@
   margin-right: 2rem;
 }
 
+.footer {
+  background: linear-gradient(20deg, rgba(0, 0, 0) 35%, var(--color-quaternary) 61%);
+  width: 100vw;
+  height: 7rem;
+  border-top: 2px solid var(--color-quaternary);
+}
+
+.footer-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.footer-logo {
+  height: 4rem;
+}
+
+.footer-text {
+  color: var(--color-white);
+}
+
+.circle-small {
+  width: 12vw;
+  height: 12vw;
+  background: linear-gradient(180deg, rgba(39, 151, 168, 0.75) 35%, var(--color-quaternary) 61%);
+  border: 2px solid var(--color-quaternary);
+  border-radius: 50%;
+  position: relative;
+  top: -10rem;
+  left: 70rem;
+}
+
 

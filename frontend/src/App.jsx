@@ -9,6 +9,7 @@ import UserArtist from "./pages/userArtist/UserArtist.jsx";
 import NewArtwork from "./pages/newArtwork/NewArtwork.jsx";
 import Register from "./pages/register/Register.jsx";
 import logo from "./assets/logo-aloa-nbg.png";
+import logoSmall from "./assets/logo-aloa-small.png";
 import NavLinkItem from "./components/navLinkItem/NavLinkItem.jsx";
 import profile from "./assets/user-icon.svg";
 
@@ -17,11 +18,11 @@ function App() {
     return (
         <>
             <nav className="navbar">
-                <img className="navbar-logo" src={logo} alt="logo" />
+                <img className="navbar-logo" src={logo} alt="logo"/>
                 <ul className="navbar-menu">
-                    <NavLinkItem to={"/"} title="Home" />
-                    <NavLinkItem to={"/overview"} title="All Art" />
-                    <NavLinkItem to={"/register"} title="Register" />
+                    <NavLinkItem to={"/"} title="Home"/>
+                    <NavLinkItem to={"/overview"} title="All Art"/>
+                    <NavLinkItem to={"/register"} title="Register"/>
                     <NavLinkItem to={"/profile"} icon={profile} alt="profile"/>
                 </ul>
             </nav>
@@ -35,6 +36,13 @@ function App() {
                 <Route path="/new-artwork" element={<NewArtwork/>}/>
                 <Route path="/register" element={<Register/>}/>
             </Routes>
+            <section className="footer">
+                <div className="footer-wrapper">
+                    <img className="footer-logo" src={logoSmall} alt="logo"/>
+                    <p className="footer-text">© 2026</p>
+                </div>
+                <div className="circle-small"></div>
+            </section>
         </>
     )
 }

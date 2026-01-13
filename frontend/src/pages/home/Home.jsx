@@ -39,7 +39,7 @@ function Home() {
     return (
 
         <>
-            <div className="circle"></div>
+            <div className="circle-large"></div>
             <section className="home-wrapper">
                 <div className="error-wrapper">
                     {error && <p className="error-message">{error}</p>}
