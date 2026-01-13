@@ -38,8 +38,8 @@ function Home() {
 
     return (
 
-        <>
-            <div className="circle"></div>
+        <div className="home-container">
+            <div className="circle-large"></div>
             <section className="home-wrapper">
                 <div className="error-wrapper">
                     {error && <p className="error-message">{error}</p>}
@@ -48,7 +48,7 @@ function Home() {
                 <HighlightSection title="Uitgelichte fotografie" items={photos} loading={loadingPhotos}/>
                 <HighlightSection title="Uitgelicht" items={artworks} loading={loadingArtworks}/>
             </section>
-        </>
+        </div>
     )
 }
 

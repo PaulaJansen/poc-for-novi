@@ -31,7 +31,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 button, input, select, textarea {
