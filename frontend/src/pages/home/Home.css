@@ -1,0 +1,27 @@
+.circle {
+    width: 30vw;
+    height: 30vw;
+    background: linear-gradient(180deg, rgba(39, 151, 168, 0.55) 35%, var(--color-quaternary) 61%);
+    border: 2px solid var(--color-quaternary);
+    border-radius: 50%;
+    position: relative;
+    top: -8rem;
+    left: 35vw;
+}
+
+.error-wrapper {
+    padding: 1rem 0 0 0;
+}
+
+.home-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 5rem;
+    gap: 1rem;
+    z-index: 5;
+    position: relative;
+    top: -26rem;
+}
