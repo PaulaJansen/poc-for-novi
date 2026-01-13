@@ -12,7 +12,7 @@ import logo from "./assets/logo-aloa-nbg.png";
 import logoSmall from "./assets/logo-aloa-small.png";
 import NavLinkItem from "./components/navLinkItem/NavLinkItem.jsx";
 import profile from "./assets/user-icon.svg";
-import {getCurrentYear} from "./helper/getCurrentYear.js";
+import {getCurrentYear} from "./helpers/getCurrentYear.js";
 
 function App() {
 

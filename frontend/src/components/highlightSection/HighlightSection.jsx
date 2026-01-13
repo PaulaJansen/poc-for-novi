@@ -40,7 +40,7 @@ function HighlightSection({title, items, loading}) {
                         key={item.id}
                         id={item.id}
                         image={item.image}
-                        alt={item.title || item.title}
+                        alt={item.title}
                         title={item.title}
                         price={item.price}
                         isPlaceholder={item.isPlaceholder}

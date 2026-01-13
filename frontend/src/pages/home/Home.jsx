@@ -41,9 +41,7 @@ function Home() {
         <div className="home-container">
             <div className="circle-large"></div>
             <section className="home-wrapper">
-                <div className="error-wrapper">
-                    {error && <p className="error-message">{error}</p>}
-                </div>
+                {error && <p className="error-message">{error}</p>}
                 <HighlightSection title="Uitgelichte schilderijen" items={paintings} loading={loadingPaintings}/>
                 <HighlightSection title="Uitgelichte fotografie" items={photos} loading={loadingPhotos}/>
                 <HighlightSection title="Uitgelicht" items={artworks} loading={loadingArtworks}/>
