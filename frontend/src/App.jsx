@@ -12,6 +12,7 @@ import logo from "./assets/logo-aloa-nbg.png";
 import logoSmall from "./assets/logo-aloa-small.png";
 import NavLinkItem from "./components/navLinkItem/NavLinkItem.jsx";
 import profile from "./assets/user-icon.svg";
+import {getCurrentYear} from "./helper/getCurrentYear.js";
 
 function App() {
 
@@ -39,7 +40,7 @@ function App() {
             <section className="footer">
                 <div className="footer-wrapper">
                     <img className="footer-logo" src={logoSmall} alt="logo"/>
-                    <p className="footer-text">© 2026</p>
+                    <p className="footer-text">© {getCurrentYear()}</p>
                 </div>
                 <div className="circle-small"></div>
             </section>
