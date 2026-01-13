@@ -22,7 +22,7 @@ function Home() {
                 setPaintings(data.filter(a => a.category === "paintings"));
                 setPhotos(data.filter(a => a.category === "photography"));
             } catch (e) {
-                setError("Kunstwerken ophalen mislukt :(")
+                setError("Kunstwerken ophalen mislukt")
                 setArtworks([]);
                 setPaintings([]);
                 setPhotos([]);

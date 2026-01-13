@@ -20,7 +20,7 @@ function HighlightSection({title, items, loading}) {
                 image: defaultImage,
                 alt: "Placeholder artwork",
                 title: "---",
-                price: "€-,-",
+                price: "",
                 isPlaceholder: true
             }));
 
