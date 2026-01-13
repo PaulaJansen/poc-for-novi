@@ -26,6 +26,8 @@
   width: 100vw;
   height: 7rem;
   border-top: 2px solid var(--color-quaternary);
+  margin-top: 6rem;
+  position: relative;
 }
 
 .footer-wrapper {
@@ -50,9 +52,9 @@
   background: linear-gradient(180deg, rgba(39, 151, 168, 0.75) 35%, var(--color-quaternary) 61%);
   border: 2px solid var(--color-quaternary);
   border-radius: 50%;
-  position: relative;
-  top: -10rem;
-  left: 70rem;
+  position: absolute;
+  top: -4rem;
+  left: 76vw;
 }
 
 
