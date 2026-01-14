@@ -1,6 +1,7 @@
 .navbar {
   background: linear-gradient(20deg, rgba(39, 151, 168, 0.55) 35%, var(--color-quaternary) 61%);
   padding: 5rem 3rem;
+  margin: 0 0 2rem;
   width: 100vw;
   display: flex;
   justify-content: space-between;

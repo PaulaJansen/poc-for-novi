@@ -2,6 +2,7 @@ import "./Home.css";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import HighlightSection from "../../components/highlightSection/HighlightSection.jsx";
+import {hasAnyGenre} from "../../helpers/hasAnyGenre.js";
 
 function Home() {
 
@@ -16,11 +17,12 @@ function Home() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get("/artworks");
+                const response = await axios.get("http://localhost:8080/artworks");
                 const data = response.data;
+                console.log(data);
                 setArtworks(data);
-                setPaintings(data.filter(a => a.category === "paintings"));
-                setPhotos(data.filter(a => a.category === "photography"));
+                setPaintings(data.filter(a => hasAnyGenre(a, ["schilderij", "schilderijen", "painting", "paintings", "schilderkunst"])));
+                setPhotos(data.filter(a => hasAnyGenre(a, ["fotografie", "photography", "foto", "photo"])));
             } catch (e) {
                 setError("Kunstwerken ophalen mislukt")
                 setArtworks([]);
