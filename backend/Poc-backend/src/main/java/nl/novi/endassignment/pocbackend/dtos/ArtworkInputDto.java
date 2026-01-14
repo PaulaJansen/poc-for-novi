@@ -25,7 +25,7 @@ public class ArtworkInputDto {
 
     private List<String> removeImages;
 
-    @NotEmpty(message = "Voeg tenminste 1 genre toe")
+    @NotEmpty(message = "Voeg tenminste 1 genre toe; voeg tenminste het type kunst toe!")
     private List<String> genreNames;
 
     @NotNull(message = "Vul een prijs in")
