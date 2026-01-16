@@ -36,10 +36,7 @@ function Overview() {
 
     if (loading) {
         return (
-            <>
-                <Spinner className="spinner-default"/>
-                <p>Kunst wordt geladen...</p>
-            </>
+            <Spinner size="default" text="Kunst wordt geladen"/>
         );
     }
 

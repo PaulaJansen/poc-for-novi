@@ -29,8 +29,7 @@ function HighlightSection({title, items, loading}) {
             <h3>{title}</h3>
             {loading && (
                 <div className="spinner-overlay">
-                    <Spinner className="spinner-default"/>
-                    <p>Laden...</p>
+                    <Spinner size="default" text="Laden..."/>
                 </div>
             )}
 
