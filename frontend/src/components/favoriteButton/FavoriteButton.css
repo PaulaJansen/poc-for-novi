@@ -1,5 +1,5 @@
 .favorite-icon {
-    position: relative;
-    top: -13.5rem;
-    right: -15rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
 }

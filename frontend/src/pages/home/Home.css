@@ -9,12 +9,8 @@
     border: 2px solid var(--color-quaternary);
     border-radius: 50%;
     position: absolute;
-    top: -8rem;
+    top: -10rem;
     left: 35vw;
-}
-
-.error-wrapper {
-    padding: 1rem 0 0 0;
 }
 
 .home-wrapper {

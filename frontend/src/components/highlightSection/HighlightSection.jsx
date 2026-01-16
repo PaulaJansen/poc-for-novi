@@ -35,17 +35,25 @@ function HighlightSection({title, items, loading}) {
             )}
 
             <article className="highlight-wrapper">
-                {displayItems.map((item) => (
+                {displayItems.map((item) => {
+                    const imageUrl = item.isPlaceholder
+                        ? defaultImage
+                        : item.images?.[0]
+                            ? `http://localhost:8080/images/${item.images[0]}`
+                            : defaultImage;
+
+                    return (
                     <ArtworkCard
                         key={item.id}
                         id={item.id}
-                        image={item.image}
-                        alt={item.title || item.title}
+                        image={imageUrl}
+                        alt={item.title}
                         title={item.title}
                         price={item.price}
                         isPlaceholder={item.isPlaceholder}
                     />
-                ))}
+                );
+            })}
                 <Link to="/overview">
                     <img
                         src={arrow}
