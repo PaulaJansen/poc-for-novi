@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
+import defaultImage from "../../assets/art-gallery.jpg";
 
 function Overview() {
 
@@ -13,7 +14,7 @@ function Overview() {
     useEffect(() => {
         async function fetchArtworks() {
             try {
-                const response = await axios.get('/api/artworks');
+                const response = await axios.get("http://localhost:8080/artworks");
                 const data = response.data;
 
                 if (Array.isArray(data)) {
@@ -59,16 +60,22 @@ function Overview() {
         <div className="overview-container">
             <h3 className="overview-title">Ontdek alle kunst</h3>
             <section className="overview-wrapper">
-                {artworks.map((artwork) => (
-                    <ArtworkCard
-                        key={artwork.id}
-                        id={artwork.id}
-                        image={artwork.image}
-                        alt={artwork.title}
-                        title={artwork.title}
-                        price={artwork.price}
-                    />
-                ))}
+                {artworks.map((artwork) => {
+                    const imageUrl = artwork.images?.[0]
+                            ? `http://localhost:8080/images/${artwork.images[0]}`
+                            : defaultImage;
+
+                    return (
+                        <ArtworkCard
+                            key={artwork.id}
+                            id={artwork.id}
+                            image={imageUrl}
+                            alt={artwork.title}
+                            title={artwork.title}
+                            price={artwork.price}
+                        />
+                    );
+                })}
             </section>
         </div>
     )
