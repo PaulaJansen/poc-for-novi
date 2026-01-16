@@ -9,7 +9,9 @@ function ArtworkCard({id, title, image, alt, price, isPlaceholder}) {
 
     return (
         <div className="card-wrapper">
-            <img className="card-image" src={image} alt={alt || "Geen afbeelding beschikbaar"}/>
+            <div className="card-image-wrapper">
+                <img className="card-image" src={image} alt={alt || "Geen afbeelding beschikbaar"}/>
+            </div>
             {!isPlaceholder && (
                 <FavoriteButton
                     isFavorite={isFavorite}
