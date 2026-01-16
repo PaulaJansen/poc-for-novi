@@ -1,6 +1,6 @@
 import "./FavoriteButton.css";
 import favorite from "../../assets/heart-fill.svg";
-import noFavorite from "../../assets/heart-thin.svg";
+import noFavorite from "../../assets/heart-duotone.svg";
 
 function FavoriteButton({isFavorite, onToggle}) {
     return (
