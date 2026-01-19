@@ -16,9 +16,8 @@
 
 .overview-buttons-wrapper {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
-    gap: 0.5rem;
 }
 
 .filter-wrapper {
@@ -31,49 +30,15 @@
     left: 0;
     width: 75vw;
     background-color: var(--color-quarternary-trans);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     padding: 3rem;
     z-index: 1000;
 }
 
-.filters-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
+.filters-left,
 .filters-right {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
-
-.filter-dropdown input[type="text"],
-.filter-dropdown input[type="number"] {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 6px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.availability-filters label {
-    display: block;
-    margin-bottom: 6px;
-}
-
-.reset-filters-btn {
-    margin-top: 10px;
-    padding: 6px 12px;
-    background-color: #dc2626;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.reset-filters-btn:hover {
-    background-color: #b91c1c;
 }
 
 .overview-wrapper {

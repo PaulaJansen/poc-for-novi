@@ -6,6 +6,12 @@
     gap: 1rem;
 }
 
+.input-field {
+    padding: 0.3rem 1rem;
+    border: 1px solid var(--color-tertiary);
+    font-size: 1rem;
+}
+
 .input-field::placeholder {
     color: var(--color-text);
     font-size: 1rem;

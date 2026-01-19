@@ -27,6 +27,22 @@ function Overview() {
 
     const dropdownRef = useRef(null);
 
+    const [sortBy, setSortBy] = useState("");
+    const sortedArtworks = [...artworks].sort((a, b) => {
+        switch (sortBy) {
+            case "PRICE_ASC":
+                return a.price - b.price;
+            case "PRICE_DESC":
+                return b.price - a.price;
+            case "TITLE_ASC":
+                return a.title.localeCompare(b.title);
+            case "TITLE_DESC":
+                return b.title.localeCompare(a.title);
+            default:
+                return 0;
+        }
+    });
+
     useEffect(() => {
         fetchFilteredArtworks();
     }, []);
@@ -90,10 +106,19 @@ function Overview() {
                             onClick={() => setShowFilters(prev => !prev)}
                             label={`Filters ${showFilters ? "▲" : "▼"}`}
                     />
-                    <Button className="button-default button-tertiary"
-                            type="button"
-                            onClick={() => setShowFilters(prev => !prev)}
-                            label="Sorteer"
+                    <InputField
+                        as="select"
+                        name="sort"
+                        id="sort"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        options={[
+                            {value: "", label: "Geen sortering", disabled: true},
+                            {value: "PRICE_ASC", label: "Prijs: laag → hoog"},
+                            {value: "PRICE_DESC", label: "Prijs: hoog → laag"},
+                            {value: "TITLE_ASC", label: "Titel: A → Z"},
+                            {value: "TITLE_DESC", label: "Titel: Z → A"},
+                        ]}
                     />
                 </div>
                 {showFilters && (
@@ -146,25 +171,15 @@ function Overview() {
                                 value={filters.availabilities[0] || ""}
                                 onChange={e => setFilters({...filters, availabilities: [e.target.value]})}
                                 options={[
-                                    {
-                                        value: "",
-                                        label: "Selecteer...",
-                                        disabled: true,
-                                    }, {
-                                        value: "AVAILABLE",
-                                        label: "Beschikbaar",
-                                    }, {
-                                        value: "SOLD",
-                                        label: "Verkocht",
-                                    }, {
-                                        value: "ONLOAN",
-                                        label: "Uitgehuurd",
-                                    }
+                                    {value: "", label: "Selecteer...", disabled: true},
+                                    {value: "AVAILABLE", label: "Beschikbaar"},
+                                    {value: "SOLD", label: "Verkocht"},
+                                    {value: "ONLOAN", label: "Uitgehuurd"}
                                 ]}
                             />
                             <Button className="button-default button-tertiary"
                                     type="button"
-                                    onClick={() =>
+                                    onClick={() => {
                                         setFilters({
                                             title: "",
                                             artistFirstName: "",
@@ -173,8 +188,9 @@ function Overview() {
                                             maxPrice: "",
                                             genre: "",
                                             availabilities: []
-                                        })
-                                    }
+                                        });
+                                        setSortBy("");
+                                    }}
                                     label="Reset filters"
                             />
                         </div>
@@ -182,14 +198,15 @@ function Overview() {
                 )}
             </div>
             <section className="overview-wrapper">
-                {artworks.length === 0 ? (
+                {sortedArtworks.length === 0 ? (
                     <div className="geen-kunstwerken-wrapper">
                         <h3 className="geen-kunstwerken-gevonden">
                             Geen kunstwerken gevonden met deze filters.
                         </h3>
                         <Button className="button-default button-tertiary"
                                 type="button"
-                                onClick={() =>
+                                label="Reset filters"
+                                onClick={() => {
                                     setFilters({
                                         title: "",
                                         artistFirstName: "",
@@ -198,13 +215,13 @@ function Overview() {
                                         maxPrice: "",
                                         genre: "",
                                         availabilities: []
-                                    })
-                                }
-                                label="Reset filters"
+                                    });
+                                    setSortBy("");
+                                }}
                         />
                     </div>
                 ) : (
-                    artworks.map((artwork) => {
+                    sortedArtworks.map((artwork) => {
                         const imageUrl = artwork.images?.[0]
                             ? `http://localhost:8080/images/${artwork.images[0]}`
                             : defaultImage;
