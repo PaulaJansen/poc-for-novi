@@ -8,11 +8,72 @@
     padding: 3rem;
 }
 
+.filter-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 0 5.5rem;
+}
+
+.overview-buttons-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .filter-wrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 6rem;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 75vw;
+    background-color: var(--color-quarternary-trans);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 3rem;
+    z-index: 1000;
+}
+
+.filters-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filters-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter-dropdown input[type="text"],
+.filter-dropdown input[type="number"] {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.availability-filters label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.reset-filters-btn {
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.reset-filters-btn:hover {
+    background-color: #b91c1c;
 }
 
 .overview-wrapper {
@@ -21,4 +82,15 @@
     justify-content: center;
     gap: 2rem;
     padding: 0 1rem;
+}
+
+.geen-kunstwerken-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.geen-kunstwerken-gevonden {
+    margin: 2rem 0.5rem;
 }

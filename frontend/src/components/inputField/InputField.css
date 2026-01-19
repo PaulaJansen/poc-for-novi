@@ -3,22 +3,34 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
+}
+
+.input-field::placeholder {
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+option {
+    font-weight: 400;
+    font-size: 1rem;
+    margin: 0.25rem 1rem;
 }
 
 .label-secondary {
-    gap: 1rem;
     justify-content: flex-start;
+}
+
+label > span {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-white);
 }
 
 .label-tertiary {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    font-weight: 600;
-}
-
-label > span {
     font-weight: 600;
 }
 
@@ -31,5 +43,6 @@ label > span {
 }
 
 input[type=text] {
-    width: 70%;
+    width: 30rem;
+    height: 2rem;
 }

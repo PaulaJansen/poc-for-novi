@@ -10,9 +10,10 @@ function InputField({label, as = "input", type, className, name, id, register, v
             <label htmlFor={id} className="label-primary">
                 <span>{label}</span>
                 <Component
-                    className={className}
+                    className={`${className || ""} input-field`}
                     id={id}
                     onChange={onChange}
+                    value={value}
                     {...(typeof register === "function" ? register(name) : {})}>
                     {options?.map((option) => (
                         <option key={option.value} value={option.value} disabled={option.disabled}
@@ -38,7 +39,7 @@ function InputField({label, as = "input", type, className, name, id, register, v
         return wrapInputInLabel ? (
             <label htmlFor={id} className="label-secondary">
                 <Component
-                    className={className}
+                    className={`${className || ""} input-field`}
                     {...(typeof register === "function" ? register(name) : {})}
                     id={id}
                     value={value}
@@ -52,7 +53,7 @@ function InputField({label, as = "input", type, className, name, id, register, v
             <label htmlFor={id} className="label-primary">
                 <span>{label}</span>
                 <Component
-                    className={className}
+                    className={`${className || ""} input-field`}
                     {...(typeof register === "function" ? register(name) : {})}
                     id={id}
                     type={type}

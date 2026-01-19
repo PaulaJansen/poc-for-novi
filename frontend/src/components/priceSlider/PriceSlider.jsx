@@ -1,6 +1,6 @@
+import "rc-slider/assets/index.css";
 import "./PriceSlider.css";
 import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
 
 function PriceSlider({ filters, setFilters, min = 0, max = 90000 }) {
     const onChange = (value) => {
@@ -23,7 +23,7 @@ function PriceSlider({ filters, setFilters, min = 0, max = 90000 }) {
                 allowCross={false}
                 tipFormatter={(value) => `€${value}`}
             />
-            <div>
+            <div className="slider-text">
                 <span>Min: €{filters.minPrice || min}</span>{" "}
                 <span>Max: €{filters.maxPrice || max}</span>
             </div>

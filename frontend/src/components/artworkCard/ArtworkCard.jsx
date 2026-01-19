@@ -19,7 +19,7 @@ function ArtworkCard({id, title, image, alt, price, isPlaceholder}) {
                 />
             )}
             <div className="card-text-wrapper">
-                <h4>{title || "Titel onbekend"}</h4>
+                <h3>{title || "Titel onbekend"}</h3>
                 <p>{price ? `€${price}` : "Prijs onbekend"}</p>
             </div>
         </div>
