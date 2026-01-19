@@ -117,10 +117,15 @@ public class ArtworkService {
         };
     }
 
-    public Specification<Artwork> buildGenreSpecification(List<Genre> genres) {
+    public Specification<Artwork> buildGenreSpecification(String genreSearch) {
         return (root, query, cb) -> {
+            assert query != null;
+            query.distinct(true);
             Join<Artwork, Genre> genreJoin = root.join("genres");
-            return genreJoin.in(genres);
+            return cb.like(
+                    cb.lower(genreJoin.get("name")),
+                    "%" + genreSearch.toLowerCase() + "%"
+            );
         };
     }
 
@@ -158,16 +163,13 @@ public class ArtworkService {
         }
 
         if (genreNames != null && !genreNames.isEmpty()) {
-            List<Genre> genres = genreNames.stream()
-                    .map(name -> genreRepository.findByNameIgnoreCase(name)
-                            .orElseThrow(() -> new RecordNotFoundException("Genre met naam " + name + " niet gevonden!")
-                            )
-                    )
-                    .toList();
+            String genreSearch = genreNames.getFirst();
 
-            specification = specification.and(
-                    buildGenreSpecification(genres)
-            );
+            if (!genreSearch.isBlank()) {
+                specification = specification.and(
+                        buildGenreSpecification(genreSearch)
+                );
+            }
         }
 
         if (availabilityNames != null && !availabilityNames.isEmpty()) {
