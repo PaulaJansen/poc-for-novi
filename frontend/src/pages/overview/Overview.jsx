@@ -39,7 +39,7 @@ function Overview() {
         try {
             const query = buildFilterQuery(filters);
             const response = await axios.get(`http://localhost:8080/artworks/filter?${query}`);
-            console.log("REQUEST URL:", response);
+            console.log(query)
 
             let data = response.data;
             setArtworks(Array.isArray(data) ? data : []);
@@ -85,7 +85,6 @@ function Overview() {
                             onChange={e =>
                                 setFilters({...filters, title: e.target.value})}
                 />
-
                 <InputField placeholder="zoek kunstenaar op voornaam"
                             as="input"
                             type="text"
@@ -95,7 +94,6 @@ function Overview() {
                             onChange={e =>
                                 setFilters({...filters, artistFirstName: e.target.value})}
                 />
-
                 <InputField placeholder="zoek kunstenaar op achternaam"
                             as="input"
                             type="text"
@@ -105,7 +103,6 @@ function Overview() {
                             onChange={e =>
                                 setFilters({...filters, artistLastName: e.target.value})}
                 />
-
                 <InputField placeholder="zoek op genre"
                             as="input"
                             type="text"
@@ -115,41 +112,26 @@ function Overview() {
                             onChange={e =>
                                 setFilters({...filters, genre: e.target.value})}
                 />
-
-                <PriceSlider filters={filters} setFilters={setFilters} min={0} max={2000} />
-
-                {/*availabilty*/}
-                <div>
-                    <label>
-                        <input
-                            type="checkbox"
-                            value="FOR_SALE"
-                            checked={filters.availabilities.includes("FOR_SALE")}
-                            onChange={e => {
-                                const updated = e.target.checked
-                                    ? [...filters.availabilities, e.target.value]
-                                    : filters.availabilities.filter(a => a !== e.target.value);
-                                setFilters({...filters, availabilities: updated});
-                            }}
-                        />
-                        Te koop
-                    </label>
-
-                    <label>
-                        <input
-                            type="checkbox"
-                            value="SOLD"
-                            checked={filters.availabilities.includes("SOLD")}
-                            onChange={e => {
-                                const updated = e.target.checked
-                                    ? [...filters.availabilities, e.target.value]
-                                    : filters.availabilities.filter(a => a !== e.target.value);
-                                setFilters({...filters, availabilities: updated});
-                            }}
-                        />
-                        Verkocht
-                    </label>
-                </div>
+                <PriceSlider filters={filters} setFilters={setFilters} min={0} max={2000}/>
+                <InputField
+                    label="Beschikbaarheid: "
+                    as="select"
+                    name="availability"
+                    id="availability"
+                    options={[
+                        {
+                            value: "AVAILABLE",
+                            label: "Beschikbaar",
+                        }, {
+                            value: "SOLD",
+                            label: "Verkocht",
+                        }, {
+                            value: "ONLOAN",
+                            label: "Uitgehuurd",
+                        }
+                    ]}
+                    onChange={e => setFilters({...filters, availabilities: [e.target.value]})}
+                />
 
                 {/* Reset filters */}
                 <button

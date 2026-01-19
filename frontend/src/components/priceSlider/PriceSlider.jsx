@@ -12,7 +12,7 @@ function PriceSlider({ filters, setFilters, min = 0, max = 90000 }) {
     };
 
     return (
-        <>
+        <div className="slider-wrapper">
             <label>Prijs:</label>
             <Slider
                 range
@@ -27,7 +27,7 @@ function PriceSlider({ filters, setFilters, min = 0, max = 90000 }) {
                 <span>Min: €{filters.minPrice || min}</span>{" "}
                 <span>Max: €{filters.maxPrice || max}</span>
             </div>
-        </>
+        </div>
     );
 }
 

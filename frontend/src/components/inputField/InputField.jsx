@@ -12,6 +12,7 @@ function InputField({label, as = "input", type, className, name, id, register, v
                 <Component
                     className={className}
                     id={id}
+                    onChange={onChange}
                     {...(typeof register === "function" ? register(name) : {})}>
                     {options?.map((option) => (
                         <option key={option.value} value={option.value} disabled={option.disabled}
