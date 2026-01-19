@@ -6,6 +6,7 @@ import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
 import {buildFilterQuery} from "../../helpers/buildFilterQuery.js";
 import InputField from "../../components/inputField/InputField.jsx";
+import PriceSlider from "../../components/priceSlider/PriceSlider.jsx";
 
 function Overview() {
 
@@ -14,37 +15,13 @@ function Overview() {
     const [error, setError] = useState(null);
     const [filters, setFilters] = useState({
         title: "",
-        artistName: "",
+        artistFirstName: "",
+        artistLastName: "",
         minPrice: "",
         maxPrice: "",
         genre: "",
         availabilities: []
     });
-
-
-    // useEffect(() => {
-    //     async function fetchArtworks() {
-    //         try {
-    //             const response = await axios.get("http://localhost:8080/artworks");
-    //             const data = response.data;
-    //
-    //             if (Array.isArray(data)) {
-    //                 setArtworks(data);
-    //             } else if (Array.isArray(data.data)) {
-    //                 setArtworks(data.data);
-    //             } else {
-    //                 setArtworks([]);
-    //                 throw new Error("Onverwacht API-formaat");
-    //             }
-    //         } catch (e) {
-    //             setError("Kunstwerken ophalen mislukt")
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     }
-
-    //     fetchArtworks();
-    // }, []);
 
     useEffect(() => {
         fetchFilteredArtworks();
@@ -60,25 +37,11 @@ function Overview() {
 
     async function fetchFilteredArtworks() {
         try {
-            const query = buildFilterQuery({
-                title: filters.title,
-                minPrice: filters.minPrice,
-                maxPrice: filters.maxPrice,
-                genres: filters.genre ? [filters.genre] : [],
-                availabilities: filters.availabilities
-            });
-
+            const query = buildFilterQuery(filters);
             const response = await axios.get(`http://localhost:8080/artworks/filter?${query}`);
+            console.log("REQUEST URL:", response);
+
             let data = response.data;
-
-            if (filters.artistName) {
-                const search = filters.artistName.toLowerCase().trim();
-                data = data.filter(artwork =>
-                    (artwork.artistFirstName?.toLowerCase().includes(search) ||
-                        artwork.artistLastName?.toLowerCase().includes(search))
-                );
-            }
-
             setArtworks(Array.isArray(data) ? data : []);
         } catch (e) {
             setError("Kunstwerken filteren mislukt")
@@ -123,14 +86,24 @@ function Overview() {
                                 setFilters({...filters, title: e.target.value})}
                 />
 
-                <InputField placeholder="zoek kunstenaar"
+                <InputField placeholder="zoek kunstenaar op voornaam"
                             as="input"
                             type="text"
-                            name="artist"
-                            id="artist"
-                            value={filters.artistName}
+                            name="artistFirstName"
+                            id="artistFirstName"
+                            value={filters.artistFirstName}
                             onChange={e =>
-                                setFilters({...filters, artistName: e.target.value})}
+                                setFilters({...filters, artistFirstName: e.target.value})}
+                />
+
+                <InputField placeholder="zoek kunstenaar op achternaam"
+                            as="input"
+                            type="text"
+                            name="artistLastName"
+                            id="artistLastName"
+                            value={filters.artistLastName}
+                            onChange={e =>
+                                setFilters({...filters, artistLastName: e.target.value})}
                 />
 
                 <InputField placeholder="zoek op genre"
@@ -140,35 +113,11 @@ function Overview() {
                             id="genre"
                             value={filters.genre}
                             onChange={e =>
-                                setFilters({...filters, genre: e.target.value.toUpperCase()})}
+                                setFilters({...filters, genre: e.target.value})}
                 />
 
-                {/*price*/}
-                <div>
-                    <label>
-                        Min prijs:
-                        <input
-                            type="number"
-                            value={filters.minPrice}
-                            onChange={e =>
-                                setFilters({...filters, minPrice: e.target.value})
-                            }
-                            min={0}
-                        />
-                    </label>
+                <PriceSlider filters={filters} setFilters={setFilters} min={0} max={2000} />
 
-                    <label>
-                        Max prijs:
-                        <input
-                            type="number"
-                            value={filters.maxPrice}
-                            onChange={e =>
-                                setFilters({...filters, maxPrice: e.target.value})
-                            }
-                            min={0}
-                        />
-                    </label>
-                </div>
                 {/*availabilty*/}
                 <div>
                     <label>
@@ -207,10 +156,11 @@ function Overview() {
                     onClick={() =>
                         setFilters({
                             title: "",
-                            artistName: "",
+                            artistFirstName: "",
+                            artistLastName: "",
                             minPrice: "",
                             maxPrice: "",
-                            genre: [],
+                            genre: "",
                             availabilities: []
                         })
                     }
