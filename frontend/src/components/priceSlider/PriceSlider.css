@@ -1,0 +1,37 @@
+.slider-wrapper {
+    width: 20rem;
+}
+
+.slider-wrapper > label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-white);
+}
+
+.rc-slider-track {
+    background-color: var(--color-tertiary);
+    height: 8px;
+}
+
+.rc-slider-rail {
+    background-color: var(--color-primary);
+    height: 8px;
+}
+
+.rc-slider-handle {
+    border: 2px solid var(--color-tertiary);
+    background-color: var(--color-quaternary);
+    width: 20px;
+    height: 20px;
+    margin-top: -6px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.slider-text {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-white);
+}

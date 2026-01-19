@@ -8,11 +8,54 @@
     padding: 3rem;
 }
 
-.overview-wrapper {
+.filter-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 0 5.5rem;
+}
+
+.overview-buttons-wrapper {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+}
+
+.filter-wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 6rem;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    width: 75vw;
+    background-color: var(--color-quarternary-trans);
+    padding: 3rem;
+    z-index: 1000;
+}
+
+.filters-left,
+.filters-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.overview-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 18rem);
+    justify-content: center;
     gap: 2rem;
-    padding: 0 5rem;
+    padding: 0 1rem;
+}
+
+.geen-kunstwerken-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.geen-kunstwerken-gevonden {
+    margin: 2rem 0.5rem;
 }
