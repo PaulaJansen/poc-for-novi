@@ -43,7 +43,7 @@ function HighlightSection({title, items, loading}) {
 
                     return (
                     <ArtworkCard
-                        key={item.id}
+                        key={item.key ?? item.id}
                         id={item.id}
                         image={imageUrl}
                         alt={item.title}

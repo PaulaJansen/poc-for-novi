@@ -9,7 +9,6 @@ function Artwork() {
 
     const {id} = useParams();
     const [artwork, setArtwork] = useState(null);
-    const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(null);
@@ -111,9 +110,6 @@ function Artwork() {
                         ))}
                     </div>
                 </div>
-            </section>
-            <section className="more-of-wrapper">
-
             </section>
             <Link to="/overview" className="artwork-detail-button">
                 ← Terug naar overzicht
