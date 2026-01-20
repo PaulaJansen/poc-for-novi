@@ -70,7 +70,6 @@ function Overview() {
         try {
             const query = buildFilterQuery(filters);
             const response = await axios.get(`http://localhost:8080/artworks/filter?${query}`);
-            console.log(query)
 
             let data = response.data;
             setArtworks(Array.isArray(data) ? data : []);

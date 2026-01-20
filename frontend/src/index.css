@@ -23,12 +23,15 @@
 }
 
 /*----------------TYPOGRAPHY--------------*/
+html {
+  font-size: 14px;
+}
 
 body {
   font-family: 'Quicksand', 'Poppins', 'Avenir', 'Segoe UI', Helvetica, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 1rem;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -37,8 +40,9 @@ body {
   overflow-x: hidden;
 }
 
-button, input, select, textarea {
+button, input, select, textarea, p {
   font-family: inherit;
+  font-size: inherit;
 }
 
 h1 {
