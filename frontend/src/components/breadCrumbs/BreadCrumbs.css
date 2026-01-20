@@ -1,0 +1,13 @@
+.breadcrumbs {
+    text-align: center;
+    font-size: 1rem;
+}
+
+.breadcrumbs-link {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.breadcrumbs-link:hover {
+    color: var(--color-quaternary);
+}
