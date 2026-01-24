@@ -24,3 +24,13 @@
     background-color: var(--color-white);
     border: 1px solid var(--color-tertiary);
 }
+
+.button-tertiary-reverse {
+    background-color: var(--color-tertiary);
+    border: 1px solid var(--color-white);
+}
+
+.button-tertiary-reverse:hover {
+    background-color: var(--color-primary-trans);
+    border: 1px solid var(--color-primary-trans);
+}

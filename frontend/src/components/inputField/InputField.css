@@ -1,9 +1,28 @@
 .label-primary,
 .label-secondary {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     gap: 1rem;
+}
+
+.label-quarternary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.label-quarternary .input-field {
+    width: 75%;
+}
+
+.label-quarternary > span {
+    color: var(--color-text);
+}
+
+.label-quarternary .input-field::placeholder {
+    color: var(--color-tertiary);
 }
 
 .input-field {

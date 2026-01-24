@@ -198,8 +198,8 @@ function Overview() {
             </div>
             <section className="overview-wrapper">
                 {sortedArtworks.length === 0 ? (
-                    <div className="geen-kunstwerken-wrapper">
-                        <h3 className="geen-kunstwerken-gevonden">
+                    <div className="no-artworks-wrapper">
+                        <h3 className="no-artworks-found">
                             Geen kunstwerken gevonden met deze filters.
                         </h3>
                         <Button className="button-default button-tertiary"
@@ -226,14 +226,14 @@ function Overview() {
                             : defaultImage;
 
                         return (
-                            <ArtworkCard
-                                key={artwork.id}
-                                id={artwork.id}
-                                image={imageUrl}
-                                alt={artwork.title}
-                                title={artwork.title}
-                                price={artwork.price}
-                            />
+                                <ArtworkCard
+                                    key={artwork.id}
+                                    id={artwork.id}
+                                    image={imageUrl}
+                                    alt={artwork.title}
+                                    title={artwork.title}
+                                    price={artwork.price}
+                                />
                         );
                     })
                 )}
