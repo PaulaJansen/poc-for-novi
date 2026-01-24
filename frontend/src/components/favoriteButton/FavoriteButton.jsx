@@ -4,7 +4,12 @@ import noFavorite from "../../assets/heart-duotone.svg";
 
 function FavoriteButton({isFavorite, onToggle}) {
     return (
-        <button onClick={onToggle}
+        <button className="favorite-button"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggle();
+                }}
                 aria-label={
                     isFavorite
                         ? "Verwijderen uit favorieten"

@@ -49,13 +49,13 @@
     padding: 0 1rem;
 }
 
-.geen-kunstwerken-wrapper {
+.no-artworks-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
 }
 
-.geen-kunstwerken-gevonden {
+.no-artworks-found {
     margin: 2rem 0.5rem;
 }

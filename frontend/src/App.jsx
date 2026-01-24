@@ -22,35 +22,37 @@ function App() {
     const navigate = useNavigate();
 
     return (
-        <>
+        <div className="app-container">
             <nav className="navbar">
                 <img className="navbar-logo" src={logo} alt="logo"/>
                 <ul className="navbar-menu">
                     <NavLinkItem to={"/"} title="Home"/>
                     <NavLinkItem to={"/overview"} title="All Art"/>
                     <NavLinkItem to={"/register-artlover"} title="Register"/>
-                    <NavLinkItem to={"/profile"} icon={profile} alt="profile"/>
+                    <NavLinkItem to={"/login"} icon={profile} alt="profile"/>
                 </ul>
             </nav>
-            <Routes>
-                <Route path="/" element={<Home/>}/>
-                <Route path="/overview" element={<Overview/>}/>
-                <Route path="/artist/:id" element={<Artist/>}/>
-                <Route path="/artwork/:id" element={<Artwork/>}/>
-                <Route path="/user/:id" element={<UserVisitor/>}/>
-                <Route path="/artist/:id" element={<UserArtist/>}/>
-                <Route path="/new-artwork" element={<NewArtwork/>}/>
-                <Route path="/register-artist" element={<RegisterArtist/>}/>
-                <Route path="/register-artlover" element={<RegisterVisitor/>}/>
-                <Route path="/login" element={<Login/>}/>
-            </Routes>
+            <div className="main-container">
+                <Routes>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/overview" element={<Overview/>}/>
+                    <Route path="/artist/:id" element={<Artist/>}/>
+                    <Route path="/artwork/:id" element={<Artwork/>}/>
+                    <Route path="/user/:id" element={<UserVisitor/>}/>
+                    <Route path="/artist/:id" element={<UserArtist/>}/>
+                    <Route path="/new-artwork" element={<NewArtwork/>}/>
+                    <Route path="/register-artist" element={<RegisterArtist/>}/>
+                    <Route path="/register-artlover" element={<RegisterVisitor/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                </Routes>
+            </div>
             <section className="footer">
                 <div className="footer-wrapper">
                     <div className="footer-info-wrapper">
                         <img className="footer-logo" src={logoSmall} alt="logo"/>
                         <p className="footer-text">© {getCurrentYear()}</p>
                     </div>
-                    <Button className="button-default button-primary footer-navlink-wrapper"
+                    <Button className="button-default button-tertiary-reverse footer-navlink-wrapper"
                             type="button"
                             onClick={() => navigate("/register-artist")}
                             label="Register als kunstenaar"
@@ -58,7 +60,7 @@ function App() {
                 </div>
                 <div className="circle-small"></div>
             </section>
-        </>
+        </div>
     )
 }
 
