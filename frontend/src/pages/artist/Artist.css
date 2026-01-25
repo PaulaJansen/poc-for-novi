@@ -1,0 +1,37 @@
+.artist-container {
+    position: relative;
+}
+
+.artist-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 12rem;
+    margin: 4rem auto;
+}
+
+.artist-image {
+    width: 20%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 5%;
+
+}
+
+.artist-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.artist-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.artist-biography {
+    width: 40vw;
+    margin: 0 auto 5rem auto;
+}
+

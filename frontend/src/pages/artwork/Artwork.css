@@ -86,15 +86,20 @@
 }
 
 .availability-tag,
-.genre-tag {
+.genre-tag,
+.art-tag {
     padding: 0.25rem 1rem;
     border-radius: 999px;
     background-color: var(--color-tertiary);
 }
 
+.availability-tag,
+.art-tag {
+    width: fit-content;
+}
+
 .availability-tag {
     background-color: var(--color-tertiary-trans);
-    width: fit-content;
 }
 
 .artwork-detail-button {
