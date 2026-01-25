@@ -19,15 +19,17 @@ public class ArtworkResponseDto {
     private List<String> genreNames = new ArrayList<>();
     private BigDecimal price;
     private String availability;
+    private Long artistId;
     private String artistName;
     private int widthInCm;
     private int lengthInCm;
     private int heightInCm;
 
-    public ArtworkResponseDto(String title, BigDecimal price, String availability, String artistName, int widthInCm, int lengthInCm, int heightInCm) {
+    public ArtworkResponseDto(String title, BigDecimal price, String availability, Long artistId, String artistName, int widthInCm, int lengthInCm, int heightInCm) {
         this.title = title;
         this.price = price;
         this.availability = availability;
+        this.artistId = artistId;
         this.artistName = artistName;
         this.widthInCm = widthInCm;
         this.lengthInCm = lengthInCm;
