@@ -22,6 +22,7 @@ public class ArtworkMapper {
         artworkResponseDto.setWidthInCm(artwork.getWidthInCm());
         artworkResponseDto.setLengthInCm(artwork.getLengthInCm());
         artworkResponseDto.setHeightInCm(artwork.getHeightInCm());
+        artworkResponseDto.setArtistId(artwork.getArtist().getId());
         artworkResponseDto.setArtistName(artwork.getArtist().getFirstName() + " " + artwork.getArtist().getLastName());
 
         artworkResponseDto.setGenreNames(

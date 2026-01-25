@@ -3,7 +3,9 @@ package nl.novi.endassignment.pocbackend.controllers;
 import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.services.ArtistService;
+import nl.novi.endassignment.pocbackend.services.ArtworkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import java.util.List;
 public class ArtistController {
 
     private final ArtistService artistService;
+    private final ArtworkService artworkService;
 
-    public ArtistController(ArtistService artistService) {
+    public ArtistController(ArtistService artistService, ArtworkService artworkService) {
         this.artistService = artistService;
+        this.artworkService = artworkService;
     }
 
     @GetMapping
@@ -38,6 +42,12 @@ public class ArtistController {
     public ResponseEntity<List<ArtistResponseDto>> getArtistByName(@RequestParam String firstName, String lastName) {
         List<ArtistResponseDto> artist = artistService.getArtistByName(firstName, lastName);
         return ResponseEntity.ok(artist);
+    }
+
+    @GetMapping("/{id}/artworks")
+    public ResponseEntity<List<ArtworkResponseDto>> getArtworksByArtist(@PathVariable long id) {
+        List<ArtworkResponseDto> artworks = artworkService.getArtworksByArtistId(id);
+        return ResponseEntity.ok(artworks);
     }
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

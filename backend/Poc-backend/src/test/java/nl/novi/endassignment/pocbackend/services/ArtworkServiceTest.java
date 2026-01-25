@@ -73,7 +73,7 @@ class ArtworkServiceTest {
         artworkInputDto = new ArtworkInputDto();
         artist = new Artist();
         artwork = new Artwork("Sunflowers", new BigDecimal("599.95"), AVAILABLE, artist, 100, 100, 2);
-        artworkDto = new ArtworkResponseDto("Sunflowers", new BigDecimal("599.95"), "AVAILABLE", "John Doe", 100, 100, 2);
+        artworkDto = new ArtworkResponseDto("Sunflowers", new BigDecimal("599.95"), "AVAILABLE", 1L, "John Doe", 100, 100, 2);
         artworkService = new ArtworkService(artworkRepository, artistRepository, genreService, artworkMapper, genreRepository, testUploadDirectory);
     }
 
@@ -227,8 +227,45 @@ class ArtworkServiceTest {
     }
 
     @Test
-    @DisplayName("Should return artworks without filters")
+    @DisplayName("Should return artworks for artist with id")
     public void test7() {
+
+        long artistId = 1L;
+        artwork.setId(10L);
+        artworkDto.setId(10L);
+
+        List<Artwork> artworks = List.of(artwork);
+        List<ArtworkResponseDto> dtos = List.of(artworkDto);
+
+        when(artworkRepository.findByArtistId(artistId)).thenReturn(artworks);
+        when(artworkMapper.toDtoList(artworks)).thenReturn(dtos);
+
+        List<ArtworkResponseDto> result = artworkService.getArtworksByArtistId(artistId);
+
+        assertEquals(1, result.size());
+        assertEquals(10L, result.getFirst().getId());
+
+        verify(artworkRepository).findByArtistId(1L);
+        verify(artworkMapper).toDtoList(artworks);
+    }
+
+    @Test
+    @DisplayName("Should return empty list when artist has no artworks")
+    public void test8() {
+
+        long artistId = 2L;
+
+        when(artworkRepository.findByArtistId(artistId)).thenReturn(List.of());
+        when(artworkMapper.toDtoList(List.of())).thenReturn(List.of());
+
+        List<ArtworkResponseDto> result = artworkService.getArtworksByArtistId(artistId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should return artworks without filters")
+    public void test9() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -245,7 +282,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with title filter")
-    public void test8() {
+    public void test10() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -262,7 +299,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should skip when title is empty")
-    public void test9() {
+    public void test11() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -279,7 +316,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with first + last name filters")
-    public void test10() {
+    public void test12() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -294,7 +331,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should skip when first + last name are empty")
-    public void test11() {
+    public void test13() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -311,7 +348,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with first name filter")
-    public void test12() {
+    public void test14() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -326,7 +363,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with last name filter")
-    public void test13() {
+    public void test15() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -343,7 +380,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should execute artist specification")
-    public void test14() {
+    public void test16() {
 
         @SuppressWarnings("unchecked")
         Root<Artwork> root = mock(Root.class);
@@ -394,7 +431,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with min + max price filters")
-    public void test15() {
+    public void test17() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -414,7 +451,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with min price filter")
-    public void test16() {
+    public void test18() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -434,7 +471,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with max price filter")
-    public void test17() {
+    public void test19() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -454,7 +491,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with partial genre match")
-    public void test18() {
+    public void test20() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -475,7 +512,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should not throw exception when genre does not exist")
-    public void test19() {
+    public void test21() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of());
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of());
@@ -492,7 +529,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should skip genre filter when genre is empty")
-    public void test20() {
+    public void test22() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -510,7 +547,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should skip genre filter when genre is blank")
-    public void test21() {
+    public void test23() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -531,7 +568,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should build genre like specification")
-    public void test22() {
+    public void test24() {
 
         @SuppressWarnings("unchecked")
         Root<Artwork> root = mock(Root.class);
@@ -566,7 +603,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw AssertionError when query is null")
-    public void test23() {
+    public void test25() {
         Root<Artwork> root = mock(Root.class);
         CriteriaBuilder cb = mock(CriteriaBuilder.class);
 
@@ -577,7 +614,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should return artworks with availability filter")
-    public void test24() {
+    public void test26() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -596,7 +633,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should skip when availability is empty")
-    public void test25() {
+    public void test27() {
 
         when(artworkRepository.findAll(any(Specification.class))).thenReturn(List.of(artwork));
         when(artworkMapper.toDtoList(anyList())).thenReturn(List.of(artworkDto));
@@ -613,7 +650,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should execute availability specification")
-    public void test26() {
+    public void test28() {
 
         @SuppressWarnings("unchecked")
         Root<Artwork> root = mock(Root.class);
@@ -639,7 +676,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw exception when artwork not found")
-    public void test27() {
+    public void test29() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -651,7 +688,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should update title of artwork")
-    public void test28() {
+    public void test30() {
 
         artworkInputDto.setTitle("New title");
 
@@ -674,7 +711,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should update price and dimensions of artwork")
-    public void test29() {
+    public void test31() {
 
         artworkInputDto.setPrice(BigDecimal.valueOf(500));
         artworkInputDto.setWidthInCm(50);
@@ -709,7 +746,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should update availability of artwork")
-    public void test30() {
+    public void test32() {
 
         artworkInputDto.setAvailability("SOLD");
 
@@ -732,7 +769,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should update genres of artwork")
-    public void test31() {
+    public void test33() {
 
         artworkInputDto.setGenreNames(List.of("Impressionisme"));
 
@@ -764,7 +801,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should handle genreNames is null without error")
-    public void test32() {
+    public void test34() {
 
         artworkInputDto.setGenreNames(null);
 
@@ -782,7 +819,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should handle genreNames is empty without error")
-    public void test33() {
+    public void test35() {
 
         artworkInputDto.setGenreNames(List.of());
 
@@ -800,7 +837,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should remove images of artwork")
-    public void test34() {
+    public void test36() {
 
         artwork.getImages().add("old.png");
 
@@ -824,7 +861,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should swallow exception when deleting image fails")
-    public void test35() throws IOException {
+    public void test37() throws IOException {
 
         artwork.getImages().add("old.png");
         artworkInputDto.setRemoveImages(List.of("old.png"));
@@ -846,7 +883,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should add images to artwork")
-    public void test36() {
+    public void test38() {
 
         MockMultipartFile file = new MockMultipartFile("file", "new.png",
                 "image/png", "content".getBytes());
@@ -877,7 +914,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw exception when images cannot be added")
-    public void test37() throws IOException {
+    public void test39() throws IOException {
 
         MultipartFile file = mock(MultipartFile.class);
 
@@ -899,7 +936,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should handle images is null without error")
-    public void test38() {
+    public void test40() {
 
         artworkInputDto.setImages(null);
 
@@ -917,7 +954,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should handle images is empty without error")
-    public void test39() {
+    public void test41() {
 
         artworkInputDto.setImages(List.of());
 
@@ -935,7 +972,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should delete artwork")
-    public void test40() {
+    public void test42() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
 
@@ -948,7 +985,7 @@ class ArtworkServiceTest {
 
     @Test
     @DisplayName("Should throw exception when deleting non-existing artwork")
-    public void test41() {
+    public void test43() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.empty());
 

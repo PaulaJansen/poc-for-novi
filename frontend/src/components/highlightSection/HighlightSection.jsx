@@ -26,7 +26,7 @@ function HighlightSection({title, items, loading}) {
 
     return (
         <div className="highlight-section-wrapper">
-            <h2>{title}</h2>
+            <h2 className="highlight-header">{title}</h2>
             {loading && (
                 <div className="spinner-overlay">
                     <Spinner size="default" text="Laden..."/>

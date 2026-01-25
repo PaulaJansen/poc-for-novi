@@ -16,6 +16,7 @@
     gap: 0.7rem;
     position: relative;
     border-radius: 5%;
+    background-color: transparent;
 }
 
 .card-image-wrapper {

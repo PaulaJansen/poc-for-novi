@@ -99,6 +99,10 @@ public class ArtworkService {
                 .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!")));
     }
 
+    public List<ArtworkResponseDto> getArtworksByArtistId(long artistId) {
+        return artworkMapper.toDtoList(artworkRepository.findByArtistId(artistId));
+    }
+
     public Specification<Artwork> buildArtistSpecification(String artistFirstName, String artistLastName) {
         return (root, query, cb) -> {
 

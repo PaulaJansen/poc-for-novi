@@ -9,4 +9,5 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ArtworkRepository extends JpaRepository<Artwork, Long>, JpaSpecificationExecutor<Artwork> {
+    List<Artwork> findByArtistId(long artistId);
 }

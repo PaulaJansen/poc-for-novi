@@ -85,7 +85,9 @@ function Artwork() {
                     )}
                 </div>
                 <div className="artwork-details">
-                    <h3>{artwork.artistName}</h3>
+                    <Link to={`/artist/${artwork.artistId}`} className="link">
+                        <h3>{artwork.artistName}</h3>
+                    </Link>
                     <div className="price-availability-wrapper">
                         <p>Prijs: €{artwork.price}</p>
                         <p className="availability-tag">{artwork.availability}</p>
