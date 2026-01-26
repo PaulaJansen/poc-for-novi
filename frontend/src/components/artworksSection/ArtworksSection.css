@@ -1,0 +1,36 @@
+.scrollbar-wrapper {
+    position: relative;
+}
+
+.artist-artworks {
+    display: flex;
+    gap: 2rem;
+    padding: 0 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.scroll-arrow {
+    position: absolute;
+    right: -3rem;
+    top: 40%;
+    transform: translateY(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: 10;
+}
+
+.scroll-arrow.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.section-arrow-icon {
+    width: 60px;
+    height: 60px;
+    display: block;
+}

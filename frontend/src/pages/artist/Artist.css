@@ -14,7 +14,6 @@
     height: auto;
     object-fit: contain;
     border-radius: 5%;
-
 }
 
 .artist-details {
@@ -35,55 +34,17 @@
     gap: 0.5rem;
 }
 
+.artist-artworks-header {
+    text-align: center;
+}
+
 .artist-biography {
     width: 40vw;
     margin: 0 auto 5rem auto;
 }
 
-.artist-scrollbar-wrapper {
-    position: relative;
-}
-
-.artist-artworks {
-    display: flex;
-    gap: 2rem;
-    padding: 0 1rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-}
-
-.artist-artworks-header {
-    text-align: center;
-}
-
 .artist-no-artworks {
     text-align: center;
 }
-
-.scroll-arrow {
-    position: absolute;
-    right: -3rem;
-    top: 40%;
-    transform: translateY(-50%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    z-index: 10;
-}
-
-.scroll-arrow.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.artist-arrow-icon {
-    width: 60px;
-    height: 60px;
-    display: block;
-}
-
 
 
