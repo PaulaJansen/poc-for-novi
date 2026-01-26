@@ -1,12 +1,10 @@
 import './Artist.css';
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import Breadcrumbs from "../../components/breadCrumbs/BreadCrumbs.jsx";
-import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
-import defaultImage from "../../assets/art-gallery.jpg";
-import arrow from "../../assets/arrow-circle.svg";
+import ArtworksSection from "../../components/artworksSection/ArtworksSection.jsx";
 
 function Artist() {
 
@@ -16,8 +14,6 @@ function Artist() {
     const [loading, setLoading] = useState(true);
     const [artworksLoading, setArtworksLoading] = useState(true);
     const [artworks, setArtworks] = useState([]);
-    const [showScrollArrow, setShowScrollArrow] = useState(false);
-    const scrollRef = useRef(null);
 
     useEffect(() => {
         async function fetchArtistAndArtworks() {
@@ -43,20 +39,6 @@ function Artist() {
 
         fetchArtistAndArtworks();
     }, [id]);
-
-    useEffect(() => {
-        const wrapper = scrollRef.current;
-        if (wrapper && wrapper.scrollWidth > wrapper.clientWidth) {
-            setShowScrollArrow(true);
-        }
-    }, [artworks]);
-
-    const handleScroll = () => {
-        const wrapper = scrollRef.current;
-        if (!wrapper) return;
-        const isAtEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1;
-        setShowScrollArrow(!isAtEnd);
-    };
 
     if (loading) {
         return (
@@ -100,35 +82,7 @@ function Artist() {
                     <p className="artist-no-artworks">Deze kunstenaar heeft nog geen kunstwerken.</p>
                 )}
 
-                <div className="artist-scrollbar-wrapper">
-                    <div className="artist-artworks" ref={scrollRef} onScroll={handleScroll}>
-                        {artworks.map(artwork => {
-                            const imageUrl = artwork.images?.[0]
-                                ? `http://localhost:8080/images/${artwork.images[0]}`
-                                : defaultImage;
-
-                            return (
-                                <ArtworkCard
-                                    key={artwork.id}
-                                    id={artwork.id}
-                                    image={imageUrl}
-                                    alt={artwork.title}
-                                    title={artwork.title}
-                                    price={artwork.price}
-                                />
-                            );
-                        })}
-                    </div>
-                    <div className={`scroll-arrow ${showScrollArrow ? "visible" : ""}`}
-                         onClick={() => scroll(200)}
-                    >
-                        <img
-                            src={arrow}
-                            alt="See more"
-                            className="artist-arrow-icon"
-                        />
-                    </div>
-                </div>
+                <ArtworksSection artworks={artworks}/>
             </section>
         </artist-container>
     )
