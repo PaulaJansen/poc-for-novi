@@ -4,8 +4,15 @@
 
 .user-wrapper {
     display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 20rem;
     margin: 4rem 10rem 4rem 20rem;
+}
+
+.profile-picture {
+    position: relative;
 }
 
 .user-image {
@@ -14,6 +21,36 @@
     object-fit: contain;
     border-radius: 50%;
     background-color: var(--color-text);
+}
+
+.image-change-wrapper {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 1.5rem;
+    cursor: pointer;
+}
+
+.image-change-wrapper::after {
+    content: "Profielfoto aanpassen";
+    position: absolute;
+    bottom: 120%;
+    left: 120%;
+    transform: translateX(50%);
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.4rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.image-change-wrapper:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
 }
 
 .user-details {
@@ -25,10 +62,10 @@
 .user-artworks-wrapper {
     display: grid;
     grid-template-columns: repeat(auto-fit, 18rem);
-    justify-content: center;
+    justify-content: flex-start;
     gap: 2rem;
     padding: 0 1rem;
-    margin: 5rem 3rem 1.5rem 3rem;
+    margin: 5rem 4rem 1.5rem 4rem;
 }
 
 .user-artworks-header {

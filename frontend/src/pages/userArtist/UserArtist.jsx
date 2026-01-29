@@ -4,7 +4,9 @@ import axios from "axios";
 import {useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
+import profilePicture from "../../assets/user-switch.svg"
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
+import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx"
 
 function UserArtist() {
 
@@ -40,6 +42,21 @@ function UserArtist() {
         fetchArtistAndArtworks();
     }, [id]);
 
+    const {
+        fileInputRef,
+        preview,
+        file,
+        loading: uploadLoading,
+        openFilePicker,
+        onFileChange,
+        upload,
+    } = useChangeProfilePicture(
+        id,
+        artist
+            ? `http://localhost:8080/images/${artist.profilePicture}`
+            : null
+    );
+
     if (loading) {
         return (
             <Spinner size="default" text="Profiel wordt geladen"/>
@@ -57,8 +74,27 @@ function UserArtist() {
     return (
         <div className="user-container">
             <section className="user-wrapper">
-                <img className="user-image" src={`http://localhost:8080/images/${artist.profilePicture}`}
-                     alt={artist.username}/>
+                <div className="profile-picture">
+                    <img className="user-image"
+                         src={preview || `http://localhost:8080/images/${artist.profilePicture}`}
+                         alt={artist.username}/>
+                    <div className="image-change-wrapper" onClick={openFilePicker}>
+                        <img src={profilePicture} alt="change-picture" />
+                    </div>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={onFileChange}
+                        hidden
+                    />
+
+                    {file && (
+                        <button onClick={upload} disabled={uploadLoading}>
+                            {uploadLoading ? "Uploaden..." : "Opslaan"}
+                        </button>
+                    )}
+                </div>
                 <article className="user-details">
                     <h2>{artist.firstName} {artist.lastName}</h2>
                     <h3>{artist.username}</h3>
@@ -70,6 +106,16 @@ function UserArtist() {
             </section>
             <section className="user-artworks-wrapper">
                 <h2 className="user-artworks-header">Kunstwerken</h2>
+
+                {artworksLoading && (
+                    <Spinner size="small" text="Kunstwerken laden..."/>
+                )}
+
+                {!artworksLoading && artworks.length === 0 && (
+                    <p className="artist-no-artworks">Deze kunstenaar heeft nog geen kunstwerken.</p>
+                )}
+
+
                 {artworks.map(artwork => {
                     const imageUrl = artwork.images?.[0]
                         ? `http://localhost:8080/images/${artwork.images[0]}`
@@ -89,6 +135,14 @@ function UserArtist() {
             </section>
             <section className="user-artworks-wrapper">
                 <h2 className="user-artworks-header">Favorieten</h2>
+
+                {artworksLoading && (
+                    <Spinner size="small" text="Favorieten laden..."/>
+                )}
+
+                {!artworksLoading && artworks.length === 0 && (
+                    <p className="artist-no-artworks">Je hebt nog geen favorieten</p>
+                )}
 
                 {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
                 {artworks.map(artwork => {

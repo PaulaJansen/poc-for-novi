@@ -3,6 +3,8 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
+import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
+import profilePicture from "../../assets/user-switch.svg"
 
 function UserVisitor() {
 
@@ -28,6 +30,21 @@ function UserVisitor() {
         fetchVisitor();
     }, [id])
 
+    const {
+        fileInputRef,
+        preview,
+        file,
+        loading: uploadLoading,
+        openFilePicker,
+        onFileChange,
+        upload,
+    } = useChangeProfilePicture(
+        id,
+        visitor
+            ? `http://localhost:8080/images/${visitor.profilePicture}`
+            : null
+    );
+
     if (loading) {
         return (
             <Spinner size="default" text="Profiel wordt geladen"/>
@@ -45,8 +62,27 @@ function UserVisitor() {
     return (
         <div className="user-container">
             <section className="user-wrapper">
-                <img className="user-image" src={`http://localhost:8080/images/${visitor.profilePicture}`}
-                     alt={visitor.username}/>
+                <div className="profile-picture">
+                    <img className="user-image"
+                         src={preview || `http://localhost:8080/images/${visitor.profilePicture}`}
+                         alt={visitor.username}/>
+                    <div className="image-change-wrapper" onClick={openFilePicker}>
+                        <img src={profilePicture} alt="change-picture" />
+                    </div>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={onFileChange}
+                        hidden
+                    />
+
+                    {file && (
+                        <button onClick={upload} disabled={uploadLoading}>
+                            {uploadLoading ? "Uploaden..." : "Opslaan"}
+                        </button>
+                    )}
+                </div>
                 <article className="user-details">
                     <h2>{visitor.name}</h2>
                     <h3>{visitor.username}</h3>
@@ -56,7 +92,7 @@ function UserVisitor() {
             {/*<section className="user-artworks-wrapper">*/}
             {/*    <h2 className="user-artworks-header">Favorieten</h2>*/}
 
-                {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
+            {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
             {/*    {artworks.map(artwork => {*/}
             {/*        const imageUrl = artwork.images?.[0]*/}
             {/*            ? `http://localhost:8080/images/${artwork.images[0]}`*/}
