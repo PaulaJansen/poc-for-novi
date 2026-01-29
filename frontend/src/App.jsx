@@ -38,8 +38,8 @@ function App() {
                     <Route path="/overview" element={<Overview/>}/>
                     <Route path="/artist/:id" element={<Artist/>}/>
                     <Route path="/artwork/:id" element={<Artwork/>}/>
-                    <Route path="/user/:id" element={<UserVisitor/>}/>
-                    <Route path="/artist/:id" element={<UserArtist/>}/>
+                    <Route path="/artlover-dashboard/:id" element={<UserVisitor/>}/>
+                    <Route path="/artist-dashboard/:id" element={<UserArtist/>}/>
                     <Route path="/new-artwork" element={<NewArtwork/>}/>
                     <Route path="/register-artist" element={<RegisterArtist/>}/>
                     <Route path="/register-artlover" element={<RegisterVisitor/>}/>

@@ -1,0 +1,39 @@
+.user-container {
+    position: relative;
+}
+
+.user-wrapper {
+    display: flex;
+    gap: 20rem;
+    margin: 4rem 10rem 4rem 20rem;
+}
+
+.user-image {
+    width: 15rem;
+    height: 15rem;
+    object-fit: contain;
+    border-radius: 50%;
+    background-color: var(--color-text);
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.user-artworks-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 18rem);
+    justify-content: center;
+    gap: 2rem;
+    padding: 0 1rem;
+    margin: 5rem 3rem 1.5rem 3rem;
+}
+
+.user-artworks-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

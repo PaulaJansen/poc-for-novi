@@ -25,7 +25,7 @@
 
 .artist-artworks-wrapper {
     width: 80vw;
-    margin: 1rem auto;
+    margin: 1.5rem auto;
 }
 
 .artist-header {
@@ -36,6 +36,7 @@
 
 .artist-artworks-header {
     text-align: center;
+    margin-bottom: 1.5rem;
 }
 
 .artist-biography {
