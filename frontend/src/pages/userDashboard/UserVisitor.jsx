@@ -1,17 +1,24 @@
-import './UserVisitor.css';
+import './UserDashboard.css';
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
-import profilePicture from "../../assets/user-switch.svg"
+import profilePicture from "../../assets/user-switch.svg";
+import closeSquare from "../../assets/x-square.svg";
+import {useForm} from "react-hook-form";
+import Button from "../../components/button/Button.jsx";
+import InputField from "../../components/inputField/InputField.jsx";
 
 function UserVisitor() {
 
     const {id} = useParams();
+    const {register, handleSubmit, reset} = useForm();
+
     const [visitor, setVisitor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [changeProfile, setChangeProfile] = useState(false);
 
     useEffect(() => {
         async function fetchVisitor() {
@@ -30,6 +37,15 @@ function UserVisitor() {
         fetchVisitor();
     }, [id])
 
+    useEffect(() => {
+        if (visitor) {
+            reset({
+                name: visitor.name,
+                email: visitor.email,
+            });
+        }
+    }, [visitor, reset]);
+
     const {
         fileInputRef,
         preview,
@@ -44,6 +60,17 @@ function UserVisitor() {
             ? `http://localhost:8080/images/${visitor.profilePicture}`
             : null
     );
+
+    async function handleFormSubmit(data) {
+        try {
+            await axios.patch(`http://localhost:8080/visitors/${id}`, data);
+            console.log("Gegevens zijn opgeslagen!");
+            setChangeProfile(false);
+        } catch (e) {
+            console.error(e);
+            setError("Gegevens aanpassen niet gelukt");
+        }
+    }
 
     if (loading) {
         return (
@@ -88,6 +115,46 @@ function UserVisitor() {
                     <h3>{visitor.username}</h3>
                     <p>Hier sinds {visitor.dateOfRegistration}</p>
                 </article>
+
+                <aside className="user-sidebar">
+                    <Button className="button-default button-tertiary"
+                            type="button"
+                            label="Profiel aanpassen"
+                            onClick={() => setChangeProfile(true)}
+                    />
+                </aside>
+
+                {changeProfile && (
+                    <div className="profile-form-overlay" onClick={() => setChangeProfile(false)}>
+                        <div className="profile-form" onClick={(e) => e.stopPropagation()}>
+                            <div className="close-button">
+                                <img src={closeSquare} alt="close form" onClick={() => setChangeProfile(false)}/>
+                            </div>
+                            <h2 className="form-header">Gegevens aanpassen</h2>
+                            <form onSubmit={handleSubmit(handleFormSubmit)}>
+                                <InputField as="input"
+                                            type="text"
+                                            label="Naam: "
+                                            name="name"
+                                            id="name"
+                                            register={register}
+                                />
+                                <InputField as="input"
+                                            type="text"
+                                            label="E-mailadres: "
+                                            name="email"
+                                            id="email"
+                                            register={register}
+                                />
+                                <Button className="button-default button-tertiary-reverse button-form"
+                                        type="submit"
+                                        label="Opslaan"
+                                />
+                            </form>
+                        </div>
+                    </div>
+                )}
+
             </section>
             {/*<section className="user-artworks-wrapper">*/}
             {/*    <h2 className="user-artworks-header">Favorieten</h2>*/}
