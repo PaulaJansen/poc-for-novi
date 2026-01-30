@@ -1,5 +1,6 @@
 import {useRef, useState} from "react";
 import axios from "axios";
+import {toast} from "react-toastify";
 
 export function useChangeProfilePicture(artistId, initialImage) {
 
@@ -38,8 +39,18 @@ export function useChangeProfilePicture(artistId, initialImage) {
             );
 
             setFile(null);
+            toast.success("Profielfoto succesvol veranderd!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                });
         } catch (e) {
             setError(e);
+            toast.error("Foto uploaden mislukt, probeer opnieuw!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                })
         } finally {
             setLoading(false);
         }
