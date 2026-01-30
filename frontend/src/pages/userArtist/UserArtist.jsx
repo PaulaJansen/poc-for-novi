@@ -4,18 +4,26 @@ import axios from "axios";
 import {useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
-import profilePicture from "../../assets/user-switch.svg"
+import profilePicture from "../../assets/user-switch.svg";
+import closeSquare from "../../assets/x-square.svg";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
-import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx"
+import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
+import Button from "../../components/button/Button.jsx";
+import InputField from "../../components/inputField/InputField.jsx";
+import {useForm} from "react-hook-form";
+
 
 function UserArtist() {
 
     const {id} = useParams();
+    const {register, handleSubmit, reset} = useForm();
+
     const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [artworksLoading, setArtworksLoading] = useState(true);
     const [artworks, setArtworks] = useState([]);
+    const [changeProfile, setChangeProfile] = useState(false);
 
     useEffect(() => {
         async function fetchArtistAndArtworks() {
@@ -42,6 +50,18 @@ function UserArtist() {
         fetchArtistAndArtworks();
     }, [id]);
 
+    useEffect(() => {
+        if (artist) {
+            reset({
+                firstName: artist.firstName,
+                lastName: artist.lastName,
+                city: artist.city,
+                biography: artist.biography,
+                email: artist.email,
+            });
+        }
+    }, [artist, reset]);
+
     const {
         fileInputRef,
         preview,
@@ -56,6 +76,17 @@ function UserArtist() {
             ? `http://localhost:8080/images/${artist.profilePicture}`
             : null
     );
+
+    async function handleFormSubmit(data) {
+        try {
+            await axios.patch(`http://localhost:8080/artists/${id}`, data);
+            console.log("Gegevens zijn opgeslagen!");
+            setChangeProfile(false);
+        } catch (e) {
+            console.error(e);
+            setError("Gegevens aanpassen niet gelukt");
+        }
+    }
 
     if (loading) {
         return (
@@ -79,7 +110,7 @@ function UserArtist() {
                          src={preview || `http://localhost:8080/images/${artist.profilePicture}`}
                          alt={artist.username}/>
                     <div className="image-change-wrapper" onClick={openFilePicker}>
-                        <img src={profilePicture} alt="change-picture" />
+                        <img src={profilePicture} alt="change-picture"/>
                     </div>
                     <input
                         type="file"
@@ -103,6 +134,66 @@ function UserArtist() {
                     <p>Hier sinds {artist.dateOfRegistration}</p>
                     <p className="user-biography">{artist.biography}</p>
                 </article>
+                <aside className="user-sidebar">
+                    <Button className="button-default button-tertiary"
+                            type="button"
+                            label="Profiel aanpassen"
+                            onClick={() => setChangeProfile(true)}
+                    />
+                </aside>
+
+                {changeProfile && (
+                    <div className="profile-form-overlay" onClick={() => setChangeProfile(false)}>
+                        <div className="profile-form" onClick={(e) => e.stopPropagation()}>
+                            <div className="close-button">
+                                <img src={closeSquare} alt="close form" onClick={() => setChangeProfile(false)}/>
+                            </div>
+                            <h2 className="form-header">Gegevens aanpassen</h2>
+                            <form onSubmit={handleSubmit(handleFormSubmit)}>
+                                <InputField as="input"
+                                            type="text"
+                                            label="Voornaam: "
+                                            name="firstName"
+                                            id="firstName"
+                                            register={register}
+                                />
+                                <InputField as="input"
+                                            type="text"
+                                            label="Achternaam: "
+                                            name="lastName"
+                                            id="lastName"
+                                            register={register}
+                                />
+                                <InputField as="input"
+                                            type="text"
+                                            label="Plaats: "
+                                            name="city"
+                                            id="city"
+                                            register={register}
+                                />
+                                <InputField as="textarea"
+                                            label="Biografie: "
+                                            name="biography"
+                                            id="biography"
+                                            register={register}
+                                            className="textarea"
+                                />
+                                <InputField as="input"
+                                            type="text"
+                                            label="E-mailadres: "
+                                            name="email"
+                                            id="email"
+                                            register={register}
+                                />
+                                <Button className="button-default button-tertiary-reverse button-form"
+                                        type="submit"
+                                        label="Opslaan"
+                                />
+                            </form>
+                        </div>
+                    </div>
+                )}
+
             </section>
             <section className="user-artworks-wrapper">
                 <h2 className="user-artworks-header">Kunstwerken</h2>

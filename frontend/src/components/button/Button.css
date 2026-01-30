@@ -16,7 +16,7 @@
 }
 
 .button-secondary {
-    background-color: var(--color-quarternary-trans);
+    background-color: var(--color-quaternary-trans);
     border: 1px solid var(--color-quaternary);
 }
 

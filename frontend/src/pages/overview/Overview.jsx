@@ -103,7 +103,7 @@ function Overview() {
                     <Button className="button-default button-tertiary"
                             type="button"
                             onClick={() => setShowFilters(prev => !prev)}
-                            label={`Filters ${showFilters ? "▲" : "▼"}`}
+                            label={`Filters\u00A0${showFilters ? "▲" : "▼"}`}
                     />
                     <InputField
                         as="select"

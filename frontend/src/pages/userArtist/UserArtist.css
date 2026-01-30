@@ -2,6 +2,11 @@
     position: relative;
 }
 
+.user-sidebar {
+    position: absolute;
+    right: 3rem;
+}
+
 .user-wrapper {
     display: flex;
     flex-direction: row;
@@ -73,4 +78,44 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.profile-form-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.profile-form {
+    background: var(--color-quaternary-trans);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 50%;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.form-header {
+    color: var(--color-white);
+    text-align: center;
+}
+
+.button-form {
+    margin-top: 2rem;
 }

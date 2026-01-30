@@ -29,7 +29,7 @@
     top: 110%;
     left: 0;
     width: 75vw;
-    background-color: var(--color-quarternary-trans);
+    background-color: var(--color-quaternary-trans);
     padding: 3rem;
     z-index: 1000;
 }
