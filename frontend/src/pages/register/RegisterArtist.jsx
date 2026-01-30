@@ -1,7 +1,7 @@
 import './Register.css';
 import InputField from "../../components/inputField/InputField.jsx";
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useForm} from "react-hook-form";
 import Button from "../../components/button/Button.jsx";
@@ -18,6 +18,7 @@ function RegisterArtist() {
             console.log("Kunstenaar is geregistreerd!");
             navigate("/login");
         } catch (e) {
+            console.error(e);
             setError("Registreren niet gelukt");
         }
     }
@@ -28,7 +29,6 @@ function RegisterArtist() {
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <InputField as="input"
                             type="text"
-                            label="E-mailadres: "
                             id="email"
                             name="email"
                             register={register}
@@ -38,7 +38,6 @@ function RegisterArtist() {
                 />
                 <InputField as="input"
                             type="text"
-                            label="Gebruikersnaam: "
                             id="username"
                             name="username"
                             register={register}
@@ -48,7 +47,6 @@ function RegisterArtist() {
                 />
                 <InputField as="input"
                             type="password"
-                            label="Wachtwoord: "
                             id="password"
                             name="password"
                             register={register}
@@ -61,6 +59,9 @@ function RegisterArtist() {
                         label="Registreer"
                 />
             </form>
+            <p className="navigate-register">
+                Liever registreren als artlover? <Link className="link-register" to="/register-artlover">Dat doe je hier {">>"}</Link>
+            </p>
             {error && (
                 <p className="error">{error}</p>
             )}

@@ -1,6 +1,6 @@
 import "./Register.css";
 import {useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import InputField from "../../components/inputField/InputField.jsx";
@@ -27,7 +27,6 @@ function RegisterVisitor() {
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <InputField as="input"
                             type="text"
-                            label="E-mailadres: "
                             id="email"
                             name="email"
                             register={register}
@@ -37,7 +36,6 @@ function RegisterVisitor() {
                 />
                 <InputField as="input"
                             type="text"
-                            label="Gebruikersnaam: "
                             id="username"
                             name="username"
                             register={register}
@@ -47,7 +45,6 @@ function RegisterVisitor() {
                 />
                 <InputField as="input"
                             type="password"
-                            label="Wachtwoord: "
                             id="password"
                             name="password"
                             register={register}
@@ -60,6 +57,9 @@ function RegisterVisitor() {
                         label="Registreer"
                 />
             </form>
+            <p className="navigate-register">
+                Liever registreren als kunstenaar? <Link className="link-register" to="/register-artist">Dat doe je hier {">>"}</Link>
+            </p>
             {error && (
                 <p className="error">{error}</p>
             )}
