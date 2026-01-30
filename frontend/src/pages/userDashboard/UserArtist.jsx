@@ -1,7 +1,7 @@
 import './UserDashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
 import profilePicture from "../../assets/user-switch.svg";
@@ -17,6 +17,7 @@ function UserArtist() {
 
     const {id} = useParams();
     const {register, handleSubmit, reset} = useForm();
+    const navigate = useNavigate();
 
     const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
@@ -139,6 +140,11 @@ function UserArtist() {
                             type="button"
                             label="Profiel aanpassen"
                             onClick={() => setChangeProfile(true)}
+                    />
+                    <Button className="button-default button-tertiary"
+                            type="button"
+                            label="Kunstwerk toevoegen"
+                            onClick={() => navigate("/new-artwork")}
                     />
                 </aside>
 
