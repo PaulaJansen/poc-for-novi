@@ -55,7 +55,7 @@ function Artist() {
     }
 
     return (
-        <artist-container>
+        <div className="artist-container">
             <Breadcrumbs lastLabel={`${artist.firstName} ${artist.lastName}`}/>
             <section className="artist-wrapper">
                 <img className="artist-image" src={`http://localhost:8080/images/${artist.profilePicture}`}
@@ -84,7 +84,7 @@ function Artist() {
 
                 <ArtworksSection artworks={artworks}/>
             </section>
-        </artist-container>
+        </div>
     )
 }
 

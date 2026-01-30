@@ -27,7 +27,6 @@ function Login() {
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <InputField as="input"
                             type="text"
-                            label="Gebruikersnaam: "
                             id="username"
                             name="username"
                             register={register}
@@ -37,7 +36,6 @@ function Login() {
                 />
                 <InputField as="input"
                             type="password"
-                            label="Wachtwoord: "
                             id="password"
                             name="password"
                             register={register}

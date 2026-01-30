@@ -17,3 +17,18 @@ form {
     margin: 2rem;
 }
 
+.navigate-register {
+    text-align: center;
+}
+
+.link-register {
+    color: var(--color-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.link-register:hover {
+    color: var(--color-quaternary);
+    text-decoration: underline;
+}

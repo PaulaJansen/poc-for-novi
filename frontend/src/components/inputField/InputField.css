@@ -1,27 +1,19 @@
 .label-primary,
-.label-secondary {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 1rem;
-}
-
-.label-quarternary {
+.label-secondary,
+.label-tertiary,
+.label-quaternary {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     width: 100%;
 }
 
-.label-quarternary .input-field {
-    width: 75%;
-}
-
-.label-quarternary > span {
+.label-quaternary > span {
     color: var(--color-text);
 }
 
-.label-quarternary .input-field::placeholder {
+.label-quaternary .input-field::placeholder {
     color: var(--color-tertiary);
 }
 
@@ -52,22 +44,18 @@ label > span {
     color: var(--color-white);
 }
 
-.label-tertiary {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    font-weight: 600;
-}
-
 .textarea {
     height: 6rem;
+    width: 30rem;
     resize: vertical;
-    padding: 0;
+    padding: 0.5rem;
     font-weight: 400;
     font-size: 0.9rem;
 }
 
-input[type=text] {
-    width: 30rem;
+input[type=text],
+input[type=password] {
+    min-width: 30rem;
     height: 2rem;
+    box-sizing: border-box;
 }

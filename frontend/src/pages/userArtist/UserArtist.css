@@ -1,0 +1,121 @@
+.user-container {
+    position: relative;
+}
+
+.user-sidebar {
+    position: absolute;
+    right: 3rem;
+}
+
+.user-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 20rem;
+    margin: 4rem 10rem 4rem 20rem;
+}
+
+.profile-picture {
+    position: relative;
+}
+
+.user-image {
+    width: 15rem;
+    height: 15rem;
+    object-fit: contain;
+    border-radius: 50%;
+    background-color: var(--color-text);
+}
+
+.image-change-wrapper {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 1.5rem;
+    cursor: pointer;
+}
+
+.image-change-wrapper::after {
+    content: "Profielfoto aanpassen";
+    position: absolute;
+    bottom: 120%;
+    left: 120%;
+    transform: translateX(50%);
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.4rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.image-change-wrapper:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-2px);
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.user-artworks-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 18rem);
+    justify-content: flex-start;
+    gap: 2rem;
+    padding: 0 1rem;
+    margin: 5rem 4rem 1.5rem 4rem;
+}
+
+.user-artworks-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-form-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.profile-form {
+    background: var(--color-quaternary-trans);
+    padding: 2rem;
+    border-radius: 8px;
+    width: 50%;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.form-header {
+    color: var(--color-white);
+    text-align: center;
+}
+
+.button-form {
+    margin-top: 2rem;
+}

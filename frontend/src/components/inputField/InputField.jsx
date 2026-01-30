@@ -4,11 +4,12 @@ function InputField({label, as = "input", type, className, labelClassName, name,
     const Component = as === "textarea" ? "textarea" :
         as === "select" ? "select" : "input";
     const wrapInputInLabel = type === "radio" || type === "checkbox";
+    const hasLabel = Boolean(label);
 
     if (as === "select") {
         return (
-            <label htmlFor={id} className={`label-primary ${labelClassName}`}>
-                <span>{label}</span>
+            <label htmlFor={id} className={hasLabel? `label-primary ${labelClassName}` : ""}>
+                {hasLabel && <span>{label}</span>}
                 <Component
                     className={`${className || ""} input-field`}
                     id={id}
@@ -25,8 +26,8 @@ function InputField({label, as = "input", type, className, labelClassName, name,
         )
     } else if (as === "textarea") {
         return (
-            <label htmlFor={id} className={`label-tertiary ${labelClassName}`}>
-                <span>{label}</span>
+            <label htmlFor={id} className={hasLabel ? `label-tertiary ${labelClassName}` : ""}>
+                {hasLabel && <span>{label}</span>}
                 <Component
                     className={className}
                     {...(typeof register === "function" ? register(name, {required}) : {})}
@@ -37,7 +38,7 @@ function InputField({label, as = "input", type, className, labelClassName, name,
         )
     } else {
         return wrapInputInLabel ? (
-            <label htmlFor={id} className={`label-secondary ${labelClassName}`}>
+            <label htmlFor={id} className={hasLabel ? `label-secondary ${labelClassName}` : ""}>
                 <Component
                     className={`${className || ""} input-field`}
                     {...(typeof register === "function" ? register(name, {required}) : {})}
@@ -47,11 +48,11 @@ function InputField({label, as = "input", type, className, labelClassName, name,
                     onChange={e => onChange(e.target.value)}
                     placeholder={placeholder}
                 />
-                <span>{label}</span>
+                {hasLabel && <span>{label}</span>}
             </label>
         ) : (
-            <label htmlFor={id} className={`label-primary ${labelClassName}`}>
-                <span>{label}</span>
+            <label htmlFor={id} className={hasLabel ? `label-primary ${labelClassName}` : ""}>
+                {hasLabel && <span>{label}</span>}
                 <Component
                     className={`${className || ""} input-field`}
                     {...(typeof register === "function" ? register(name, {required}) : {})}
