@@ -1,15 +1,28 @@
 import './NewArtwork.css';
 import axios from "axios";
 import {useForm} from "react-hook-form";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
 
 function NewArtwork() {
 
-    const {register, handleSubmit, reset} = useForm();
+    const {register, handleSubmit, setValue} = useForm();
+    const fileInputRef = useRef(null);
+
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
+
+    const MAX_IMAGES = 8;
+
+    useEffect(() => {
+        return () => {
+            selectedImages.forEach(file =>
+                URL.revokeObjectURL(file)
+            );
+        };
+    }, [selectedImages]);
 
     async function handleFormSubmit(data) {
         setLoading(true);
@@ -45,12 +58,71 @@ function NewArtwork() {
         }
     }
 
+    function handleImageChange(e) {
+        const newFiles = Array.from(e.target.files);
+
+        setSelectedImages(prev => {
+            const combined = [...prev, ...newFiles].slice(0, MAX_IMAGES);
+            setValue("images", combined);
+            return combined;
+        });
+
+        e.target.value = null;
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const files = Array.from(e.dataTransfer.files).filter(
+            file => file.type.startsWith("image/")
+        );
+
+        setSelectedImages(prev => {
+            const combined = [...prev, ...files].slice(0, MAX_IMAGES);
+            setValue("images", combined);
+            return combined;
+        });
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+
+    function removeImage(index) {
+        setSelectedImages(prev => {
+            const updated = prev.filter((_, i) => i !== index);
+            setValue("images", updated);
+            return updated;
+        });
+    }
+
+    function moveImageUp(index) {
+        if (index === 0) return;
+
+        setSelectedImages(prev => {
+            const copy = [...prev];
+            [copy[index - 1], copy[index]] = [copy[index], copy[index - 1]];
+            setValue("images", copy);
+            return copy;
+        });
+    }
+
+    function moveImageDown(index) {
+        setSelectedImages(prev => {
+            if (index === prev.length - 1) return prev;
+            const copy = [...prev];
+            [copy[index + 1], copy[index]] = [copy[index], copy[index + 1]];
+            setValue("images", copy);
+            return copy;
+        });
+    }
+
     return (
         <div className="new-artwork-container">
-            <h2>Kunstwerk toevoegen</h2>
-            <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <h2 className="new-artwork-header">Kunstwerk toevoegen</h2>
+            <form className="new-artwork-form" onSubmit={handleSubmit(handleFormSubmit)}>
                 <InputField as="input"
                             type="text"
+                            labelClassName="label-quinary"
                             label="Titel: "
                             name="title"
                             id="title"
@@ -59,6 +131,7 @@ function NewArtwork() {
                 />
                 <InputField as="input"
                             type="text"
+                            labelClassName="label-quinary"
                             label="Genres (scheid genres met komma's: "
                             name="genreNames"
                             id="genreNames"
@@ -69,6 +142,7 @@ function NewArtwork() {
                 />
                 <InputField as="input"
                             type="number"
+                            labelClassName="label-quinary"
                             label="Prijs: "
                             name="price"
                             id="price"
@@ -79,22 +153,24 @@ function NewArtwork() {
                             required
                 />
                 <InputField as="select"
+                            labelClassName="label-quinary"
                             label="Beschikbaarheid: "
                             name="availability"
                             id="availability"
                             register={register}
                             required
                             options={[
+                                {value: "AVAILABLE", label: "Beschikbaar"},
                                 {value: "AVAILABLETOBUY", label: "Te koop"},
                                 {value: "AVAILABLETOLOAN", label: "Te huur"},
-                                {value: "AVAILABLE", label: "Beschikbaar"},
                                 {value: "SOLD", label: "Verkocht"},
                                 {value: "ONLOAN", label: "Verhuurd"}
                             ]}
                 />
-                <div className="dimensions">
+                <div className="new-artwork-dimensions">
                     <InputField as="input"
                                 type="number"
+                                labelClassName="label-quinary"
                                 label="Breedte (cm): "
                                 name="widthInCm"
                                 id="widthInCm"
@@ -103,6 +179,7 @@ function NewArtwork() {
                     />
                     <InputField as="input"
                                 type="number"
+                                labelClassName="label-quinary"
                                 label="Lengte (cm): "
                                 name="lengthInCm"
                                 id="lengthInCm"
@@ -111,6 +188,7 @@ function NewArtwork() {
                     />
                     <InputField as="input"
                                 type="number"
+                                labelClassName="label-quinary"
                                 label="Hoogte (cm): "
                                 name="heightInCm"
                                 id="heightInCm"
@@ -118,15 +196,43 @@ function NewArtwork() {
                                 required
                     />
                 </div>
+                <div className="image-dropzone"
+                     onClick={() => fileInputRef.current.click()}
+                     onDrop={handleDrop}
+                     onDragOver={handleDragOver}
+                >
+                    Sleep afbeeldingen hierheen of klik om te kiezen
+                </div>
                 <InputField as="input"
                             type="file"
-                            label="Afbeeldingen: "
+                            className="file-input-hidden"
                             name="images"
                             id="images"
                             register={register}
-                            required
                             multiple
+                            required
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleImageChange}
                 />
+                <div className="image-preview-grid">
+                    {selectedImages.map((file, index) => (
+                        <div key={index} className="image-preview-item">
+                            <img
+                                src={URL.createObjectURL(file)}
+                                alt="preview"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                <button type="button" onClick={() => moveImageUp(index)}>↑</button>
+                <button type="button" onClick={() => moveImageDown(index)}>↓</button>
                 <Button className="button-default button-tertiary-reverse button-form"
                         type="submit"
                         label="Kunstwerk opslaan"

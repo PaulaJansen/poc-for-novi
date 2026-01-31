@@ -16,7 +16,10 @@ import {useForm} from "react-hook-form";
 function UserArtist() {
 
     const {id} = useParams();
-    const {register, handleSubmit, reset} = useForm();
+    const {register, handleSubmit, reset} = useForm({
+        shouldUnregister: false,
+    });
+
     const navigate = useNavigate();
 
     const [artist, setArtist] = useState(null);

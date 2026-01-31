@@ -1,3 +1,62 @@
 .new-artwork-container {
     position: relative;
 }
+
+.new-artwork-header {
+    text-align: center;
+    margin: 3rem;
+}
+
+.new-artwork-form {
+    max-width: 40rem;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.new-artwork-dimensions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.image-dropzone {
+    border: 2px dashed var(--color-tertiary);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    gap: 1rem;
+}
+
+.image-preview-item {
+    position: relative;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 6rem;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.image-preview-item button {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
