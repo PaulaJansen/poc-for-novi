@@ -229,6 +229,7 @@ function UserArtist() {
                             alt={artwork.title}
                             title={artwork.title}
                             price={artwork.price}
+                            onEdit={(id) => navigate(`/edit-artwork/${id}`)}
                         />
                     );
                 })}
