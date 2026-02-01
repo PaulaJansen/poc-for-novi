@@ -9,11 +9,13 @@
 
 .new-artwork-form {
     max-width: 40rem;
-    margin: 2rem auto;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 1rem;
+}
+
+.new-artwork-wrapper {
+    align-items: center;
 }
 
 .new-artwork-dimensions {
@@ -39,7 +41,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fill, 8rem);
-    justify-content: flex-start;
+    justify-content: center;
     gap: 1rem;
 }
 
