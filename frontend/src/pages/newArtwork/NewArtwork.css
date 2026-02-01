@@ -32,11 +32,14 @@
     text-align: center;
     cursor: pointer;
     border-radius: 6px;
+    width: 30rem;
 }
 
 .image-preview-grid {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    grid-template-columns: repeat(auto-fill, 8rem);
+    justify-content: flex-start;
     gap: 1rem;
 }
 
@@ -70,7 +73,7 @@
 
 .button-form {
     width: 100%;
-    margin-bottom: 1.5rem;
+    margin: 2.5rem 0 1.5rem 0;
     display: flex;
     justify-content: center;
  }

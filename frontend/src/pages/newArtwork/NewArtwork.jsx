@@ -6,6 +6,8 @@ import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
 import removeSquare from "../../assets/x-square-fill.svg"
 import useImageUpload from "../../customHooks/useImageUpload.jsx";
+import Spinner from "../../components/spinner/Spinner.jsx";
+import {toast} from "react-toastify";
 
 function NewArtwork() {
 
@@ -34,13 +36,13 @@ function NewArtwork() {
             formData.append("price", data.price);
             formData.append("availability", data.availability);
 
-            if (data.genreNames) {
-                data.genreNames.forEach(g => formData.append("genreNames", g));
-            }
+            data.genreNames?.forEach(g =>
+                formData.append("genreNames", g)
+            );
 
-            if (data.images) {
-                Array.from(data.images).forEach(file => formData.append("images", file));
-            }
+            data.images?.forEach(file =>
+                formData.append("images", file)
+            );
 
             formData.append("widthInCm", data.widthInCm || 0);
             formData.append("lengthInCm", data.lengthInCm || 0);
@@ -51,10 +53,19 @@ function NewArtwork() {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
 
-            console.log("Kunstwerk is opgeslagen");
+            toast.success("Kunstwerk succesvol toegevoegd!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                });
         } catch (e) {
             console.error(e);
             setError("Kunstwerk opslaan niet gelukt");
+            toast.error("Kunstwerk opslaan mislukt, probeer opnieuw!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                });
         } finally {
             setLoading(false);
         }
@@ -63,7 +74,10 @@ function NewArtwork() {
     return (
         <div className="new-artwork-container">
             <h2 className="new-artwork-header">Kunstwerk toevoegen</h2>
-            <form className="new-artwork-form" onSubmit={handleSubmit(handleFormSubmit)}>
+            <form className="new-artwork-form"
+                  onSubmit={handleSubmit(handleFormSubmit)}
+                  style={{opacity: loading ? 0.6 : 1}}
+            >
                 <InputField as="input"
                             type="text"
                             labelClassName="label-quinary"
@@ -184,10 +198,12 @@ function NewArtwork() {
                 <div className="button-form">
                     <Button className="button-default button-tertiary-reverse"
                             type="submit"
-                            label="Kunstwerk opslaan"
+                            disabled={loading}
+                            label={loading ? <Spinner /> : "Kunstwerk opslaan"}
                     />
                 </div>
             </form>
+            {error && <p className="error-message">{error}</p>}
         </div>
     )
 }
