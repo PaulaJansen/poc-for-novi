@@ -1,13 +1,13 @@
 import './UserDashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
 import profilePicture from "../../assets/user-switch.svg";
 import closeSquare from "../../assets/x-square.svg";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
-import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
+import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import {useForm} from "react-hook-form";
@@ -16,7 +16,11 @@ import {useForm} from "react-hook-form";
 function UserArtist() {
 
     const {id} = useParams();
-    const {register, handleSubmit, reset} = useForm();
+    const {register, handleSubmit, reset} = useForm({
+        shouldUnregister: false,
+    });
+
+    const navigate = useNavigate();
 
     const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
@@ -139,6 +143,11 @@ function UserArtist() {
                             type="button"
                             label="Profiel aanpassen"
                             onClick={() => setChangeProfile(true)}
+                    />
+                    <Button className="button-default button-tertiary"
+                            type="button"
+                            label="Kunstwerk toevoegen"
+                            onClick={() => navigate("/new-artwork")}
                     />
                 </aside>
 

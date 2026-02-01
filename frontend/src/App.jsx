@@ -16,6 +16,8 @@ import NavLinkItem from "./components/navLinkItem/NavLinkItem.jsx";
 import profile from "./assets/user-icon.svg";
 import {getCurrentYear} from "./helpers/getCurrentYear.js";
 import Button from "./components/button/Button.jsx";
+import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
 
@@ -60,6 +62,11 @@ function App() {
                 </div>
                 <div className="circle-small"></div>
             </section>
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+            />
         </div>
     )
 }

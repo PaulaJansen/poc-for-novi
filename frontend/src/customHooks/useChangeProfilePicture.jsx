@@ -29,7 +29,7 @@ export function useChangeProfilePicture(artistId, initialImage) {
         setError(null);
 
         const formData = new FormData();
-        formData.append("profilePicture", profilePictureFile);
+        formData.append("profilePictureFile", file);
 
         try {
             await axios.patch(

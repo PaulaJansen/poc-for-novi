@@ -1,17 +1,30 @@
 import './Artwork.css';
 import axios from "axios";
 import {useEffect, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {Link, useLocation, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import Breadcrumbs from "../../components/breadCrumbs/BreadCrumbs.jsx";
+import {toast} from "react-toastify";
 
 function Artwork() {
 
     const {id} = useParams();
+    const location = useLocation();
+
     const [artwork, setArtwork] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(null);
+
+    useEffect(() => {
+        if (location.state?.created) {
+            toast.success("Kunstwerk succesvol toegevoegd!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                });
+        }
+    }, [location.state]);
 
     useEffect(() => {
         async function fetchArtwork() {
