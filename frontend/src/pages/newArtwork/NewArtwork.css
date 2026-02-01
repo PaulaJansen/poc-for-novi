@@ -42,21 +42,35 @@
 
 .image-preview-item {
     position: relative;
+    cursor: grab;
 }
 
-.image-preview-item img {
+.image-preview-item:active {
+    cursor: grabbing;
+    opacity: 0.6;
+}
+
+.image-preview-item .image-preview {
     width: 100%;
     height: 6rem;
     object-fit: cover;
     border-radius: 4px;
 }
 
-.image-preview-item button {
+.remove-image {
     position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
-    background: rgba(0,0,0,0.6);
+    width: 15px;
+    height: 15px;
+    top: -0.25rem;
+    right: 1rem;
     color: white;
     border: none;
     cursor: pointer;
 }
+
+.button-form {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+ }

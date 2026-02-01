@@ -7,7 +7,7 @@ import defaultImage from "../../assets/art-gallery.jpg";
 import profilePicture from "../../assets/user-switch.svg";
 import closeSquare from "../../assets/x-square.svg";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
-import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
+import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import {useForm} from "react-hook-form";

@@ -3,7 +3,7 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
-import {useChangeProfilePicture} from "../../helpers/useChangeProfilePicture.jsx";
+import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
 import profilePicture from "../../assets/user-switch.svg";
 import closeSquare from "../../assets/x-square.svg";
 import {useForm} from "react-hook-form";

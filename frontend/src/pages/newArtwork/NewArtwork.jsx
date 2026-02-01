@@ -1,9 +1,11 @@
 import './NewArtwork.css';
 import axios from "axios";
 import {useForm} from "react-hook-form";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
+import removeSquare from "../../assets/x-square-fill.svg"
+import useImageUpload from "../../customHooks/useImageUpload.jsx";
 
 function NewArtwork() {
 
@@ -12,17 +14,17 @@ function NewArtwork() {
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [selectedImages, setSelectedImages] = useState([]);
 
-    const MAX_IMAGES = 8;
-
-    useEffect(() => {
-        return () => {
-            selectedImages.forEach(file =>
-                URL.revokeObjectURL(file)
-            );
-        };
-    }, [selectedImages]);
+    const {
+        images,
+        handleFileInput,
+        handleDrop,
+        handleDragOver,
+        removeImage,
+        handleDragStart,
+        handleDragEnter,
+        handleDragEnd
+    } = useImageUpload({setValue, maxImages: 8});
 
     async function handleFormSubmit(data) {
         setLoading(true);
@@ -56,64 +58,6 @@ function NewArtwork() {
         } finally {
             setLoading(false);
         }
-    }
-
-    function handleImageChange(e) {
-        const newFiles = Array.from(e.target.files);
-
-        setSelectedImages(prev => {
-            const combined = [...prev, ...newFiles].slice(0, MAX_IMAGES);
-            setValue("images", combined);
-            return combined;
-        });
-
-        e.target.value = null;
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        const files = Array.from(e.dataTransfer.files).filter(
-            file => file.type.startsWith("image/")
-        );
-
-        setSelectedImages(prev => {
-            const combined = [...prev, ...files].slice(0, MAX_IMAGES);
-            setValue("images", combined);
-            return combined;
-        });
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-    }
-
-    function removeImage(index) {
-        setSelectedImages(prev => {
-            const updated = prev.filter((_, i) => i !== index);
-            setValue("images", updated);
-            return updated;
-        });
-    }
-
-    function moveImageUp(index) {
-        if (index === 0) return;
-
-        setSelectedImages(prev => {
-            const copy = [...prev];
-            [copy[index - 1], copy[index]] = [copy[index], copy[index - 1]];
-            setValue("images", copy);
-            return copy;
-        });
-    }
-
-    function moveImageDown(index) {
-        setSelectedImages(prev => {
-            if (index === prev.length - 1) return prev;
-            const copy = [...prev];
-            [copy[index + 1], copy[index]] = [copy[index], copy[index + 1]];
-            setValue("images", copy);
-            return copy;
-        });
     }
 
     return (
@@ -213,30 +157,36 @@ function NewArtwork() {
                             required
                             accept="image/*"
                             ref={fileInputRef}
-                            onChange={handleImageChange}
+                            onChange={(e) => handleFileInput(e.target.files)}
                 />
                 <div className="image-preview-grid">
-                    {selectedImages.map((file, index) => (
-                        <div key={index} className="image-preview-item">
-                            <img
-                                src={URL.createObjectURL(file)}
-                                alt="preview"
+                    {images.map((file, index) => (
+                        <div key={index}
+                             className="image-preview-item"
+                             draggable
+                             onDragStart={() => handleDragStart(index)}
+                             onDragEnter={() => handleDragEnter(index)}
+                             onDragEnd={handleDragEnd}
+                        >
+                            <img className="image-preview"
+                                 src={URL.createObjectURL(file)}
+                                 alt="preview"
                             />
-                            <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                            >
-                                ✕
-                            </button>
+                            <div className="remove-image">
+                                <img src={removeSquare}
+                                     alt="close form"
+                                     onClick={() => removeImage(index)}
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>
-                <button type="button" onClick={() => moveImageUp(index)}>↑</button>
-                <button type="button" onClick={() => moveImageDown(index)}>↓</button>
-                <Button className="button-default button-tertiary-reverse button-form"
-                        type="submit"
-                        label="Kunstwerk opslaan"
-                />
+                <div className="button-form">
+                    <Button className="button-default button-tertiary-reverse"
+                            type="submit"
+                            label="Kunstwerk opslaan"
+                    />
+                </div>
             </form>
         </div>
     )
