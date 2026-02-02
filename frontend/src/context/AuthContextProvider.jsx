@@ -5,6 +5,7 @@ import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 import isTokenValid from "../helpers/isTokenValid.js";
 import {toast} from "react-toastify";
+import Spinner from "../components/spinner/Spinner.jsx";
 
 export default function AuthContextProvider({children}) {
 
@@ -13,6 +14,14 @@ export default function AuthContextProvider({children}) {
         user: null,
         status: "pending",
     });
+
+    function resetAuthState() {
+        setAuth({
+            isAuth: false,
+            user: null,
+            status: "done",
+        });
+    }
 
     const navigate = useNavigate();
 
@@ -69,7 +78,7 @@ export default function AuthContextProvider({children}) {
 
             try {
                 const decodedToken = jwtDecode(userDetails.token);
-                void fetchUserInformation(decodedToken, userDetails.token, '/');
+                void fetchUserInformation(decodedToken, userDetails.token, "/");
                 console.log("Gebruiker is ingelogd");
                 toast.success("Je bent ingelogd!")
             } catch {
@@ -85,7 +94,7 @@ export default function AuthContextProvider({children}) {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            logout();
+            resetAuthState();
             return;
         }
 
@@ -93,13 +102,13 @@ export default function AuthContextProvider({children}) {
             const decodedToken = jwtDecode(token);
 
             if (!isTokenValid(decodedToken)) {
-                logout();
+                resetAuthState();
                 return;
             }
 
             void fetchUserInformation(decodedToken, token);
         } catch {
-            logout();
+            resetAuthState();
         }
     }, [fetchUserInformation, logout]);
 
@@ -114,7 +123,7 @@ export default function AuthContextProvider({children}) {
 
     return (
         <AuthContext.Provider value={contextData}>
-            {auth.status === 'done' ? children : <p>Loading...</p>}
+            {auth.status === 'done' ? children : <Spinner size="default" text="Laden..."/>}
         </AuthContext.Provider>
     )
 }

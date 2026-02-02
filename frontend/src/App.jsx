@@ -1,5 +1,5 @@
 import "./App.css"
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {Link, Route, Routes, useNavigate} from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import Overview from "./pages/overview/Overview.jsx";
 import Artist from "./pages/artist/Artist.jsx";
@@ -19,6 +19,7 @@ import Button from "./components/button/Button.jsx";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditArtwork from "./pages/editArtwork/EditArtwork.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
 
@@ -27,7 +28,9 @@ function App() {
     return (
         <div className="app-container">
             <nav className="navbar">
-                <img className="navbar-logo" src={logo} alt="logo"/>
+                <Link to="/">
+                    <img className="navbar-logo" src={logo} alt="logo"/>
+                </Link>
                 <ul className="navbar-menu">
                     <NavLinkItem to={"/"} title="Home"/>
                     <NavLinkItem to={"/overview"} title="All Art"/>
@@ -41,13 +44,33 @@ function App() {
                     <Route path="/overview" element={<Overview/>}/>
                     <Route path="/artist/:id" element={<Artist/>}/>
                     <Route path="/artwork/:id" element={<Artwork/>}/>
-                    <Route path="/artlover-dashboard/:id" element={<UserVisitor/>}/>
-                    <Route path="/artist-dashboard/:id" element={<UserArtist/>}/>
-                    <Route path="/new-artwork" element={<NewArtwork/>}/>
+                    <Route path="/artlover-dashboard/:id" element={
+                        <ProtectedRoute>
+                            <UserVisitor/>
+                        </ProtectedRoute>
+                    }
+                    />
+                    <Route path="/artist-dashboard/:id" element={
+                        <ProtectedRoute>
+                            <UserArtist/>
+                        </ProtectedRoute>
+                    }
+                    />
+                    <Route path="/new-artwork" element={
+                        <ProtectedRoute>
+                            <NewArtwork/>
+                        </ProtectedRoute>
+                    }
+                    />
                     <Route path="/register-artist" element={<RegisterArtist/>}/>
                     <Route path="/register-artlover" element={<RegisterVisitor/>}/>
                     <Route path="/login" element={<Login/>}/>
-                    <Route path="/edit-artwork/:id" element={<EditArtwork/>}/>
+                    <Route path="/edit-artwork/:id" element={
+                        <ProtectedRoute>
+                            <EditArtwork/>
+                        </ProtectedRoute>
+                    }
+                    />
                 </Routes>
             </div>
             <section className="footer">
