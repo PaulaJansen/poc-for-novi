@@ -170,13 +170,12 @@ function NewArtwork() {
                             id="images"
                             register={register}
                             multiple
-                            required
                             accept="image/*"
                             ref={fileInputRef}
                             onChange={(e) => handleFileInput(e.target.files)}
                 />
                 <div className="image-preview-grid">
-                    {images.map((file, index) => (
+                    {images.map((img, index) => (
                         <div key={index}
                              className="image-preview-item"
                              draggable
@@ -185,7 +184,7 @@ function NewArtwork() {
                              onDragEnd={handleDragEnd}
                         >
                             <img className="image-preview"
-                                 src={URL.createObjectURL(file)}
+                                 src={img.file ? URL.createObjectURL(img.file) : img.url}
                                  alt="preview"
                             />
                             <div className="remove-image">
