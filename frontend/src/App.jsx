@@ -37,7 +37,7 @@ function App() {
                     <NavLinkItem to={"/"} title="Home"/>
                     <NavLinkItem to={"/overview"} title="All Art"/>
                     <NavLinkItem to={"/register-artlover"} title="Register"/>
-                    <NavbarProfileMenu />
+                    <NavbarProfileMenu/>
                 </ul>
             </nav>
             <div className="main-container">
@@ -46,7 +46,12 @@ function App() {
                     <Route path="/overview" element={<Overview/>}/>
                     <Route path="/artist/:id" element={<Artist/>}/>
                     <Route path="/artwork/:id" element={<Artwork/>}/>
-                    <Route path="/dashboard" element={<UserDashboard/>}/>
+                    <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                            <UserDashboard/>
+                        </ProtectedRoute>
+                    }
+                    />
                     <Route path="/artlover-dashboard/:id" element={
                         <ProtectedRoute>
                             <UserVisitor/>
@@ -60,7 +65,7 @@ function App() {
                     }
                     />
                     <Route path="/new-artwork" element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRole="ROLE_ARTIST">
                             <NewArtwork/>
                         </ProtectedRoute>
                     }
@@ -69,7 +74,7 @@ function App() {
                     <Route path="/register-artlover" element={<RegisterVisitor/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/edit-artwork/:id" element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRole="ROLE_ARTIST">
                             <EditArtwork/>
                         </ProtectedRoute>
                     }

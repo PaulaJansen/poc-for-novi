@@ -27,6 +27,16 @@ function Artwork() {
     }, [location.state]);
 
     useEffect(() => {
+        if (location.state?.edited) {
+            toast.success("Kunstwerk succesvol aangepast!",
+                {
+                    duration: 3000,
+                    position: "top-center",
+                });
+        }
+    }, [location.state]);
+
+    useEffect(() => {
         async function fetchArtwork() {
             try {
                 const artworkResponse = await axios.get(`http://localhost:8080/artworks/${id}`);

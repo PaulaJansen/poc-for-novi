@@ -1,6 +1,6 @@
 import "./EditArtwork.css";
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
@@ -8,6 +8,8 @@ import InputField from "../../components/inputField/InputField.jsx";
 import removeSquare from "../../assets/x-square-fill.svg";
 import Button from "../../components/button/Button.jsx";
 import useImageUpload from "../../customHooks/useImageUpload.jsx";
+import {AuthContext} from "../../context/AuthContext.js";
+import {toast} from "react-toastify";
 
 function EditArtwork() {
 
@@ -15,10 +17,10 @@ function EditArtwork() {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const {register, handleSubmit, reset, setValue} = useForm();
+    const { auth } = useContext(AuthContext);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [artwork, setArtwork] = useState(null);
 
     const imageUpload = useImageUpload({
         setValue,
@@ -28,7 +30,6 @@ function EditArtwork() {
 
     const {
         images,
-        setImages,
         handleFileInput,
         handleDrop,
         handleDragOver,
@@ -43,6 +44,12 @@ function EditArtwork() {
             try {
                 const response = await axios.get(`http://localhost:8080/artworks/${id}`);
                 const data = response.data;
+
+                if (auth.user.id !== data.artistId) {
+                    toast.error("Je mag dit kunstwerk niet bewerken");
+                    navigate("/dashboard");
+                    return;
+                }
 
                 reset({
                     title: data.title,
@@ -60,7 +67,6 @@ function EditArtwork() {
                     setValue("images", prefillImages);
                 }
 
-                setArtwork(data);
             } catch (e) {
                 console.error(e);
                 setError("Kunstwerk ophalen mislukt");
@@ -70,12 +76,10 @@ function EditArtwork() {
         }
 
         fetchArtwork();
-    }, []);
+    }, [id, auth.user.id, navigate, reset, imageUpload, setValue]);
 
     async function handleFormSubmit(data) {
 
-        console.log("Form data:", data);
-        console.log("Hook images:", images);
         setLoading(true);
         try {
             const formData = new FormData();
@@ -100,10 +104,13 @@ function EditArtwork() {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
 
-            navigate(`/artwork/${id}`);
+            navigate(`/artwork/${id}`, {
+                state: {edited: true}
+            });
         } catch (e) {
             console.error(e);
             setError("Opslaan niet gelukt");
+            toast.error("Opslaan mislukt, probeer opnieuw!");
         } finally {
             setLoading(false);
         }

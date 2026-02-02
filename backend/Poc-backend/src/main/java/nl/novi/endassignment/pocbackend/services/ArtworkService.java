@@ -48,6 +48,7 @@ public class ArtworkService {
         this.uploadDirectory = uploadDirectory;
     }
 
+    @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
     public ArtworkResponseDto createArtwork(ArtworkInputDto artworkInputDto) {
         List<String> fileNames = new ArrayList<>();
