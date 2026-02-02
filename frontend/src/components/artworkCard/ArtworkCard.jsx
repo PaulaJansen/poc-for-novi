@@ -1,6 +1,6 @@
 import "./ArtworkCard.css";
 import FavoriteButton from "../favoriteButton/FavoriteButton.jsx";
-import {useFavorites} from "../../context/FavoritesProvider.jsx";
+import {useFavorites} from "../../context/FavoritesContextProvider.jsx";
 import {Link} from "react-router-dom";
 import editBrush from "../../assets/paint-brush-broad.svg";
 

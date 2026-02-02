@@ -3,14 +3,17 @@ import {createRoot} from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import {BrowserRouter as Router} from "react-router-dom";
-import {FavoritesProvider} from "./context/FavoritesProvider.jsx";
+import FavoritesContextProvider from "./context/FavoritesContextProvider.jsx";
+import AuthContextProvider from "./context/AuthContextProvider.jsx";
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <Router>
-            <FavoritesProvider>
-                <App/>
-            </FavoritesProvider>
+            <AuthContextProvider>
+                <FavoritesContextProvider>
+                    <App/>
+                </FavoritesContextProvider>
+            </AuthContextProvider>
         </Router>
     </StrictMode>,
 )
