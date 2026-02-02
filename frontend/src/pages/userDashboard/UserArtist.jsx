@@ -1,7 +1,7 @@
 import './UserDashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
 import profilePicture from "../../assets/user-switch.svg";
@@ -13,9 +13,8 @@ import InputField from "../../components/inputField/InputField.jsx";
 import {useForm} from "react-hook-form";
 
 
-function UserArtist() {
+function UserArtist({id}) {
 
-    const {id} = useParams();
     const {register, handleSubmit, reset} = useForm({
         shouldUnregister: false,
     });

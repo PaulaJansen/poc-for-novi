@@ -1,5 +1,4 @@
 import './UserDashboard.css';
-import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
@@ -10,9 +9,8 @@ import {useForm} from "react-hook-form";
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 
-function UserVisitor() {
+function UserVisitor({id}) {
 
-    const {id} = useParams();
     const {register, handleSubmit, reset} = useForm();
 
     const [visitor, setVisitor] = useState(null);

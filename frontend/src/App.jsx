@@ -20,6 +20,8 @@ import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditArtwork from "./pages/editArtwork/EditArtwork.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import NavbarProfileMenu from "./components/navbarProfileMenu/NavbarProfileMenu.jsx";
+import UserDashboard from "./pages/userDashboard/UserDashboard.jsx";
 
 function App() {
 
@@ -35,7 +37,7 @@ function App() {
                     <NavLinkItem to={"/"} title="Home"/>
                     <NavLinkItem to={"/overview"} title="All Art"/>
                     <NavLinkItem to={"/register-artlover"} title="Register"/>
-                    <NavLinkItem to={"/login"} icon={profile} alt="profile"/>
+                    <NavbarProfileMenu />
                 </ul>
             </nav>
             <div className="main-container">
@@ -44,6 +46,7 @@ function App() {
                     <Route path="/overview" element={<Overview/>}/>
                     <Route path="/artist/:id" element={<Artist/>}/>
                     <Route path="/artwork/:id" element={<Artwork/>}/>
+                    <Route path="/dashboard" element={<UserDashboard/>}/>
                     <Route path="/artlover-dashboard/:id" element={
                         <ProtectedRoute>
                             <UserVisitor/>
