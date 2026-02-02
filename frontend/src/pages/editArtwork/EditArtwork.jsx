@@ -1,26 +1,34 @@
-import './NewArtwork.css';
-import axios from "axios";
+import "./EditArtwork.css";
+import {useNavigate, useParams} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
-import {useRef, useState} from "react";
-import InputField from "../../components/inputField/InputField.jsx";
-import Button from "../../components/button/Button.jsx";
-import removeSquare from "../../assets/x-square-fill.svg"
-import useImageUpload from "../../customHooks/useImageUpload.jsx";
+import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
-import {toast} from "react-toastify";
-import {useNavigate} from "react-router-dom";
+import InputField from "../../components/inputField/InputField.jsx";
+import removeSquare from "../../assets/x-square-fill.svg";
+import Button from "../../components/button/Button.jsx";
+import useImageUpload from "../../customHooks/useImageUpload.jsx";
 
-function NewArtwork() {
+function EditArtwork() {
 
-    const {register, handleSubmit, setValue} = useForm();
-    const fileInputRef = useRef(null);
+    const {id} = useParams();
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+    const {register, handleSubmit, reset, setValue} = useForm();
 
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [artwork, setArtwork] = useState(null);
+
+    const imageUpload = useImageUpload({
+        setValue,
+        maxImages: 8,
+        initialImages: []
+    });
 
     const {
         images,
+        setImages,
         handleFileInput,
         handleDrop,
         handleDragOver,
@@ -28,9 +36,46 @@ function NewArtwork() {
         handleDragStart,
         handleDragEnter,
         handleDragEnd
-    } = useImageUpload({setValue, maxImages: 8});
+    } = imageUpload;
+
+    useEffect(() => {
+        async function fetchArtwork() {
+            try {
+                const response = await axios.get(`http://localhost:8080/artworks/${id}`);
+                const data = response.data;
+
+                reset({
+                    title: data.title,
+                    price: data.price,
+                    availability: data.availability,
+                    widthInCm: data.widthInCm,
+                    lengthInCm: data.lengthInCm,
+                    heightInCm: data.heightInCm,
+                    genreNames: data.genreNames,
+                });
+
+                if (data.images?.length) {
+                    const prefillImages = data.images.map(url => ({ file: null, url }));
+                    imageUpload.setImages(prefillImages);
+                    setValue("images", prefillImages);
+                }
+
+                setArtwork(data);
+            } catch (e) {
+                console.error(e);
+                setError("Kunstwerk ophalen mislukt");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchArtwork();
+    }, []);
 
     async function handleFormSubmit(data) {
+
+        console.log("Form data:", data);
+        console.log("Hook images:", images);
         setLoading(true);
         try {
             const formData = new FormData();
@@ -42,33 +87,40 @@ function NewArtwork() {
                 formData.append("genreNames", g)
             );
 
-            data.images?.forEach(file =>
-                formData.append("images", file)
-            );
+            images.forEach(img => {
+                if (img.file) formData.append("images", img.file);
+            });
 
             formData.append("widthInCm", data.widthInCm || 0);
             formData.append("lengthInCm", data.lengthInCm || 0);
             formData.append("heightInCm", data.heightInCm || 0);
 
-            const response = await axios.post(`http://localhost:8080/artworks`, formData,
-                {
+            await axios.patch(`http://localhost:8080/artworks/${id}`,
+                formData, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
 
-            navigate(`/artwork/${response.data.id}`, {
-                state: {created: true}
-            });
+            navigate(`/artwork/${id}`);
         } catch (e) {
             console.error(e);
-            setError("Kunstwerk opslaan niet gelukt");
-            toast.error("Kunstwerk opslaan mislukt, probeer opnieuw!",
-                {
-                    duration: 3000,
-                    position: "top-center",
-                });
+            setError("Opslaan niet gelukt");
         } finally {
             setLoading(false);
         }
+    }
+
+    if (loading) {
+        return (
+            <Spinner size="default" text="Kunstwerk wordt geladen"/>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="artwork-container">
+                <p className="error-message">{error}</p>
+            </div>
+        );
     }
 
     return (
@@ -184,7 +236,7 @@ function NewArtwork() {
                              onDragEnd={handleDragEnd}
                         >
                             <img className="image-preview"
-                                 src={img.file ? URL.createObjectURL(img.file) : img.url}
+                                 src={img.file ? URL.createObjectURL(img.file) : `http://localhost:8080/images/${img.url}`}
                                  alt="preview"
                             />
                             <div className="remove-image">
@@ -211,4 +263,4 @@ function NewArtwork() {
     )
 }
 
-export default NewArtwork;
+export default EditArtwork;

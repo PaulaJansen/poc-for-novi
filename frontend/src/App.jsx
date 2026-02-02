@@ -18,6 +18,7 @@ import {getCurrentYear} from "./helpers/getCurrentYear.js";
 import Button from "./components/button/Button.jsx";
 import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EditArtwork from "./pages/editArtwork/EditArtwork.jsx";
 
 function App() {
 
@@ -46,6 +47,7 @@ function App() {
                     <Route path="/register-artist" element={<RegisterArtist/>}/>
                     <Route path="/register-artlover" element={<RegisterVisitor/>}/>
                     <Route path="/login" element={<Login/>}/>
+                    <Route path="/edit-artwork/:id" element={<EditArtwork/>}/>
                 </Routes>
             </div>
             <section className="footer">

@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 
-export default function useImageUpload({ setValue, maxImages = 8 }) {
-    const [images, setImages] = useState([]);
+export default function useImageUpload({ setValue, maxImages = 8, initialImages = [] }) {
+    const [images, setImages] = useState(  initialImages.map(img => ({
+            file: img.file || null,
+            url: img.url || img
+        }))
+    );
+
     const [dragIndex, setDragIndex] = useState(null);
 
     useEffect(() => {
         return () => {
-            images.forEach(file => URL.revokeObjectURL(file));
+            images.forEach(img => {
+                if (img.file) URL.revokeObjectURL(img.file);
+            });
         };
     }, [images]);
 
@@ -52,10 +59,9 @@ export default function useImageUpload({ setValue, maxImages = 8 }) {
     }
 
     function handleFileInput(files) {
-        if (!files) return;
-        addImages(
-            Array.from(files ?? []).filter(f => f.type.startsWith("image/"))
-        );
+        const newFiles = Array.from(files).map(f => ({ file: f, url: null }));
+        const filteredFiles = newFiles.filter(img => img.file?.type.startsWith("image/"));
+        addImages(filteredFiles);
     }
 
     function handleDrop(e) {
@@ -69,6 +75,7 @@ export default function useImageUpload({ setValue, maxImages = 8 }) {
 
     return {
         images,
+        setImages,
         handleFileInput,
         handleDrop,
         handleDragOver,
