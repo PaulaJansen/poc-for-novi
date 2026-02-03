@@ -1,8 +1,7 @@
-import { AuthContext } from "./AuthContext";
+import {AuthContext} from "./AuthContext";
 import {useEffect, useMemo, useState, useCallback} from "react";
 import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
-import axios from "axios";
 import isTokenValid from "../helpers/isTokenValid.js";
 import {toast} from "react-toastify";
 import Spinner from "../components/spinner/Spinner.jsx";
@@ -29,11 +28,7 @@ export default function AuthContextProvider({children}) {
     const logout = useCallback(
         () => {
             localStorage.removeItem("token");
-            setAuth({
-                isAuth: false,
-                user: null,
-                status: "done"
-            });
+            resetAuthState();
             console.log("Gebruiker is uitgelogd");
             toast.info("Je bent uitgelogd!")
         }, []
@@ -73,6 +68,9 @@ export default function AuthContextProvider({children}) {
                 localStorage.setItem("token", token);
 
                 const decodedToken = jwtDecode(token);
+
+                if (!isTokenValid(decodedToken)) throw new Error("Token is verlopen");
+
                 const userId = decodedToken.userId;
 
                 if (!userId) throw new Error("Token heeft geen userId");
@@ -91,22 +89,26 @@ export default function AuthContextProvider({children}) {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+        if (!token) return resetAuthState();
 
-        if (token) {
+        (async () => {
             try {
                 const decoded = jwtDecode(token);
-                const userId = decoded.userId;
 
+                if (!isTokenValid(decoded)) {
+                    toast.info("Je sessie is verlopen, log opnieuw in.");
+                    return logout();
+                }
+
+                const userId = decoded.userId;
                 if (!userId) throw new Error("Token bevat geen userId");
 
-                void fetchUserInformation(userId, token);
-            } catch (e) {
-                console.error("Token ongeldig:", e);
+                await fetchUserInformation(userId, token);
+            } catch {
+                console.error("Token ongeldig, log opnieuw in.");
                 logout();
             }
-        } else {
-                resetAuthState();
-            }
+        })();
     }, [fetchUserInformation, logout]);
 
     const contextData = useMemo(

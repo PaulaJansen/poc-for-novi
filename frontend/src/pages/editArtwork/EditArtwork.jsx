@@ -17,7 +17,7 @@ function EditArtwork() {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const {register, handleSubmit, reset, setValue} = useForm();
-    const { auth } = useContext(AuthContext);
+    const {auth} = useContext(AuthContext);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -30,6 +30,7 @@ function EditArtwork() {
 
     const {
         images,
+        setImages,
         handleFileInput,
         handleDrop,
         handleDragOver,
@@ -41,6 +42,12 @@ function EditArtwork() {
 
     useEffect(() => {
         async function fetchArtwork() {
+
+            if (!id) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await axios.get(`http://localhost:8080/artworks/${id}`);
                 const data = response.data;
@@ -62,8 +69,12 @@ function EditArtwork() {
                 });
 
                 if (data.images?.length) {
-                    const prefillImages = data.images.map(url => ({ file: null, url }));
-                    imageUpload.setImages(prefillImages);
+                    const prefillImages = data.images.map((url) => ({
+                        id: url,
+                        file: null,
+                        url
+                    }));
+                    setImages(prefillImages);
                     setValue("images", prefillImages);
                 }
 
@@ -76,7 +87,7 @@ function EditArtwork() {
         }
 
         fetchArtwork();
-    }, [id, auth.user.id, navigate, reset, imageUpload, setValue]);
+    }, [id, auth.user.id, navigate, reset, setImages, setValue]);
 
     async function handleFormSubmit(data) {
 
@@ -132,7 +143,7 @@ function EditArtwork() {
 
     return (
         <div className="new-artwork-container">
-            <h2 className="new-artwork-header">Kunstwerk toevoegen</h2>
+            <h2 className="new-artwork-header">Kunstwerk bewerken</h2>
             <form className="new-artwork-form"
                   onSubmit={handleSubmit(handleFormSubmit)}
                   style={{opacity: loading ? 0.6 : 1}}

@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import {v4 as uuidv4} from "uuid";
 
-export default function useImageUpload({ setValue, maxImages = 8, initialImages = [] }) {
-    const [images, setImages] = useState(  initialImages.map(img => ({
+export default function useImageUpload({setValue, maxImages = 8, initialImages = []}) {
+    const [images, setImagesState] = useState(
+        initialImages.map(img => ({
+            id: img.id || uuidv4(),
             file: img.file || null,
-            url: img.url || img
+            url: img.url || null
         }))
-    );
+    )
 
     const [dragIndex, setDragIndex] = useState(null);
 
@@ -18,15 +21,27 @@ export default function useImageUpload({ setValue, maxImages = 8, initialImages 
     }, [images]);
 
     function updateImages(updater) {
-        setImages(prev => {
-            const updated = updater([...prev]);
-            setValue("images", updated);
-            return updated;
-        });
+        if (typeof updater === "function") {
+            setImagesState(prev => {
+                const updated = updater([...prev]);
+                setValue("images", updated);
+                return updated;
+            });
+        }
+    }
+
+    function setImages(newImages) {
+        setImagesState(newImages);
+        setValue("images", newImages);
     }
 
     function addImages(files) {
-        updateImages(prev => [...prev, ...files].slice(0, maxImages));
+        const newImages = files.map(f => ({
+            id: uuidv4(),
+            file: f,
+            url: null
+        }));
+        updateImages(prev => [...prev, ...newImages].slice(0, maxImages));
     }
 
     function removeImage(index) {
@@ -59,8 +74,8 @@ export default function useImageUpload({ setValue, maxImages = 8, initialImages 
     }
 
     function handleFileInput(files) {
-        const newFiles = Array.from(files).map(f => ({ file: f, url: null }));
-        const filteredFiles = newFiles.filter(img => img.file?.type.startsWith("image/"));
+        const filteredFiles = Array.from(files)
+            .filter(f => f.type.startsWith("image/"));
         addImages(filteredFiles);
     }
 
