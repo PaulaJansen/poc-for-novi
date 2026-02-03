@@ -65,7 +65,7 @@ function App() {
                     }
                     />
                     <Route path="/new-artwork" element={
-                        <ProtectedRoute requiredRole="ROLE_ARTIST">
+                        <ProtectedRoute requiredRole="ARTIST">
                             <NewArtwork/>
                         </ProtectedRoute>
                     }
@@ -74,7 +74,7 @@ function App() {
                     <Route path="/register-artlover" element={<RegisterVisitor/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/edit-artwork/:id" element={
-                        <ProtectedRoute requiredRole="ROLE_ARTIST">
+                        <ProtectedRoute requiredRole="ARTIST">
                             <EditArtwork/>
                         </ProtectedRoute>
                     }

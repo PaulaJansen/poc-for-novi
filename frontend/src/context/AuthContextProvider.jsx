@@ -6,6 +6,7 @@ import axios from "axios";
 import isTokenValid from "../helpers/isTokenValid.js";
 import {toast} from "react-toastify";
 import Spinner from "../components/spinner/Spinner.jsx";
+import API from "../helpers/api.js";
 
 export default function AuthContextProvider({children}) {
 
@@ -33,18 +34,16 @@ export default function AuthContextProvider({children}) {
                 user: null,
                 status: "done"
             });
-            navigate("/");
             console.log("Gebruiker is uitgelogd");
-            toast.success("Je bent uitgelogd!")
-        }, [navigate]
+            toast.info("Je bent uitgelogd!")
+        }, []
     );
 
     const fetchUserInformation = useCallback(
-        async (decodedToken, token, redirectUrl = null) => {
-            const { userId, roleNames } = decodedToken;
+        async (userId, token, redirectUrl = null) => {
 
             try {
-                const response = await axios.get(`http://localhost:8080/users/${userId}`,
+                const response = await API.get(`http://localhost:8080/users/id/${userId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -53,11 +52,7 @@ export default function AuthContextProvider({children}) {
 
                 setAuth({
                     isAuth: true,
-                    user: {
-                        id: response.data.id,
-                        email: response.data.email,
-                        role: roleNames,
-                    },
+                    user: response.data,
                     status: "done",
                 });
 
@@ -72,17 +67,21 @@ export default function AuthContextProvider({children}) {
     );
 
     const login = useCallback(
-        (userDetails) => {
-
-            localStorage.setItem("token", userDetails.token);
-
+        async (token) => {
             try {
-                const decodedToken = jwtDecode(userDetails.token);
-                void fetchUserInformation(decodedToken, userDetails.token, "/");
+                if (!token) throw new Error("Token ontbreekt");
+                localStorage.setItem("token", token);
+
+                const decodedToken = jwtDecode(token);
+                const userId = decodedToken.userId;
+
+                if (!userId) throw new Error("Token heeft geen userId");
+
+                await fetchUserInformation(userId, token, "/");
                 console.log("Gebruiker is ingelogd");
-                toast.success("Je bent ingelogd!")
-            } catch {
-                console.error("Token ongeldig");
+                toast.success("Je bent ingelogd!");
+            } catch (e) {
+                console.error("Login mislukt: ", e);
                 toast.error("Inloggen mislukt, probeer opnieuw!");
                 logout();
             }
@@ -93,23 +92,21 @@ export default function AuthContextProvider({children}) {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        if (!token) {
-            resetAuthState();
-            return;
-        }
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                const userId = decoded.userId;
 
-        try {
-            const decodedToken = jwtDecode(token);
+                if (!userId) throw new Error("Token bevat geen userId");
 
-            if (!isTokenValid(decodedToken)) {
-                resetAuthState();
-                return;
+                void fetchUserInformation(userId, token);
+            } catch (e) {
+                console.error("Token ongeldig:", e);
+                logout();
             }
-
-            void fetchUserInformation(decodedToken, token);
-        } catch {
-            resetAuthState();
-        }
+        } else {
+                resetAuthState();
+            }
     }, [fetchUserInformation, logout]);
 
     const contextData = useMemo(

@@ -17,8 +17,8 @@ function UserDashboard() {
         </p>
     );
 
-    if (auth.user.role.includes("ARTIST")) return <UserArtist id={auth.user.id}/>;
-    if (auth.user.role.includes("VISITOR")) return <UserVisitor id={auth.user.id}/>;
+    if (auth.user?.roleNames?.includes("ARTIST")) return <UserArtist id={auth.user.id}/>;
+    if (auth.user?.roleNames?.includes("VISITOR")) return <UserVisitor id={auth.user.id}/>;
 
     return <p className="error">Je hebt geen toegang tot deze pagina.</p>;
 }

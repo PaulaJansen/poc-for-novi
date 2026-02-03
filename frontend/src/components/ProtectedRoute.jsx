@@ -10,7 +10,7 @@ export default function ProtectedRoute({children, requiredRole}) {
     const toastShown = useRef(false);
 
     useEffect(() => {
-        if (requiredRole && auth.user && !auth.user.role.includes(requiredRole) && !toastShown.current) {
+        if (requiredRole && auth.user && !auth.user.roleNames.includes(requiredRole) && !toastShown.current) {
             toast.error("Geen toegang tot deze actie");
             toastShown.current = true;
         }
@@ -20,7 +20,7 @@ export default function ProtectedRoute({children, requiredRole}) {
 
     if (!auth.isAuth) return <Navigate to="/login" replace/>
 
-    if (requiredRole && auth.user && !auth.user.role.includes(requiredRole))
+    if (requiredRole && auth.user && !auth.user.roleNames.includes(requiredRole))
         return <Navigate to="/dashboard" replace />;
 
     return children;
