@@ -222,7 +222,7 @@ function Overview() {
                 ) : (
                     sortedArtworks.map((artwork) => {
                         const imageUrl = artwork.images?.[0]
-                            ? `http://localhost:8080/images/${artwork.images[0]}`
+                            ? `http://localhost:8080/uploads/${artwork.images[0]}`
                             : defaultImage;
 
                         return (

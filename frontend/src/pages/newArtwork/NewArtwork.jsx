@@ -13,12 +13,12 @@ import {AuthContext} from "../../context/AuthContext.js";
 
 function NewArtwork() {
 
-    const {register, handleSubmit, setValue} = useForm();
+    const {register, handleSubmit, setValue, clearErrors, formState: {errors}} = useForm();
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
-    const { auth } = useContext(AuthContext);
-    const artistId = auth.user.id;
+    // const { auth } = useContext(AuthContext);
+    // const artistId = auth.user.id;
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -39,26 +39,35 @@ function NewArtwork() {
         try {
             const formData = new FormData();
             formData.append("title", data.title);
-            formData.append("artistId", artistId);
             formData.append("price", data.price);
             formData.append("availability", data.availability);
 
-            data.genreNames?.forEach(g =>
+            const genres = data.genreNames
+                ?.split(",")
+                .map(g => g.trim());
+
+            genres?.forEach(g =>
                 formData.append("genreNames", g)
             );
 
-            data.images?.forEach(file =>
-                formData.append("images", file)
-            );
+            images.forEach(img => {
+                if (img.file) {
+                    formData.append("images", img.file);
+                }
+            });
 
             formData.append("widthInCm", data.widthInCm || 0);
             formData.append("lengthInCm", data.lengthInCm || 0);
             formData.append("heightInCm", data.heightInCm || 0);
 
-            const response = await axios.post(`http://localhost:8080/artworks`, formData,
+            const response = await axios.post(`http://localhost:8080/artworks`,
+                formData,
                 {
-                    headers: {"Content-Type": "multipart/form-data"}
-                });
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    }
+                }
+            );
 
             navigate(`/artwork/${response.data.id}`, {
                 state: {created: true}
@@ -84,37 +93,45 @@ function NewArtwork() {
                   style={{opacity: loading ? 0.6 : 1}}
             >
                 <div className="new-artwork-wrapper">
+
+                    {errors.title && <p className="error-message">{errors.title.message}</p>}
                     <InputField as="input"
                                 type="text"
                                 labelClassName="label-quinary"
                                 label="Titel: "
                                 name="title"
                                 id="title"
-                                register={register}
+                                register={register("title", {required: "Voeg een titel toe"})}
                                 required
+                                onChange={() => clearErrors("title")}
                     />
+
+                    {errors.genreNames && <p className="error-message">{errors.genreNames.message}</p>}
                     <InputField as="input"
                                 type="text"
                                 labelClassName="label-quinary"
                                 label="Genres (scheid genres met komma's: "
                                 name="genreNames"
                                 id="genreNames"
-                                register={register}
+                                register={register("genreNames", {required: "Voeg tenminste 1 genre toe"})}
                                 placeholder="bijv. schilderij, abstract, modern"
-                                multiple
-                                required
+                                onChange={() => clearErrors("genreNames")}
                     />
+
+                    {errors.price && <p className="error-message">{errors.price.message}</p>}
                     <InputField as="input"
                                 type="number"
                                 labelClassName="label-quinary"
                                 label="Prijs: "
                                 name="price"
                                 id="price"
-                                register={register}
-                                min="0"
+                                register={register("price", {
+                                    required: "Voeg een prijs toe",
+                                    min: {value: 0, message: "Prijs moet €0,01 of hoger zijn"}
+                                })}
                                 step="0.01"
                                 placeholder="€"
-                                required
+                                onChange={() => clearErrors("price")}
                     />
                     <InputField as="select"
                                 labelClassName="label-quinary"
@@ -140,7 +157,6 @@ function NewArtwork() {
                                 name="widthInCm"
                                 id="widthInCm"
                                 register={register}
-                                required
                     />
                     <InputField as="input"
                                 type="number"
@@ -149,7 +165,6 @@ function NewArtwork() {
                                 name="lengthInCm"
                                 id="lengthInCm"
                                 register={register}
-                                required
                     />
                     <InputField as="input"
                                 type="number"
@@ -158,7 +173,6 @@ function NewArtwork() {
                                 name="heightInCm"
                                 id="heightInCm"
                                 register={register}
-                                required
                     />
                 </div>
                 <div className="image-dropzone"
@@ -173,19 +187,28 @@ function NewArtwork() {
                             className="file-input-hidden"
                             name="images"
                             id="images"
-                            register={register}
+                            register={register("images", {
+                                validate: () => images.length > 0 || "Voeg tenminste 1 afbeelding toe"
+                            })}
                             multiple
                             accept="image/*"
                             ref={fileInputRef}
-                            onChange={(e) => handleFileInput(e.target.files)}
+                            onChange={(e) => {
+                                handleFileInput(e.target.files);
+                                clearErrors("images");
+                            }}
                 />
+                {errors.images && (
+                    <p className="error-message">{errors.images.message}</p>
+                )}
+
                 <div className="image-preview-grid">
                     {images.map((img, index) => (
                         <div key={index}
                              className="image-preview-item"
                              draggable
-                             onDragStart={() => handleDragStart(index)}
-                             onDragEnter={() => handleDragEnter(index)}
+                             onDragStart={() => handleDragStart(img.id)}
+                             onDragEnter={() => handleDragEnter(img.id)}
                              onDragEnd={handleDragEnd}
                         >
                             <img className="image-preview"
@@ -195,7 +218,7 @@ function NewArtwork() {
                             <div className="remove-image">
                                 <img src={removeSquare}
                                      alt="close form"
-                                     onClick={() => removeImage(index)}
+                                     onClick={() => removeImage(img.id)}
                                 />
                             </div>
                         </div>

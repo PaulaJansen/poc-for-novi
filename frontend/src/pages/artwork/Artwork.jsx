@@ -1,7 +1,7 @@
 import './Artwork.css';
 import axios from "axios";
-import {useEffect, useState} from "react";
-import {Link, useLocation, useParams} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import Breadcrumbs from "../../components/breadCrumbs/BreadCrumbs.jsx";
 import {toast} from "react-toastify";
@@ -10,6 +10,8 @@ function Artwork() {
 
     const {id} = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
+    const editedToastShown = useRef(false);
 
     const [artwork, setArtwork] = useState(null);
     const [error, setError] = useState(null);
@@ -17,24 +19,30 @@ function Artwork() {
     const [activeImage, setActiveImage] = useState(null);
 
     useEffect(() => {
-        if (location.state?.created) {
-            toast.success("Kunstwerk succesvol toegevoegd!",
-                {
-                    duration: 3000,
-                    position: "top-center",
-                });
-        }
-    }, [location.state]);
+        if (!editedToastShown.current) {
+            if (location.state?.created) {
+                toast.success("Kunstwerk succesvol toegevoegd!",
+                    {
+                        duration: 3000,
+                        position: "top-center",
+                    });
+            }
 
-    useEffect(() => {
-        if (location.state?.edited) {
-            toast.success("Kunstwerk succesvol aangepast!",
-                {
-                    duration: 3000,
-                    position: "top-center",
-                });
+            if (location.state?.edited) {
+                toast.success("Kunstwerk succesvol aangepast!",
+                    {
+                        duration: 3000,
+                        position: "top-center",
+                    });
+                navigate(location.pathname, {replace: true});
+            }
+
+            if (location.state?.created || location.state?.edited) {
+                editedToastShown.current = true;
+                navigate(location.pathname, {replace: true});
+            }
         }
-    }, [location.state]);
+    }, [location.state, location.pathname, navigate]);
 
     useEffect(() => {
         async function fetchArtwork() {
@@ -58,6 +66,14 @@ function Artwork() {
         fetchArtwork();
     }, [id]);
 
+    useEffect(() => {
+        if (artwork?.images?.length) {
+            setActiveImage(artwork.images[0]);
+        } else {
+            setActiveImage(null);
+        }
+    }, [artwork]);
+
     if (loading) {
         return (
             <Spinner size="default" text="Kunstwerk wordt geladen"/>
@@ -75,6 +91,7 @@ function Artwork() {
     const images = artwork.images || [];
 
     return (
+
         <div className="artwork-container">
             <Breadcrumbs lastLabel={artwork.title}/>
             <h2 className="artwork-details-title">{artwork.title}</h2>
@@ -83,7 +100,7 @@ function Artwork() {
                     {activeImage && (
                         <div className="main-image-wrapper">
                             <img
-                                src={`http://localhost:8080/images/${activeImage}`}
+                                src={`http://localhost:8080/uploads/${activeImage}`}
                                 alt={artwork.title}
                                 className="main-image"
                             />
@@ -93,12 +110,12 @@ function Artwork() {
                         <div className="thumbnail-wrapper">
                             {images.map((img, index) => (
                                 <button
-                                    key={index}
+                                    key={img}
                                     className="thumbnail-button"
                                     onClick={() => setActiveImage(img)}
                                 >
                                     <img
-                                        src={`http://localhost:8080/images/${img}`}
+                                        src={`http://localhost:8080/uploads/${img}`}
                                         alt={`Afbeelding ${index + 1}`}
                                         className="thumbnail-image"
                                     />
@@ -113,7 +130,7 @@ function Artwork() {
                     </Link>
                     <div className="price-availability-wrapper">
                         <p>Prijs: €{artwork.price}</p>
-                        <p className="availability-tag">{artwork.availability}</p>
+                        <p className="availability-tag">{artwork.availabilityLabel}</p>
                     </div>
                     <div>
                         <div className="sizes-wrapper">

@@ -38,7 +38,7 @@ function HighlightSection({title, items, loading}) {
                     const imageUrl = item.isPlaceholder
                         ? defaultImage
                         : item.images?.[0]
-                            ? `http://localhost:8080/images/${item.images[0]}`
+                            ? `http://localhost:8080/uploads/${item.images[0]}`
                             : defaultImage;
 
                     return (

@@ -55,7 +55,7 @@ function UserVisitor({id}) {
     } = useChangeProfilePicture(
         id,
         visitor
-            ? `http://localhost:8080/images/${visitor.profilePicture}`
+            ? `http://localhost:8080/uploads/${visitor.profilePicture}`
             : null
     );
 
