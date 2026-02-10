@@ -1,15 +1,17 @@
 package nl.novi.endassignment.pocbackend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Entity
@@ -32,21 +34,23 @@ public class Artwork {
     @Column(name = "image")
     private List<String> images = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "artworks_genres",
             joinColumns = @JoinColumn(name = "artwork_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    List<Genre> genres;
+    private Set<Genre> genres = new HashSet<>();
 
     private BigDecimal price;
 
     @Enumerated(EnumType.STRING)
     private AvailabilityType availability;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id")
+    @JsonIgnore
+    @ToString.Exclude
     private Artist artist;
 
     private int widthInCm;
@@ -54,7 +58,7 @@ public class Artwork {
     private int heightInCm;
 
     @ManyToMany(mappedBy = "favorites")
-    private List<Visitor> favoriteOf;
+    private List<Visitor> favoriteOf = new ArrayList<>();
 
     // Domain constructor
     public Artwork(String title, BigDecimal price, AvailabilityType availability, Artist artist, int widthInCm, int lengthInCm, int heightInCm) {
@@ -66,7 +70,7 @@ public class Artwork {
         this.lengthInCm = lengthInCm;
         this.heightInCm = heightInCm;
         this.images = new ArrayList<>();
-        this.genres = new ArrayList<>();
+        this.genres = new HashSet<>();
         this.favoriteOf = new ArrayList<>();
     }
 }

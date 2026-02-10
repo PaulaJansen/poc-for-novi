@@ -7,18 +7,17 @@ import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtistMapper;
 import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.RoleType;
-import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.RoleRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ArtistService {
@@ -28,13 +27,15 @@ public class ArtistService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final Path uploadDirectory;
+    private final FileStorageService fileStorageService;
 
-    public ArtistService(ArtistRepository artistRepository, ArtistMapper artistMapper, RoleRepository roleRepository, PasswordEncoder passwordEncoder, Path uploadDirectory) {
+    public ArtistService(ArtistRepository artistRepository, ArtistMapper artistMapper, RoleRepository roleRepository, PasswordEncoder passwordEncoder, Path uploadDirectory, FileStorageService fileStorageService) {
         this.artistRepository = artistRepository;
         this.artistMapper = artistMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.uploadDirectory = uploadDirectory;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<ArtistResponseDto> getAllArtists() {
@@ -73,13 +74,8 @@ public class ArtistService {
         }
 
         if (artistInputDto.getProfilePictureFile() != null && !artistInputDto.getProfilePictureFile().isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + artistInputDto.getProfilePictureFile().getOriginalFilename();
-
-            Path path = uploadDirectory.resolve(fileName);
-
-            artistInputDto.getProfilePictureFile().transferTo(path.toFile());
-
-            artist.setProfilePicture(fileName);
+            String relativePath = fileStorageService.saveFile(artistInputDto.getProfilePictureFile(), "profile");
+            artist.setProfilePicture(relativePath);
         }
 
         Artist savedArtist = artistRepository.save(artist);
@@ -93,7 +89,7 @@ public class ArtistService {
 
     @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
-    public ArtistResponseDto updateArtist(long id, ArtistInputDto artistInputDto) {
+    public ArtistResponseDto updateArtistInfo(long id, ArtistInputDto artistInputDto) throws IOException {
         Artist existingArtist = artistRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
 
@@ -101,12 +97,35 @@ public class ArtistService {
         if (artistInputDto.getLastName() != null) existingArtist.setLastName(artistInputDto.getLastName());
         if (artistInputDto.getEmail() != null) existingArtist.setEmail(artistInputDto.getEmail());
         if (artistInputDto.getUsername() != null) existingArtist.setUsername(artistInputDto.getUsername());
-        if (artistInputDto.getProfilePicture() != null) existingArtist.setProfilePicture(artistInputDto.getProfilePicture());
         if (artistInputDto.getCity() != null) existingArtist.setCity(artistInputDto.getCity());
         if (artistInputDto.getTypeOfArt() != null) existingArtist.setTypeOfArt(artistInputDto.getTypeOfArt());
         if (artistInputDto.getBiography() != null) existingArtist.setBiography(artistInputDto.getBiography());
 
-        return artistMapper.toDto(artistRepository.save(existingArtist));
+        Artist savedArtist = artistRepository.save(existingArtist);
+
+        return artistMapper.toDto(savedArtist);
+    }
+
+    @PreAuthorize("@artistSecurity.isOwner(#id)")
+    @Transactional
+    public ArtistResponseDto updateArtistProfilePicture(long id, MultipartFile profilePicture) throws IOException {
+       Artist existingArtist = artistRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
+
+        if (existingArtist.getProfilePicture() != null) {
+            fileStorageService.deleteFile(existingArtist.getProfilePicture());
+        }
+
+        String relativePath = fileStorageService.saveFile(profilePicture, "profile");
+        existingArtist.setProfilePicture(relativePath);
+
+        Artist savedArtist = artistRepository.save(existingArtist);
+        ArtistResponseDto artistResponseDto = artistMapper.toDto(savedArtist);
+        if (savedArtist.getProfilePicture() != null) {
+            artistResponseDto.setProfilePicture("/uploads/" + savedArtist.getProfilePicture());
+        }
+
+        return artistResponseDto;
     }
 
     @PreAuthorize("@artistSecurity.isOwner(#id)")

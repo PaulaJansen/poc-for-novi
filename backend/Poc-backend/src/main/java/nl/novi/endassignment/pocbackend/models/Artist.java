@@ -1,14 +1,15 @@
 package nl.novi.endassignment.pocbackend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Entity
 @Table(name = "artists")
@@ -23,8 +24,11 @@ public class Artist extends User {
     @Column(columnDefinition = "TEXT")
     private String biography;
 
-    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Artwork> portfolio;
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Artwork> portfolio = new ArrayList<>();
 
     // Domain constructor
     public Artist(String username, String email, String password, String firstName, String lastName, String city, String typeOfArt, String biography) {

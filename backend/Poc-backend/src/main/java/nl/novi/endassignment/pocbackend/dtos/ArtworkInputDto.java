@@ -20,17 +20,16 @@ public class ArtworkInputDto {
     @NotBlank(message = "Vul een titel in")
     private String title;
 
-    @NotEmpty(message = "Voeg tenminste 1 afbeelding toe")
-    private List<MultipartFile> images;
-
-    private List<String> removeImages;
+    @NotEmpty(message = "Voeg tenminste 1 afbeelding toe!")
+    private List<MultipartFile> images = new ArrayList<>();
 
     @NotEmpty(message = "Voeg tenminste 1 genre toe; voeg tenminste het type kunst toe!")
-    private List<String> genreNames;
+    private List<String> genreNames = new ArrayList<>();
 
     @NotNull(message = "Vul een prijs in")
     private BigDecimal price;
 
+    @NotNull
     private String availability;
 
     private int widthInCm;
