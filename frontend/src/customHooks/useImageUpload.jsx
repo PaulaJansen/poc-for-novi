@@ -1,57 +1,78 @@
-import { useEffect, useState } from "react";
+import {useState} from "react";
+import {v4 as uuidv4} from "uuid";
 
-export default function useImageUpload({ setValue, maxImages = 8, initialImages = [] }) {
-    const [images, setImages] = useState(  initialImages.map(img => ({
-            file: img.file || null,
-            url: img.url || img
-        }))
-    );
+export default function useImageUpload({maxImages = 8}) {
 
+    const [images, setImages] = useState([]);
     const [dragIndex, setDragIndex] = useState(null);
 
-    useEffect(() => {
-        return () => {
-            images.forEach(img => {
-                if (img.file) URL.revokeObjectURL(img.file);
-            });
-        };
-    }, [images]);
-
-    function updateImages(updater) {
-        setImages(prev => {
-            const updated = updater([...prev]);
-            setValue("images", updated);
-            return updated;
-        });
+    function setInitialImages(items) {
+        setImages(
+            items.map((item, index) => {
+                if (typeof item === "string") {
+                    return {
+                        id: `db-${index}`,
+                        file: null,
+                        url: item.startsWith("http") ? item : `http://localhost:8080/uploads/${item}`,
+                        removed: false,
+                        dbPath: item
+                    };
+                } else {
+                    return {
+                        id: item.id || `db-${index}`,
+                        file: item.file || null,
+                        url:
+                            item.url?.startsWith("http") ||
+                            item.dbPath?.startsWith("https")
+                                ? item.url || item.dbPath
+                                : `http://localhost:8080/uploads/${item.url || item.dbPath}`,
+                        removed: item.removed || false,
+                        dbPath: item.dbPath || item.url,
+                    };
+                }
+            })
+        );
     }
 
     function addImages(files) {
-        updateImages(prev => [...prev, ...files].slice(0, maxImages));
+        const newImages = Array.from(files)
+            .filter(f => f.type.startsWith("image/"))
+            .map(file => ({
+                id: uuidv4(),
+                file,
+                url: null,
+                removed: false,
+                dbPath: null,
+            }));
+
+        setImages(prev => [...prev, ...newImages].slice(0, maxImages));
     }
 
-    function removeImage(index) {
-        updateImages(prev => prev.filter((_, i) => i !== index));
+    function removeImage(id) {
+        setImages((prev) =>
+            prev.map((img) => img.id === id ? {...img, removed: true} : img)
+        );
     }
 
-    function moveImages(from, to) {
-        if (from === to) return;
+    function handleDragStart(id) {
+        setDragIndex(id);
+    }
 
-        updateImages(prev => {
-            const item = prev[from];
-            prev.splice(from, 1);
-            prev.splice(to, 0, item);
-            return prev;
+    function handleDragEnter(overId) {
+        if (dragIndex === null || dragIndex === overId) return;
+        setImages(prev => {
+            const from = prev.findIndex(img => img.id === dragIndex);
+            const to = prev.findIndex(img => img.id === overId);
+
+            if (from === -1 || to === -1) return prev;
+
+            const copy = [...prev];
+            const [moved] = copy.splice(from, 1);
+            copy.splice(to, 0, moved);
+            return copy;
         });
-    }
 
-    function handleDragStart(index) {
-        setDragIndex(index);
-    }
-
-    function handleDragEnter(targetIndex) {
-        if (dragIndex === null || dragIndex === targetIndex) return;
-        moveImages(dragIndex, targetIndex);
-        setDragIndex(targetIndex);
+        setDragIndex(overId);
     }
 
     function handleDragEnd() {
@@ -59,9 +80,7 @@ export default function useImageUpload({ setValue, maxImages = 8, initialImages 
     }
 
     function handleFileInput(files) {
-        const newFiles = Array.from(files).map(f => ({ file: f, url: null }));
-        const filteredFiles = newFiles.filter(img => img.file?.type.startsWith("image/"));
-        addImages(filteredFiles);
+        addImages(files);
     }
 
     function handleDrop(e) {
@@ -74,8 +93,9 @@ export default function useImageUpload({ setValue, maxImages = 8, initialImages 
     }
 
     return {
-        images,
-        setImages,
+        images: images.filter((img) => !img.removed),
+        rawImages: images,
+        setInitialImages,
         handleFileInput,
         handleDrop,
         handleDragOver,

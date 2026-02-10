@@ -1,0 +1,27 @@
+.navbar-profile-container {
+    position: relative;
+}
+
+.navbar-profile-icon {
+    cursor: pointer;
+}
+
+.navbar-profile-options {
+    position: absolute;
+    left: -0.5rem;
+    bottom: 2.8rem;
+    border-radius: 5%;
+    list-style-type: none;
+    background-color: var(--color-primary);
+    padding: 0.5rem 1rem;
+}
+
+.navbar-profile-item {
+    font-weight: 500;
+    color: var(--color-white);
+    cursor: pointer;
+}
+
+.navbar-profile-item:hover {
+    color: var(--color-text);
+ }

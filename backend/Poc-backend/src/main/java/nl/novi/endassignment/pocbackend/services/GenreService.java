@@ -42,4 +42,14 @@ public class GenreService {
                     return genreRepository.save(newGenre);
                 });
     }
+
+    @Transactional
+    public Genre findOrCreateByName(String name) {
+        return genreRepository.findByNameIgnoreCase(name)
+                .orElseGet(() -> {
+                    Genre genre = new Genre();
+                    genre.setName(name);
+                    return genreRepository.save(genre);
+                });
+    }
 }

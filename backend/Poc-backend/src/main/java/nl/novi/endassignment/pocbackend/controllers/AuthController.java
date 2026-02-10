@@ -1,6 +1,7 @@
 package nl.novi.endassignment.pocbackend.controllers;
 
 import nl.novi.endassignment.pocbackend.dtos.AuthDto;
+import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.repositories.UserRepository;
 import nl.novi.endassignment.pocbackend.security.JwtService;
 import org.springframework.http.HttpHeaders;
@@ -16,15 +17,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 public class AuthController {
 
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthenticationManager man, JwtService service) {
+    public AuthController(AuthenticationManager man, JwtService service, UserRepository userRepository) {
         this.authManager = man;
         this.jwtService = service;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/auth")
@@ -36,11 +41,14 @@ public class AuthController {
             Authentication auth = authManager.authenticate(up);
 
             UserDetails ud = (UserDetails) auth.getPrincipal();
-            String token = jwtService.generateToken(ud);
+            User user = userRepository.findByUsername(authDto.getUsername()).orElseThrow();
+            String token = jwtService.generateToken(ud, user.getId());
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                    .body("Token generated");
+            return ResponseEntity.ok(
+                    Map.of("token", token)
+                    );
+//                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+//                    .body("Token generated");
         }
         catch (AuthenticationException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);

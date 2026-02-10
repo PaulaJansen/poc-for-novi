@@ -1,8 +1,10 @@
 package nl.novi.endassignment.pocbackend.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtworkUpdateDto;
 import nl.novi.endassignment.pocbackend.services.ArtworkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -50,14 +53,21 @@ public class ArtworkController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @ModelAttribute ArtworkInputDto artworkInputDto) {
+    public ResponseEntity<ArtworkResponseDto> createArtwork(@Valid @ModelAttribute ArtworkInputDto artworkInputDto) throws IOException {
         ArtworkResponseDto newArtwork = artworkService.createArtwork(artworkInputDto);
         return new ResponseEntity<>(newArtwork, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArtworkResponseDto> updateArtwork(@PathVariable long id, @ModelAttribute ArtworkInputDto artworkInputDto) {
-        ArtworkResponseDto updatedArtwork = artworkService.updateArtwork(id, artworkInputDto);
+    public ResponseEntity<ArtworkResponseDto> updateArtwork(
+            @PathVariable long id,
+            @RequestPart("artwork") String artworkJson,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images
+    ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        ArtworkUpdateDto artworkUpdateDto = mapper.readValue(artworkJson, ArtworkUpdateDto.class);
+
+        ArtworkResponseDto updatedArtwork = artworkService.updateArtwork(id, artworkUpdateDto, images);
         return ResponseEntity.ok(updatedArtwork);
     }
 

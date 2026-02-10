@@ -1,13 +1,21 @@
 import "./ArtworkCard.css";
 import FavoriteButton from "../favoriteButton/FavoriteButton.jsx";
-import {useFavorites} from "../../context/FavoritesProvider.jsx";
 import {Link} from "react-router-dom";
 import editBrush from "../../assets/paint-brush-broad.svg";
+import {useContext} from "react";
+import {AuthContext} from "../../context/AuthContext.js";
+import {FavoritesContext} from "../../context/FavoritesContext.js";
 
-function ArtworkCard({id, title, image, alt, price, isPlaceholder, onEdit}) {
+function ArtworkCard({id, title, image, alt, price, isPlaceholder, onEdit, onToggleFavorite, isFavoriteProp}) {
 
-    const {favoriteIds, toggleFavorite} = useFavorites()
-    const isFavorite = favoriteIds.includes(id);
+    const {favoriteIds, toggleFavorite} = useContext(FavoritesContext);
+    const {auth} = useContext(AuthContext);
+
+    const isFavorite = typeof isFavoriteProp === "boolean"
+        ? isFavoriteProp
+        : favoriteIds.includes(Number(id));
+
+    const isVisitor = auth?.user?.roleNames?.includes("VISITOR");
 
     return (
         <Link to={`/artwork/${id}`} className="card-link">
@@ -15,10 +23,10 @@ function ArtworkCard({id, title, image, alt, price, isPlaceholder, onEdit}) {
                 <div className="card-image-wrapper">
                     <img className="card-image" src={image} alt={alt || "Geen afbeelding beschikbaar"}/>
                 </div>
-                {!isPlaceholder && !onEdit && (
+                {!isPlaceholder && !onEdit && isVisitor && (
                     <FavoriteButton
                         isFavorite={isFavorite}
-                        onToggle={() => toggleFavorite(id)}
+                        onToggle={onToggleFavorite ? onToggleFavorite : () => toggleFavorite(id)}
                     />
                 )}
                 <div className="card-text-wrapper">

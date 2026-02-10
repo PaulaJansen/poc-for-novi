@@ -1,7 +1,7 @@
 import './UserDashboard.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
 import profilePicture from "../../assets/user-switch.svg";
@@ -12,10 +12,8 @@ import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import {useForm} from "react-hook-form";
 
+function UserArtist({id}) {
 
-function UserArtist() {
-
-    const {id} = useParams();
     const {register, handleSubmit, reset} = useForm({
         shouldUnregister: false,
     });
@@ -77,16 +75,34 @@ function UserArtist() {
     } = useChangeProfilePicture(
         id,
         artist
-            ? `http://localhost:8080/images/${artist.profilePicture}`
+            ? `http://localhost:8080/uploads/${artist.profilePicture}`
             : null
     );
 
     async function handleFormSubmit(data) {
         try {
-            await axios.patch(`http://localhost:8080/artists/${id}`, data);
+            await axios.patch(`http://localhost:8080/artists/${id}`, data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
             console.log("Gegevens zijn opgeslagen!");
             setChangeProfile(false);
-        } catch (e) {
+
+            const artistResponse = await axios.get(
+                `http://localhost:8080/artists/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+
+            setArtist(artistResponse.data);
+        } catch
+            (e) {
             console.error(e);
             setError("Gegevens aanpassen niet gelukt");
         }
@@ -111,7 +127,7 @@ function UserArtist() {
             <section className="user-wrapper">
                 <div className="profile-picture">
                     <img className="user-image"
-                         src={preview || `http://localhost:8080/images/${artist.profilePicture}`}
+                         src={preview || `http://localhost:8080/uploads/${artist.profilePicture}`}
                          alt={artist.username}/>
                     <div className="image-change-wrapper" onClick={openFilePicker}>
                         <img src={profilePicture} alt="change-picture"/>
@@ -218,7 +234,7 @@ function UserArtist() {
 
                 {artworks.map(artwork => {
                     const imageUrl = artwork.images?.[0]
-                        ? `http://localhost:8080/images/${artwork.images[0]}`
+                        ? `http://localhost:8080/uploads/${artwork.images[0]}`
                         : defaultImage;
 
                     return (
@@ -230,35 +246,6 @@ function UserArtist() {
                             title={artwork.title}
                             price={artwork.price}
                             onEdit={(id) => navigate(`/edit-artwork/${id}`)}
-                        />
-                    );
-                })}
-            </section>
-            <section className="user-artworks-wrapper">
-                <h2 className="user-artworks-header">Favorieten</h2>
-
-                {artworksLoading && (
-                    <Spinner size="small" text="Favorieten laden..."/>
-                )}
-
-                {!artworksLoading && artworks.length === 0 && (
-                    <p className="artist-no-artworks">Je hebt nog geen favorieten</p>
-                )}
-
-                {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
-                {artworks.map(artwork => {
-                    const imageUrl = artwork.images?.[0]
-                        ? `http://localhost:8080/images/${artwork.images[0]}`
-                        : defaultImage;
-
-                    return (
-                        <ArtworkCard
-                            key={artwork.id}
-                            id={artwork.id}
-                            image={imageUrl}
-                            alt={artwork.title}
-                            title={artwork.title}
-                            price={artwork.price}
                         />
                     );
                 })}

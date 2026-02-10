@@ -5,6 +5,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtworkUpdateDto;
 import nl.novi.endassignment.pocbackend.dtos.GenreInputDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtworkMapper;
@@ -14,7 +15,7 @@ import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.models.Genre;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
-import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
+import nl.novi.endassignment.pocbackend.security.ownership.ArtworkSecurity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,10 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtworkService {
@@ -36,31 +38,26 @@ public class ArtworkService {
     private final ArtistRepository artistRepository;
     private final GenreService genreService;
     private final ArtworkMapper artworkMapper;
-    private final GenreRepository genreRepository;
     private final Path uploadDirectory;
+    private final FileStorageService fileStorageService;
+    private final ArtworkSecurity artworkSecurity;
 
-    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, GenreRepository genreRepository, Path uploadDirectory) {
+    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, Path uploadDirectory, FileStorageService fileStorageService, ArtworkSecurity artworkSecurity) {
         this.artworkRepository = artworkRepository;
         this.artistRepository = artistRepository;
         this.genreService = genreService;
         this.artworkMapper = artworkMapper;
-        this.genreRepository = genreRepository;
         this.uploadDirectory = uploadDirectory;
+        this.fileStorageService = fileStorageService;
+        this.artworkSecurity = artworkSecurity;
     }
 
     @Transactional
-    public ArtworkResponseDto createArtwork(ArtworkInputDto artworkInputDto) {
+    public ArtworkResponseDto createArtwork(ArtworkInputDto artworkInputDto) throws IOException {
         List<String> fileNames = new ArrayList<>();
 
         for (MultipartFile file : artworkInputDto.getImages()) {
-            try {
-                String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                Path filePath = uploadDirectory.resolve(filename);
-                Files.copy(file.getInputStream(), filePath);
-                fileNames.add(filename);
-            } catch (IOException e) {
-                throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
-            }
+            fileNames.add(fileStorageService.saveFile(file, "artworks"));
         }
 
         Artwork artwork = artworkMapper.toEntity(artworkInputDto, fileNames);
@@ -71,11 +68,11 @@ public class ArtworkService {
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar niet gevonden!"));
         artwork.setArtist(artist);
 
-        List<Genre> genres = artworkInputDto.getGenreNames()
+        Set<Genre> genres = artworkInputDto.getGenreNames()
                 .stream()
-                .map(GenreInputDto::new)
-                .map(genreService::findOrCreate)
-                .toList();
+                .map(String::trim)
+                .map(genreService::findOrCreateByName)
+                .collect(Collectors.toSet());
         artwork.setGenres(genres);
 
         artworkRepository.save(artwork);
@@ -192,7 +189,7 @@ public class ArtworkService {
 
     void deleteImageFile(String oldImage) {
         try {
-            deleteFile(oldImage);
+            fileStorageService.deleteFile(oldImage);
         } catch (IOException e) {
             System.err.println("Kon afbeelding niet verwijderen: " + oldImage);
         }
@@ -202,61 +199,61 @@ public class ArtworkService {
         Files.deleteIfExists(uploadDirectory.resolve(oldImage));
     }
 
-    @PreAuthorize("@artworkSecurity.isOwner(#id)")
     @Transactional
-    public ArtworkResponseDto updateArtwork(long id, ArtworkInputDto artworkInputDto) {
+    public ArtworkResponseDto updateArtwork(long id, ArtworkUpdateDto artworkUpdateDto, List<MultipartFile> images) throws IOException {
         Artwork existingArtwork = artworkRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstwerk niet gevonden"));
 
-        if (artworkInputDto.getTitle() != null) existingArtwork.setTitle(artworkInputDto.getTitle());
-
-        if (artworkInputDto.getRemoveImages() != null) {
-            for (String oldImage : artworkInputDto.getRemoveImages()) {
-                existingArtwork.getImages().remove(oldImage);
-                deleteImageFile(oldImage);
-            }
+        if (!artworkSecurity.isOwner(existingArtwork)) {
+            throw new AccessDeniedException("Je bent geen eigenaar van dit kunstwerk");
         }
 
-        if (artworkInputDto.getImages() != null && !artworkInputDto.getImages().isEmpty()) {
-            for (MultipartFile file : artworkInputDto.getImages()) {
-                try {
-                    String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                    Path filePath = uploadDirectory.resolve(filename);
-                    Files.copy(file.getInputStream(), filePath);
-                    existingArtwork.getImages().add(filename);
-                } catch (IOException e) {
-                    throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
+        if (artworkUpdateDto.getTitle() != null) existingArtwork.setTitle(artworkUpdateDto.getTitle());
+        if (artworkUpdateDto.getPrice() != null) existingArtwork.setPrice(artworkUpdateDto.getPrice());
+        if (artworkUpdateDto.getWidthInCm() != 0) existingArtwork.setWidthInCm(artworkUpdateDto.getWidthInCm());
+        if (artworkUpdateDto.getLengthInCm() != 0) existingArtwork.setLengthInCm(artworkUpdateDto.getLengthInCm());
+        if (artworkUpdateDto.getHeightInCm() != 0) existingArtwork.setHeightInCm(artworkUpdateDto.getHeightInCm());
+        if (artworkUpdateDto.getAvailability() != null)
+            existingArtwork.setAvailability(AvailabilityType.valueOf(artworkUpdateDto.getAvailability()));
+
+        if (artworkUpdateDto.getRemoveImages() != null) {
+            Iterator<String> iterator = existingArtwork.getImages().iterator();
+            while (iterator.hasNext()) {
+                String imgPath = iterator.next();
+                if (artworkUpdateDto.getRemoveImages().contains(imgPath)) {
+                    iterator.remove();
+                    deleteImageFile(imgPath);
                 }
             }
         }
 
-        if (artworkInputDto.getPrice() != null) existingArtwork.setPrice(artworkInputDto.getPrice());
-        if (artworkInputDto.getWidthInCm() != 0) existingArtwork.setWidthInCm(artworkInputDto.getWidthInCm());
-        if (artworkInputDto.getLengthInCm() != 0) existingArtwork.setLengthInCm(artworkInputDto.getLengthInCm());
-        if (artworkInputDto.getHeightInCm() != 0) existingArtwork.setHeightInCm(artworkInputDto.getHeightInCm());
-        if (artworkInputDto.getAvailability() != null)
-            existingArtwork.setAvailability(AvailabilityType.valueOf(artworkInputDto.getAvailability().toUpperCase()));
+        if (images != null) {
+            for (MultipartFile file : images) {
+                String path = fileStorageService.saveFile(file, "artworks");
+                existingArtwork.getImages().add(path);
+            }
+        }
+//
+//        if (artworkUpdateDto.getImages() != null && !artworkUpdateDto.getImages().isEmpty()) {
+//            for (MultipartFile file : artworkUpdateDto.getImages()) {
+//                String relativePath = fileStorageService.saveFile(file, "artworks");
+//                existingArtwork.getImages().add(relativePath);
+//            }
+//        }
 
-        if (artworkInputDto.getGenreNames() != null && !artworkInputDto.getGenreNames().isEmpty()) {
-            List<Genre> genres = artworkInputDto.getGenreNames()
+        if (artworkUpdateDto.getGenreNames() != null && !artworkUpdateDto.getGenreNames().isEmpty()) {
+            Set<Genre> genres = artworkUpdateDto.getGenreNames()
                     .stream()
                     .map(GenreInputDto::new)
                     .map(genreService::findOrCreate)
-                    .toList();
+                    .collect(Collectors.toSet());
             existingArtwork.getGenres().clear();
             existingArtwork.getGenres().addAll(genres);
         }
 
-        artworkRepository.save(existingArtwork);
+        Artwork updatedArtwork = artworkRepository.save(existingArtwork);
 
-        List<String> imageUrls = existingArtwork.getImages().stream()
-                .map(name -> "/uploads/" + name)
-                .toList();
-
-        ArtworkResponseDto artworkResponseDto = artworkMapper.toDto(existingArtwork);
-        artworkResponseDto.setImages(imageUrls);
-
-        return artworkResponseDto;
+        return artworkMapper.toDtoForEdit(updatedArtwork);
     }
 
     @PreAuthorize("@artworkSecurity.isOwner(#id)")

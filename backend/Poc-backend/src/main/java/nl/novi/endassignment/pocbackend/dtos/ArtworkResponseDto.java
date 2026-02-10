@@ -3,6 +3,9 @@ package nl.novi.endassignment.pocbackend.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.novi.endassignment.pocbackend.models.Artwork;
+import nl.novi.endassignment.pocbackend.models.AvailabilityType;
+import nl.novi.endassignment.pocbackend.models.Genre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,20 +22,10 @@ public class ArtworkResponseDto {
     private List<String> genreNames = new ArrayList<>();
     private BigDecimal price;
     private String availability;
+    private String availabilityLabel;
     private Long artistId;
     private String artistName;
     private int widthInCm;
     private int lengthInCm;
     private int heightInCm;
-
-    public ArtworkResponseDto(String title, BigDecimal price, String availability, Long artistId, String artistName, int widthInCm, int lengthInCm, int heightInCm) {
-        this.title = title;
-        this.price = price;
-        this.availability = availability;
-        this.artistId = artistId;
-        this.artistName = artistName;
-        this.widthInCm = widthInCm;
-        this.lengthInCm = lengthInCm;
-        this.heightInCm = heightInCm;
-    }
 }

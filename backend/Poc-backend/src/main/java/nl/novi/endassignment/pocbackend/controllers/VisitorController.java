@@ -48,7 +48,7 @@ public class VisitorController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<VisitorResponseDto> updateVisitor(@PathVariable long id, @ModelAttribute VisitorInputDto visitorInputDto) {
+    public ResponseEntity<VisitorResponseDto> updateVisitor(@PathVariable long id, @ModelAttribute VisitorInputDto visitorInputDto) throws IOException {
         VisitorResponseDto updatedVisitor = visitorService.updateVisitor(id, visitorInputDto);
         return ResponseEntity.ok(updatedVisitor);
     }

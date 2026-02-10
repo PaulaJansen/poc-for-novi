@@ -2,6 +2,7 @@ package nl.novi.endassignment.pocbackend.mappers;
 
 import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorResponseDto;
+import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.Visitor;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +27,10 @@ public class VisitorMapper {
         visitorResponseDto.setName(visitor.getName());
 
         if (visitor.getFavorites() != null) {
-            visitorResponseDto.setFavoritesTitles(
+            visitorResponseDto.setFavoritesIds(
                     visitor.getFavorites()
                             .stream()
-                            .map(artworkMapper::toTitle)
+                            .map(Artwork::getId)
                             .toList()
             );
         }

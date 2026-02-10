@@ -15,7 +15,7 @@ import java.util.List;
 public class VisitorResponseDto extends UserResponseDto {
 
     private String name;
-    private List<String> favoritesTitles = new ArrayList<>();
+    private List<Long> favoritesIds = new ArrayList<>();
 
     public VisitorResponseDto(String username, String email, String name) {
         super(username, email);

@@ -1,13 +1,16 @@
 import "./EditArtwork.css";
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import removeSquare from "../../assets/x-square-fill.svg";
+import placeholder from "../../assets/art-gallery.jpg";
 import Button from "../../components/button/Button.jsx";
 import useImageUpload from "../../customHooks/useImageUpload.jsx";
+import {AuthContext} from "../../context/AuthContext.js";
+import {toast} from "react-toastify";
 
 function EditArtwork() {
 
@@ -15,34 +18,43 @@ function EditArtwork() {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const {register, handleSubmit, reset, setValue} = useForm();
+    const {auth} = useContext(AuthContext);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [artwork, setArtwork] = useState(null);
 
-    const imageUpload = useImageUpload({
-        setValue,
-        maxImages: 8,
-        initialImages: []
-    });
+    const imageUpload = useImageUpload({maxImages: 8});
 
     const {
         images,
-        setImages,
+        rawImages,
+        removeImage,
         handleFileInput,
         handleDrop,
         handleDragOver,
-        removeImage,
         handleDragStart,
         handleDragEnter,
-        handleDragEnd
+        handleDragEnd,
+        setInitialImages
     } = imageUpload;
 
     useEffect(() => {
         async function fetchArtwork() {
+
+            if (!id) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const response = await axios.get(`http://localhost:8080/artworks/${id}`);
                 const data = response.data;
+
+                if (auth.user.id !== data.artistId) {
+                    toast.error("Je mag dit kunstwerk niet bewerken");
+                    navigate("/dashboard");
+                    return;
+                }
 
                 reset({
                     title: data.title,
@@ -51,16 +63,13 @@ function EditArtwork() {
                     widthInCm: data.widthInCm,
                     lengthInCm: data.lengthInCm,
                     heightInCm: data.heightInCm,
-                    genreNames: data.genreNames,
+                    genreNames: [...data.genreNames],
                 });
 
                 if (data.images?.length) {
-                    const prefillImages = data.images.map(url => ({ file: null, url }));
-                    imageUpload.setImages(prefillImages);
-                    setValue("images", prefillImages);
+                    setInitialImages(data.images);
                 }
 
-                setArtwork(data);
             } catch (e) {
                 console.error(e);
                 setError("Kunstwerk ophalen mislukt");
@@ -70,44 +79,61 @@ function EditArtwork() {
         }
 
         fetchArtwork();
-    }, []);
+    }, [auth.user.id, id, navigate, reset, setInitialImages]);
 
     async function handleFormSubmit(data) {
 
-        console.log("Form data:", data);
-        console.log("Hook images:", images);
         setLoading(true);
         try {
             const formData = new FormData();
-            formData.append("title", data.title);
-            formData.append("price", data.price);
-            formData.append("availability", data.availability);
 
-            data.genreNames?.forEach(g =>
-                formData.append("genreNames", g)
-            );
+            const artworkData = {
+                title: data.title,
+                price: data.price,
+                availability: data.availability,
+                genreNames: Array.isArray(data.genreNames)
+                    ? data.genreNames
+                    : data.genreNames
+                        ? data.genreNames.split(",").map(g => g.trim())
+                        : [],
+                widthInCm: data.widthInCm,
+                lengthInCm: data.lengthInCm,
+                heightInCm: data.heightInCm,
+                removeImages: rawImages
+                    .filter(img => img.removed && img.dbPath)
+                    .map(img => img.dbPath),
+            };
 
-            images.forEach(img => {
-                if (img.file) formData.append("images", img.file);
-            });
+            formData.append("artwork",
+                new Blob([JSON.stringify(artworkData)], {type: "application/json"}));
 
-            formData.append("widthInCm", data.widthInCm || 0);
-            formData.append("lengthInCm", data.lengthInCm || 0);
-            formData.append("heightInCm", data.heightInCm || 0);
+            rawImages
+                .filter(img => img.file && !img.removed)
+                .forEach(img => formData.append("images", img.file));
+
 
             await axios.patch(`http://localhost:8080/artworks/${id}`,
                 formData, {
-                    headers: {"Content-Type": "multipart/form-data"}
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
                 });
 
-            navigate(`/artwork/${id}`);
+            navigate(`/artwork/${id}`, {
+                state: {edited: true}
+            });
         } catch (e) {
             console.error(e);
             setError("Opslaan niet gelukt");
+            toast.error("Opslaan mislukt, probeer opnieuw!");
         } finally {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        console.log("RAW IMAGES STATE:", rawImages);
+    }, [rawImages]);
 
     if (loading) {
         return (
@@ -123,9 +149,11 @@ function EditArtwork() {
         );
     }
 
+    console.log("IMAGES STATE:", images);
+
     return (
         <div className="new-artwork-container">
-            <h2 className="new-artwork-header">Kunstwerk toevoegen</h2>
+            <h2 className="new-artwork-header">Kunstwerk bewerken</h2>
             <form className="new-artwork-form"
                   onSubmit={handleSubmit(handleFormSubmit)}
                   style={{opacity: loading ? 0.6 : 1}}
@@ -227,22 +255,33 @@ function EditArtwork() {
                             onChange={(e) => handleFileInput(e.target.files)}
                 />
                 <div className="image-preview-grid">
-                    {images.map((img, index) => (
-                        <div key={index}
+                    {images.length === 0 && <p>⚠️ Geen afbeeldingen toegevoegd</p>}
+                    {images.map((img) => (
+                        <div key={img.id}
                              className="image-preview-item"
                              draggable
-                             onDragStart={() => handleDragStart(index)}
-                             onDragEnter={() => handleDragEnter(index)}
+                             onDragStart={() => handleDragStart(img.id)}
+                             onDragEnter={() => handleDragEnter(img.id)}
                              onDragEnd={handleDragEnd}
                         >
                             <img className="image-preview"
-                                 src={img.file ? URL.createObjectURL(img.file) : `http://localhost:8080/images/${img.url}`}
+                                 src={
+                                     img.file
+                                         ? URL.createObjectURL(img.file)
+                                         : img.url
+
+                                 }
                                  alt="preview"
+                                 onError={(e) => {
+                                     e.target.src = placeholder
+                                 }}
                             />
                             <div className="remove-image">
                                 <img src={removeSquare}
-                                     alt="close form"
-                                     onClick={() => removeImage(index)}
+                                     alt="verwijder afbeelding"
+                                     onClick={() => {
+                                         removeImage(img.id);
+                                     }}
                                 />
                             </div>
                         </div>

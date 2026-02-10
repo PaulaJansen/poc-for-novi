@@ -1,31 +1,51 @@
 import './UserDashboard.css';
-import {useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
 import profilePicture from "../../assets/user-switch.svg";
 import closeSquare from "../../assets/x-square.svg";
+import defaultImage from "../../assets/art-gallery.jpg";
 import {useForm} from "react-hook-form";
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
+import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
+import {FavoritesContext} from "../../context/FavoritesContext.js";
 
-function UserVisitor() {
+function UserVisitor({id}) {
 
-    const {id} = useParams();
     const {register, handleSubmit, reset} = useForm();
 
+    const {setFavoriteIds, toggleFavorite} = useContext(FavoritesContext);
+
     const [visitor, setVisitor] = useState(null);
+    const [artworks, setArtworks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [changeProfile, setChangeProfile] = useState(false);
 
     useEffect(() => {
-        async function fetchVisitor() {
+        async function fetchVisitorAndFavorites() {
             try {
-                const response = await axios.get(`http://localhost:8080/visitors/${id}`);
-                console.log(response.data);
-                setVisitor(response.data);
+                const [visitorResponse, favoritesResponse] = await Promise.all([
+                    axios.get(`http://localhost:8080/visitors/${id}`),
+                    axios.get(`http://localhost:8080/visitors/${id}/favorites`)
+                ]);
+
+                const visitorData = visitorResponse.data;
+                const favoritesData = favoritesResponse.data;
+
+                setVisitor(visitorData);
+                setArtworks(favoritesData || []);
+
+                if (visitorData.favoritesIds) {
+                    setFavoriteIds(visitorData.favoritesIds.map(id => Number(id)));
+                }
+
+                reset({
+                    name: visitorData.name,
+                    email: visitorData.email,
+                });
             } catch (e) {
                 console.error(e);
                 setError("Gegevens ophalen mislukt");
@@ -34,17 +54,8 @@ function UserVisitor() {
             }
         }
 
-        fetchVisitor();
-    }, [id])
-
-    useEffect(() => {
-        if (visitor) {
-            reset({
-                name: visitor.name,
-                email: visitor.email,
-            });
-        }
-    }, [visitor, reset]);
+        fetchVisitorAndFavorites();
+    }, [id, reset, setFavoriteIds]);
 
     const {
         fileInputRef,
@@ -57,7 +68,7 @@ function UserVisitor() {
     } = useChangeProfilePicture(
         id,
         visitor
-            ? `http://localhost:8080/images/${visitor.profilePicture}`
+            ? `http://localhost:8080/uploads/${visitor.profilePicture}`
             : null
     );
 
@@ -70,6 +81,13 @@ function UserVisitor() {
             console.error(e);
             setError("Gegevens aanpassen niet gelukt");
         }
+    }
+
+    async function handleToggleFavorite(artworkId) {
+        await toggleFavorite(artworkId);
+        setArtworks(prev =>
+            prev.filter(artwork => artwork.id !== artworkId)
+        );
     }
 
     if (loading) {
@@ -91,10 +109,10 @@ function UserVisitor() {
             <section className="user-wrapper">
                 <div className="profile-picture">
                     <img className="user-image"
-                         src={preview || `http://localhost:8080/images/${visitor.profilePicture}`}
+                         src={preview || `http://localhost:8080/uploads/${visitor.profilePicture}`}
                          alt={visitor.username}/>
                     <div className="image-change-wrapper" onClick={openFilePicker}>
-                        <img src={profilePicture} alt="change-picture" />
+                        <img src={profilePicture} alt="change-picture"/>
                     </div>
                     <input
                         type="file"
@@ -153,30 +171,37 @@ function UserVisitor() {
                             </form>
                         </div>
                     </div>
-                )}
+                )
+
+
+                }
 
             </section>
-            {/*<section className="user-artworks-wrapper">*/}
-            {/*    <h2 className="user-artworks-header">Favorieten</h2>*/}
+            <section className="user-artworks-wrapper">
+                <h2 className="user-artworks-header">Favorieten</h2>
+                {artworks.length === 0 ? (
+                    <p>Je hebt nog geen favorieten ❤️</p>
+                ) : (
+                    artworks.map(artwork => {
+                        const imageUrl = artwork.images?.[0]
+                            ? `http://localhost:8080/uploads/${artwork.images[0]}`
+                            : defaultImage;
 
-            {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
-            {/*    {artworks.map(artwork => {*/}
-            {/*        const imageUrl = artwork.images?.[0]*/}
-            {/*            ? `http://localhost:8080/images/${artwork.images[0]}`*/}
-            {/*            : defaultImage;*/}
-
-            {/*        return (*/}
-            {/*            <ArtworkCard*/}
-            {/*                key={artwork.id}*/}
-            {/*                id={artwork.id}*/}
-            {/*                image={imageUrl}*/}
-            {/*                alt={artwork.title}*/}
-            {/*                title={artwork.title}*/}
-            {/*                price={artwork.price}*/}
-            {/*            />*/}
-            {/*        );*/}
-            {/*    })}*/}
-            {/*</section>*/}
+                        return (
+                            <ArtworkCard
+                                key={artwork.id}
+                                id={artwork.id}
+                                image={imageUrl}
+                                alt={artwork.title}
+                                title={artwork.title}
+                                price={artwork.price}
+                                onToggleFavorite={() => handleToggleFavorite(artwork.id)}
+                                isFavoriteProp={true}
+                            />
+                        );
+                    })
+                )}
+            </section>
         </div>
     )
 }
