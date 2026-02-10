@@ -87,8 +87,6 @@ SELECT 'Aphrodite', 399.00, 'AVAILABLE', id, 20, 20, 38 FROM artists WHERE first
 
 -- Joined table artwork_images
 INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/sunset1.jpg' FROM artworks a WHERE a.title='Zonsopgang bij de rivier';
-INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/sunset2.jpg' FROM artworks a WHERE a.title='Zonsopgang bij de rivier';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/sunset3.jpg' FROM artworks a WHERE a.title='Zonsopgang bij de rivier';
@@ -96,9 +94,13 @@ SELECT a.id, 'artworks/sunset3.jpg' FROM artworks a WHERE a.title='Zonsopgang bi
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/sundown1.jpg' FROM artworks a WHERE a.title='Zonsondergang blauw';
 INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/sundown2.jpg' FROM artworks a WHERE a.title='Zonsondergang blauw';
+SELECT a.id, 'artworks/sundown2.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
 INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/sundown3.jpg' FROM artworks a WHERE a.title='Zonsondergang blauw';
+SELECT a.id, 'artworks/sundown3.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/sundown4.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/sundown5.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
 
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/child1.jpg' FROM artworks a WHERE a.title='Kind';

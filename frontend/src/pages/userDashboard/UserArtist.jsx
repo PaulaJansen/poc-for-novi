@@ -1,5 +1,5 @@
 import './UserDashboard.css';
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
@@ -246,35 +246,6 @@ function UserArtist({id}) {
                             title={artwork.title}
                             price={artwork.price}
                             onEdit={(id) => navigate(`/edit-artwork/${id}`)}
-                        />
-                    );
-                })}
-            </section>
-            <section className="user-artworks-wrapper">
-                <h2 className="user-artworks-header">Favorieten</h2>
-
-                {artworksLoading && (
-                    <Spinner size="small" text="Favorieten laden..."/>
-                )}
-
-                {!artworksLoading && artworks.length === 0 && (
-                    <p className="artist-no-artworks">Je hebt nog geen favorieten</p>
-                )}
-
-                {/*AANPASSEN NAAR FAVORIETEN CONTEXT*/}
-                {artworks.map(artwork => {
-                    const imageUrl = artwork.images?.[0]
-                        ? `http://localhost:8080/uploads/${artwork.images[0]}`
-                        : defaultImage;
-
-                    return (
-                        <ArtworkCard
-                            key={artwork.id}
-                            id={artwork.id}
-                            image={imageUrl}
-                            alt={artwork.title}
-                            title={artwork.title}
-                            price={artwork.price}
                         />
                     );
                 })}
