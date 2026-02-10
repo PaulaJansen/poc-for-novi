@@ -1,14 +1,14 @@
 import "./ArtworkCard.css";
 import FavoriteButton from "../favoriteButton/FavoriteButton.jsx";
-import {useFavorites} from "../../customHooks/useFavorites.js";
 import {Link} from "react-router-dom";
 import editBrush from "../../assets/paint-brush-broad.svg";
 import {useContext} from "react";
 import {AuthContext} from "../../context/AuthContext.js";
+import {FavoritesContext} from "../../context/FavoritesContext.js";
 
 function ArtworkCard({id, title, image, alt, price, isPlaceholder, onEdit, onToggleFavorite, isFavoriteProp}) {
 
-    const {favoriteIds, toggleFavorite} = useFavorites()
+    const {favoriteIds, toggleFavorite} = useContext(FavoritesContext);
     const {auth} = useContext(AuthContext);
 
     const isFavorite = typeof isFavoriteProp === "boolean"

@@ -1,5 +1,5 @@
 import './UserDashboard.css';
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
@@ -9,14 +9,14 @@ import defaultImage from "../../assets/art-gallery.jpg";
 import {useForm} from "react-hook-form";
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
-import {useFavorites} from "../../customHooks/useFavorites.js";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
+import {FavoritesContext} from "../../context/FavoritesContext.js";
 
 function UserVisitor({id}) {
 
     const {register, handleSubmit, reset} = useForm();
 
-    const {setFavoriteIds, toggleFavorite} = useFavorites();
+    const {setFavoriteIds, toggleFavorite} = useContext(FavoritesContext);
 
     const [visitor, setVisitor] = useState(null);
     const [artworks, setArtworks] = useState([]);
