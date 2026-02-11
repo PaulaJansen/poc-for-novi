@@ -22,6 +22,12 @@ INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
 VALUES (3,'Claudia', 'Bos', 'Utrecht', 'Beeldhouwen',
         'Als beeldhouwer breng ik de wereld tot leven in marmer en zeepsteen.');
 
+INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
+VALUES (7, 'PaulaMarijke', 'paula@example.com', '$2a$10$Tl2hNeEKYNS5IDxqNs4fJ.yuN3zYgjN5UOXu.zaq5OyjwKANZrMrq', CURRENT_DATE, 'profile/paula.jpg');
+INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
+VALUES (7,'Paula', 'Jansen', 'Zwolle', 'Schilderijen',
+        'Wat maakt mijn schilderijen echt van mij? Je weet het wanneer je het ziet. In mijn abstracte werken vind iedereen zelf een stukje van zichzelf, en soms ook een stukje van mij. Emotie, dynamiek, licht en donker; langer kijken is altijd meer zien. ');
+
 -- Visitors
 INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
 VALUES (4, 'pietjelovesart', 'pietje@example.com', '$2a$10$IGvGc9xnZ38nYp/gJhFIF.wmIIirkFiKR6dA9cuW5GKNW4nxH1i4C', CURRENT_DATE, 'profile/pietje.jpg');
@@ -40,7 +46,7 @@ VALUES (6,'Jaap');
 
 -- Joined table user_role
 INSERT INTO user_role (user_id, role_id)
-SELECT id, (SELECT id FROM roles WHERE role_name='ARTIST') FROM users WHERE username IN ('henkie123','anne123','claudia123');
+SELECT id, (SELECT id FROM roles WHERE role_name='ARTIST') FROM users WHERE username IN ('henkie123','anne123','claudia123','PaulaMarijke');
 
 INSERT INTO user_role (user_id, role_id)
 SELECT id, (SELECT id FROM roles WHERE role_name='VISITOR') FROM users WHERE username IN ('pietjelovesart','artlover','jaapiejaap');
@@ -84,6 +90,17 @@ SELECT 'Gladiator', 349.00, 'AVAILABLE', id, 20, 20, 40 FROM artists WHERE first
 INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
 SELECT 'Aphrodite', 399.00, 'AVAILABLE', id, 20, 20, 38 FROM artists WHERE first_name='Claudia';
 
+INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
+SELECT 'No.1', 500.00, 'SOLD', id, 30, 40, 2 FROM artists WHERE first_name='Paula';
+
+INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
+SELECT 'No.2', 550.00, 'AVAILABLE', id, 40, 50, 2 FROM artists WHERE first_name='Paula';
+
+INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
+SELECT 'No.3', 450.00, 'SOLD', id, 35, 25, 2 FROM artists WHERE first_name='Paula';
+
+INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
+SELECT 'No.4', 450.00, 'SOLD', id, 35, 25, 2 FROM artists WHERE first_name='Paula';
 
 -- Joined table artwork_images
 INSERT INTO artwork_images (artwork_id, image)
@@ -146,6 +163,40 @@ SELECT a.id, 'artworks/marble2.jpg' FROM artworks a WHERE a.title='Aphrodite';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/marble3.jpg' FROM artworks a WHERE a.title='Aphrodite';
 
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no1-1.jpg' FROM artworks a WHERE a.title='No.1';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no1-2.jpg' FROM artworks a WHERE a.title='No.1';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no1-3.jpg' FROM artworks a WHERE a.title='No.1';
+
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no2-1.jpg' FROM artworks a WHERE a.title='No.2';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no2-2.jpg' FROM artworks a WHERE a.title='No.2';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no2-3.jpg' FROM artworks a WHERE a.title='No.2';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no2-4.jpg' FROM artworks a WHERE a.title='No.2';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no2-5.jpg' FROM artworks a WHERE a.title='No.2';
+
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no3-1.jpg' FROM artworks a WHERE a.title='No.3';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no3-2.jpg' FROM artworks a WHERE a.title='No.3';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no3-3.jpg' FROM artworks a WHERE a.title='No.3';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no3-4.jpg' FROM artworks a WHERE a.title='No.3';
+
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-1.jpg' FROM artworks a WHERE a.title='No.4';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-2.jpg' FROM artworks a WHERE a.title='No.4';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-3.jpg' FROM artworks a WHERE a.title='No.4';
+
 -- Joined table artworks_genres
 INSERT INTO artworks_genres (artwork_id, genre_id)
 SELECT a.id, g.id FROM artworks a, genres g
@@ -187,12 +238,28 @@ INSERT INTO artworks_genres (artwork_id, genre_id)
 SELECT a.id, g.id FROM artworks a, genres g
 WHERE a.title='Aphrodite' AND g.name IN ('Marmer','Klassiek','Beeld');
 
+INSERT INTO artworks_genres (artwork_id, genre_id)
+SELECT a.id, g.id FROM artworks a, genres g
+WHERE a.title='No.1' AND g.name IN ('Abstract','Olieverf','Schilderij');
+
+INSERT INTO artworks_genres (artwork_id, genre_id)
+SELECT a.id, g.id FROM artworks a, genres g
+WHERE a.title='No.2' AND g.name IN ('Abstract','Olieverf','Schilderij');
+
+INSERT INTO artworks_genres (artwork_id, genre_id)
+SELECT a.id, g.id FROM artworks a, genres g
+WHERE a.title='No.3' AND g.name IN ('Abstract','Olieverf','Schilderij');
+
+INSERT INTO artworks_genres (artwork_id, genre_id)
+SELECT a.id, g.id FROM artworks a, genres g
+WHERE a.title='No.4' AND g.name IN ('Abstract','Olieverf','Schilderij');
+
 -- Joined table visitor_favorites
 INSERT INTO visitor_favorites (visitor_id, artwork_id)
-SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Pietje' AND a.title IN ('Zonsopgang bij de rivier','Zonsondergang blauw');
+SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Pietje' AND a.title IN ('Zonsopgang bij de rivier','Zonsondergang blauw','No.1','No.2');
 
 INSERT INTO visitor_favorites (visitor_id, artwork_id)
-SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Susan' AND a.title IN ('Zonsondergang blauw','Kind','Vrouw rokend','Oude man','Mooie vrouw');
+SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Susan' AND a.title IN ('Zonsondergang blauw','Kind','Vrouw rokend','Oude man','Mooie vrouw','No.3','No.4');
 
 INSERT INTO visitor_favorites (visitor_id, artwork_id)
-SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Jaap' AND a.title IN ('Gladiator','Aphrodite');
+SELECT v.id, a.id FROM visitors v, artworks a WHERE v.name='Jaap' AND a.title IN ('Gladiator','Aphrodite','No.1','No.2','No.3','No.4');
