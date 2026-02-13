@@ -1,5 +1,5 @@
 .slider-wrapper {
-    width: 20rem;
+    max-width: 30rem;
 }
 
 .slider-wrapper > label {

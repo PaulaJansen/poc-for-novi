@@ -91,12 +91,11 @@ function Artwork() {
     const images = artwork.images || [];
 
     return (
-
         <div className="artwork-container">
             <Breadcrumbs lastLabel={artwork.title}/>
-            <h2 className="artwork-details-title">{artwork.title}</h2>
             <section className="artwork-details-wrapper">
                 <div className="artwork-gallery">
+                    <h2 className="artwork-details-title">{artwork.title}</h2>
                     {activeImage && (
                         <div className="main-image-wrapper">
                             <img

@@ -1,4 +1,4 @@
-import "./Login.css";
+import "../register/Register.css";
 import {useContext, useState} from "react";
 import {useForm} from "react-hook-form";
 import axios from "axios";

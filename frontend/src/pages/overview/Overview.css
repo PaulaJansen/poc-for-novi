@@ -23,9 +23,9 @@
 
 .filter-wrapper {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: flex-start;
-    gap: 6rem;
+    gap: 2rem;
     position: absolute;
     top: 110%;
     left: 0;
@@ -33,13 +33,20 @@
     background-color: var(--color-quaternary-trans);
     padding: 3rem;
     z-index: 1000;
+    flex-wrap: wrap;
 }
 
 .filters-left,
 .filters-right {
     display: flex;
     flex-direction: column;
+    max-width: 30rem;
     gap: 1.5rem;
+    flex: 1 1 30rem;
+}
+
+.filters-right button {
+    max-width: 30rem;
 }
 
 .overview-wrapper {

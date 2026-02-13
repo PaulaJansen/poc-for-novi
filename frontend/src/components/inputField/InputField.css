@@ -11,7 +11,7 @@
 
 .label-quinary {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
     gap: 0.25rem;
 }
@@ -66,7 +66,8 @@ input[type=password],
 input[type=number],
 input[type=file],
 textarea {
-    min-width: 30rem;
+    width: 100%;
+    max-width: 30rem;
     height: 2rem;
     box-sizing: border-box;
 }
