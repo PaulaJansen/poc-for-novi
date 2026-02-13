@@ -10,13 +10,29 @@ export default function FavoritesContextProvider({children}) {
     const {auth} = useContext(AuthContext);
 
     useEffect(() => {
-        if (!auth?.user) {
-            setFavoriteIds([]);
-            return;
+        async function loadFavorites() {
+            if (!auth?.user) {
+                setFavoriteIds([]);
+                return;
+            }
+
+            try {
+                const response = await axios.get(`http://localhost:8080/visitors/${auth.user.id}/favorites`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }
+                );
+
+                setFavoriteIds((response.data || []).map(id => Number(id)));
+            } catch (e) {
+                console.error(e);
+            }
         }
 
-        setFavoriteIds(auth.user.favoriteArtworkIds || []);
-    }, [auth]);
+        loadFavorites();
+    }, [auth?.user?.id]);
 
     async function toggleFavorite(artworkId) {
         if (!auth || !auth.user) {

@@ -27,6 +27,7 @@ function ArtworkCard({id, title, image, alt, price, isPlaceholder, onEdit, onTog
                     <FavoriteButton
                         isFavorite={isFavorite}
                         onToggle={onToggleFavorite ? onToggleFavorite : () => toggleFavorite(id)}
+                        favoriteClassName="favorite-artwork-card"
                     />
                 )}
                 <div className="card-text-wrapper">
