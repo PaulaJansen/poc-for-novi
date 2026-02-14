@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,6 +54,14 @@ public class ArtworkService {
     @Transactional
     public ArtworkResponseDto createArtwork(ArtworkInputDto artworkInputDto) throws IOException {
         List<String> fileNames = new ArrayList<>();
+
+        for (MultipartFile file : artworkInputDto.getImages()) {
+            try {
+                fileNames.add(fileStorageService.saveFile(file, "artworks"));
+            } catch (IOException e) {
+                throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
+            }
+        }
 
         for (MultipartFile file : artworkInputDto.getImages()) {
             fileNames.add(fileStorageService.saveFile(file, "artworks"));
@@ -195,10 +202,6 @@ public class ArtworkService {
         }
     }
 
-    void deleteFile(String oldImage) throws IOException {
-        Files.deleteIfExists(uploadDirectory.resolve(oldImage));
-    }
-
     @Transactional
     public ArtworkResponseDto updateArtwork(long id, ArtworkUpdateDto artworkUpdateDto, List<MultipartFile> images) throws IOException {
         Artwork existingArtwork = artworkRepository.findById(id)
@@ -210,9 +213,12 @@ public class ArtworkService {
 
         if (artworkUpdateDto.getTitle() != null) existingArtwork.setTitle(artworkUpdateDto.getTitle());
         if (artworkUpdateDto.getPrice() != null) existingArtwork.setPrice(artworkUpdateDto.getPrice());
-        if (artworkUpdateDto.getWidthInCm() != 0) existingArtwork.setWidthInCm(artworkUpdateDto.getWidthInCm());
-        if (artworkUpdateDto.getLengthInCm() != 0) existingArtwork.setLengthInCm(artworkUpdateDto.getLengthInCm());
-        if (artworkUpdateDto.getHeightInCm() != 0) existingArtwork.setHeightInCm(artworkUpdateDto.getHeightInCm());
+        if (artworkUpdateDto.getWidthInCm() != null && artworkUpdateDto.getWidthInCm() != 0)
+            existingArtwork.setWidthInCm(artworkUpdateDto.getWidthInCm());
+        if (artworkUpdateDto.getLengthInCm() != null && artworkUpdateDto.getLengthInCm() != 0)
+            existingArtwork.setLengthInCm(artworkUpdateDto.getLengthInCm());
+        if (artworkUpdateDto.getHeightInCm() != null && artworkUpdateDto.getHeightInCm() != 0)
+            existingArtwork.setHeightInCm(artworkUpdateDto.getHeightInCm());
         if (artworkUpdateDto.getAvailability() != null)
             existingArtwork.setAvailability(AvailabilityType.valueOf(artworkUpdateDto.getAvailability()));
 
@@ -229,17 +235,14 @@ public class ArtworkService {
 
         if (images != null) {
             for (MultipartFile file : images) {
-                String path = fileStorageService.saveFile(file, "artworks");
-                existingArtwork.getImages().add(path);
+                try {
+                    String path = fileStorageService.saveFile(file, "artworks");
+                    existingArtwork.getImages().add(path);
+                } catch (IOException e) {
+                    throw new RuntimeException("Kan bestand niet opslaan: " + file.getOriginalFilename(), e);
+                }
             }
         }
-//
-//        if (artworkUpdateDto.getImages() != null && !artworkUpdateDto.getImages().isEmpty()) {
-//            for (MultipartFile file : artworkUpdateDto.getImages()) {
-//                String relativePath = fileStorageService.saveFile(file, "artworks");
-//                existingArtwork.getImages().add(relativePath);
-//            }
-//        }
 
         if (artworkUpdateDto.getGenreNames() != null && !artworkUpdateDto.getGenreNames().isEmpty()) {
             Set<Genre> genres = artworkUpdateDto.getGenreNames()

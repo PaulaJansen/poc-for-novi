@@ -42,8 +42,6 @@ class ArtistControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        artistRepository.deleteAll();
-
         Artist artist = new Artist();
         artist.setUsername("johnnydoee");
         artist.setPassword("Password@123");

@@ -17,13 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VisitorService {
@@ -34,17 +31,15 @@ public class VisitorService {
     private final ArtworkRepository artworkRepository;
     private final ArtworkMapper artworkMapper;
     private final PasswordEncoder passwordEncoder;
-    private final Path uploadDirectory;
     private final FileStorageService fileStorageService;
 
-    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository, ArtworkMapper artworkMapper, PasswordEncoder passwordEncoder, Path uploadDirectory, FileStorageService fileStorageService) {
+    public VisitorService(VisitorRepository visitorRepository, VisitorMapper visitorMapper, RoleRepository roleRepository, ArtworkRepository artworkRepository, ArtworkMapper artworkMapper, PasswordEncoder passwordEncoder, FileStorageService fileStorageService) {
         this.visitorRepository = visitorRepository;
         this.visitorMapper = visitorMapper;
         this.roleRepository = roleRepository;
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
         this.passwordEncoder = passwordEncoder;
-        this.uploadDirectory = uploadDirectory;
         this.fileStorageService = fileStorageService;
     }
 
@@ -106,9 +101,13 @@ public class VisitorService {
         if (visitorInputDto.getEmail() != null) existingVisitor.setEmail(visitorInputDto.getEmail());
         if (visitorInputDto.getUsername() != null) existingVisitor.setUsername(visitorInputDto.getUsername());
 
-        if (visitorInputDto.getProfilePicture() != null && !visitorInputDto.getProfilePictureFile().isEmpty()) {
+        if (visitorInputDto.getProfilePictureFile() != null && !visitorInputDto.getProfilePictureFile().isEmpty()) {
             if (existingVisitor.getProfilePicture() != null) {
-                fileStorageService.deleteFile(existingVisitor.getProfilePicture());
+                try {
+                    fileStorageService.deleteFile(existingVisitor.getProfilePicture());
+                } catch (IOException e) {
+                    System.err.println("Kan oude profielfoto niet verwijderen: " + e.getMessage());
+                }
             }
 
             String relativePath = fileStorageService.saveFile(visitorInputDto.getProfilePictureFile(), "profile");

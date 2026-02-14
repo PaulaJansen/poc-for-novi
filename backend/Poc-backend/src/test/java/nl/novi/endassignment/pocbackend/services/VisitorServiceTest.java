@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +61,9 @@ class VisitorServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private FileStorageService fileStorageService;
+
     @InjectMocks
     VisitorService visitorService;
 
@@ -74,7 +79,7 @@ class VisitorServiceTest {
         visitor.setFavorites(new ArrayList<>());
         visitorInputDto = new VisitorInputDto();
         visitorDto = new VisitorResponseDto("John", "john@test.nl", "John Doe");
-        visitorService = new VisitorService(visitorRepository, visitorMapper, roleRepository, artworkRepository, artworkMapper, passwordEncoder, testUploadDirectory);
+        visitorService = new VisitorService(visitorRepository, visitorMapper, roleRepository, artworkRepository, artworkMapper, passwordEncoder, fileStorageService);
     }
 
     @AfterEach
@@ -177,15 +182,12 @@ class VisitorServiceTest {
         visitorInputDto.setProfilePictureFile(profilePicture);
         visitorInputDto.setName("John Doe");
 
-        Visitor savedVisitor = new Visitor("John", "john@test.nl", "encodedPassword", "John Doe");
-        savedVisitor.setRoles(new ArrayList<>());
-        savedVisitor.setProfilePicture("profilepicture.png");
-
         when(visitorMapper.toEntity(visitorInputDto)).thenReturn(visitor);
         when(passwordEncoder.encode("Password@123")).thenReturn("encodedPassword");
-        when(visitorRepository.save(visitor)).thenAnswer(invocation -> invocation.getArgument(0));
         when(roleRepository.findByRoleName(RoleType.VISITOR)).thenReturn(Optional.of(new Role(RoleType.VISITOR)));
-        when(visitorMapper.toDto(any(Visitor.class))).thenAnswer(invocation -> {
+        when(visitorRepository.save(visitor)).thenAnswer(invocation -> invocation.getArgument(0));
+        when(fileStorageService.saveFile(any(MultipartFile.class), eq("profile"))).thenReturn("profile.png");
+        when(visitorMapper.toDto(visitor)).thenAnswer(invocation -> {
             Visitor v = invocation.getArgument(0);
             VisitorResponseDto visitorResponseDto =
                     new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
@@ -201,16 +203,12 @@ class VisitorServiceTest {
         assertEquals("John Doe", result.getName());
         assertNotNull(result.getProfilePicture());
         assertTrue(result.getProfilePicture().startsWith("/uploads/"));
-
-        String fileName = result.getProfilePicture().replace("/uploads/", "");
-        Path savedFilePath = testUploadDirectory.resolve(fileName);
-        assertTrue(Files.exists(savedFilePath), "Profile picture should exist in test directory");
-
         assertFalse(visitor.getRoles().isEmpty());
         assertEquals(RoleType.VISITOR, visitor.getRoles().getFirst().getRoleName());
 
         verify(visitorRepository).save(visitor);
         verify(passwordEncoder).encode("Password@123");
+        verify(fileStorageService).saveFile(profilePicture, "profile");
     }
 
     @Test
@@ -368,20 +366,31 @@ class VisitorServiceTest {
         long visitorId = 1L;
 
         visitor.setProfilePicture("oldpicture.png");
-        Path oldFilePath = testUploadDirectory.resolve("oldpicture.png");
-        Files.writeString(oldFilePath, "dummy content");
+
+        MockMultipartFile newProfilePicture = new MockMultipartFile(
+                "profilePictureFile",
+                "newpicture.png",
+                "image/png",
+                "dummy content".getBytes()
+        );
 
         visitorInputDto.setUsername("Jane");
         visitorInputDto.setEmail("jane@test.nl");
         visitorInputDto.setName("Jane Doe");
+        visitorInputDto.setProfilePictureFile(newProfilePicture);
         visitorInputDto.setProfilePicture("newpicture.png");
 
         when(visitorRepository.findById(visitorId)).thenReturn(Optional.of(visitor));
         when(visitorRepository.save(visitor)).thenAnswer(invocation -> invocation.getArgument(0));
         when(visitorMapper.toDto(any(Visitor.class))).thenAnswer(invocation -> {
             Visitor v = invocation.getArgument(0);
-            return new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
+            VisitorResponseDto visitorResponseDto = new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
+            visitorResponseDto.setProfilePicture(v.getProfilePicture());
+            return visitorResponseDto;
         });
+
+        when(fileStorageService.saveFile(newProfilePicture, "profile")).thenReturn("newpicture.png");
+        doNothing().when(fileStorageService).deleteFile("oldpicture.png");
 
         VisitorResponseDto result = visitorService.updateVisitor(visitorId, visitorInputDto);
 
@@ -391,10 +400,10 @@ class VisitorServiceTest {
         assertEquals("Jane", result.getUsername());
         assertEquals("newpicture.png", visitor.getProfilePicture());
 
-        assertFalse(Files.exists(oldFilePath));
-
         verify(visitorRepository).save(visitor);
         verify(visitorMapper).toDto(visitor);
+        verify(fileStorageService).deleteFile("oldpicture.png");
+        verify(fileStorageService).saveFile(newProfilePicture, "profile");
     }
 
     @Test
@@ -409,47 +418,77 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should update visitor when no old profile picture exists")
-    public void test16() {
+    public void test16() throws IOException {
 
         visitor.setProfilePicture(null);
-        visitorInputDto.setProfilePicture("newpicture.png");
+
+        MockMultipartFile newProfilePicture = new MockMultipartFile(
+                "profilePictureFile",
+                "newpicture.png",
+                "image/png",
+                "dummy content".getBytes()
+        );
+        visitorInputDto.setProfilePictureFile(newProfilePicture);
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
         when(visitorRepository.save(visitor)).thenReturn(visitor);
-        when(visitorMapper.toDto(visitor)).thenReturn(visitorDto);
+        when(visitorMapper.toDto(any(Visitor.class))).thenAnswer(invocation -> {
+            Visitor v = invocation.getArgument(0);
+            VisitorResponseDto visitorResponseDto = new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
+            visitorResponseDto.setProfilePicture(v.getProfilePicture() != null ? "/uploads/" + v.getProfilePicture() : null);
+            return visitorResponseDto;
+        });
 
-        visitorService.updateVisitor(1L, visitorInputDto);
+        when(fileStorageService.saveFile(newProfilePicture, "profile")).thenReturn("newpicture.png");
 
+        VisitorResponseDto result = visitorService.updateVisitor(1L, visitorInputDto);
+
+        assertNotNull(result);
         assertEquals("newpicture.png", visitor.getProfilePicture());
+        assertEquals("/uploads/newpicture.png", result.getProfilePicture());
+
+        verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
+        verify(fileStorageService).saveFile(newProfilePicture, "profile");
     }
 
     @Test
     @DisplayName("Should handle exception when deleting old profile picture")
-    public void test17() {
+    public void test17() throws IOException {
 
         visitor.setProfilePicture("oldpicture.png");
-        visitorInputDto.setProfilePicture("newpicture.png");
+        MockMultipartFile newProfilePicture = new MockMultipartFile(
+                "profilePictureFile",
+                "newpicture.png",
+                "image/png",
+                "dummy content".getBytes()
+        );
+        visitorInputDto.setProfilePictureFile(newProfilePicture);
+
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
         when(visitorRepository.save(visitor)).thenReturn(visitor);
         when(visitorMapper.toDto(visitor)).thenReturn(visitorDto);
 
-        try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
-            filesMock.when(() -> Files.deleteIfExists(any(Path.class)))
-                    .thenThrow(new IOException("Test IO exception"));
+        when(fileStorageService.saveFile(newProfilePicture, "profile")).thenReturn("newpicture.png");
+        doThrow(new IOException("Test IO exception"))
+                .when(fileStorageService).deleteFile("oldpicture.png");
 
-            VisitorResponseDto result = visitorService.updateVisitor(1L, visitorInputDto);
+        VisitorResponseDto result = visitorService.updateVisitor(1L, visitorInputDto);
 
-            assertEquals("newpicture.png", visitor.getProfilePicture());
-            assertNotNull(result);
+        assertEquals("newpicture.png", visitor.getProfilePicture());
+        assertNotNull(result);
 
-            filesMock.verify(() -> Files.deleteIfExists(any(Path.class)));
-        }
+        verify(fileStorageService).deleteFile("oldpicture.png");
+        verify(fileStorageService).saveFile(newProfilePicture, "profile");
+        verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
     }
+
 
     @Test
     @DisplayName("Should update visitor without changing profile picture")
-    public void test18() {
+    public void test18() throws IOException {
 
         visitor.setProfilePicture("existingpicture.png");
         visitorInputDto.setUsername("Jane");
@@ -469,15 +508,96 @@ class VisitorServiceTest {
         VisitorResponseDto result = visitorService.updateVisitor(1L, visitorInputDto);
 
         assertEquals("existingpicture.png", visitor.getProfilePicture());
-        assertEquals("existingpicture.png", result.getProfilePicture());
+        assertEquals("/uploads/existingpicture.png", result.getProfilePicture());
         assertEquals("Jane", visitor.getUsername());
         assertEquals("Jane Doe", visitor.getName());
         assertEquals("jane@test.nl", result.getEmail());
+
+        verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
+    }
+
+    @Test
+    @DisplayName("Should update visitor without profile picture file")
+    void test19() throws IOException {
+
+        visitor.setProfilePicture("existing.png");
+        visitorInputDto.setProfilePictureFile(null);
+
+        when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
+        when(visitorRepository.save(visitor)).thenReturn(visitor);
+        when(visitorMapper.toDto(visitor)).thenReturn(visitorDto);
+
+        visitorService.updateVisitor(1L, visitorInputDto);
+
+        assertEquals("existing.png", visitor.getProfilePicture());
+        verify(fileStorageService, never()).saveFile(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should not update profile picture when file is empty")
+    void test20() throws IOException {
+
+        visitor.setProfilePicture("existing.png");
+
+        MockMultipartFile emptyFile = new MockMultipartFile(
+                "profilePictureFile",
+                "empty.png",
+                "image/png",
+                new byte[0]
+        );
+
+        visitorInputDto.setProfilePictureFile(emptyFile);
+
+        when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
+        when(visitorRepository.save(visitor)).thenReturn(visitor);
+        when(visitorMapper.toDto(visitor)).thenReturn(visitorDto);
+
+        visitorService.updateVisitor(1L, visitorInputDto);
+
+        assertEquals("existing.png", visitor.getProfilePicture());
+
+        verify(fileStorageService, never()).saveFile(any(), any());
+        verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
+    }
+
+    @Test
+    @DisplayName("Should not set profilePicture in DTO when savedVisitor profilePicture is null")
+    void test21() throws IOException {
+
+        long visitorId = 1L;
+
+        visitor.setProfilePicture(null);
+
+        visitorInputDto.setUsername("Jane");
+        visitorInputDto.setEmail("jane@test.nl");
+        visitorInputDto.setName("Jane Doe");
+
+        when(visitorRepository.findById(visitorId)).thenReturn(Optional.of(visitor));
+        when(visitorRepository.save(visitor)).thenReturn(visitor);
+        when(visitorMapper.toDto(visitor)).thenAnswer(invocation -> {
+            Visitor v = invocation.getArgument(0);
+            VisitorResponseDto visitorResponseDto = new VisitorResponseDto(
+                    v.getUsername(),
+                    v.getEmail(),
+                    v.getName()
+            );
+            visitorResponseDto.setProfilePicture(null);
+            return visitorResponseDto;
+        });
+
+        VisitorResponseDto result = visitorService.updateVisitor(visitorId, visitorInputDto);
+
+        assertNull(result.getProfilePicture());
+
+        verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
     }
 
     @Test
     @DisplayName("Should return all favorites for visitor")
-    public void test19() {
+    public void test22() {
 
         Artwork artwork1 = new Artwork();
         artwork1.setId(1L);
@@ -509,7 +629,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should return empty list when visitor has no favorites")
-    public void test20() {
+    public void test23() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
         when(artworkMapper.toDtoList(visitor.getFavorites())).thenReturn(List.of());
@@ -524,7 +644,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should throw exception when visitor not found")
-    public void test21() {
+    public void test24() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -537,7 +657,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should add artwork to favorites of visitor")
-    public void test22() {
+    public void test25() {
 
         long visitorId = 1L;
         long artworkId = 10L;
@@ -552,10 +672,10 @@ class VisitorServiceTest {
         when(visitorMapper.toDto(any(Visitor.class))).thenAnswer(invocation -> {
             Visitor v = invocation.getArgument(0);
             VisitorResponseDto visitorResponseDto = new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
-            visitorResponseDto.setFavoritesTitles(
+            visitorResponseDto.setFavoritesIds(
                     v.getFavorites()
                             .stream()
-                            .map(Artwork::getTitle)
+                            .map(Artwork::getId)
                             .toList()
             );
             return visitorResponseDto;
@@ -565,14 +685,14 @@ class VisitorServiceTest {
 
         assertEquals(1, visitor.getFavorites().size());
         assertTrue(visitor.getFavorites().contains(artwork));
-        assertEquals(List.of("The best artwork"), result.getFavoritesTitles());
+        assertEquals(List.of(artworkId), result.getFavoritesIds());
 
         verify(visitorRepository).save(visitor);
     }
 
     @Test
     @DisplayName("Should not add artwork to favorites if artwork is already in favorites")
-    public void test23() {
+    public void test26() {
 
         long visitorId = 1L;
         long artworkId = 10L;
@@ -597,7 +717,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should throw exception when adding favorite to non-existing visitor")
-    public void test24() {
+    public void test27() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -608,7 +728,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should throw exception when adding non-existing artwork to favorites")
-    public void test25() {
+    public void test28() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
         when(artworkRepository.findById(10L)).thenReturn(Optional.empty());
@@ -620,7 +740,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should remove artwork from favorites")
-    public void test26() {
+    public void test29() {
 
         long visitorId = 1L;
         long artworkId = 10L;
@@ -637,21 +757,26 @@ class VisitorServiceTest {
         when(visitorMapper.toDto(any(Visitor.class))).thenAnswer(invocation -> {
             Visitor v = invocation.getArgument(0);
             VisitorResponseDto visitorResponseDto = new VisitorResponseDto(v.getUsername(), v.getEmail(), v.getName());
-            visitorResponseDto.setFavoritesTitles(List.of());
+            List<Long> favoriteIds = v.getFavorites()
+                    .stream()
+                    .map(Artwork::getId)
+                    .toList();
+            visitorResponseDto.setFavoritesIds(favoriteIds);
             return visitorResponseDto;
         });
 
         VisitorResponseDto result = visitorService.removeFavorites(visitorId, artworkId);
 
         assertTrue(visitor.getFavorites().isEmpty());
-        assertTrue(result.getFavoritesTitles().isEmpty());
+        assertEquals(List.of(), result.getFavoritesIds());
 
         verify(visitorRepository).save(visitor);
+        verify(visitorMapper).toDto(visitor);
     }
 
     @Test
     @DisplayName("Should throw exception when removing favorite from non-existing visitor")
-    public void test27() {
+    public void test30() {
 
         long visitorId = 1L;
         long artworkId = 10L;
@@ -667,7 +792,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should throw exception when removing non-existing artwork from favorites")
-    public void test28() {
+    public void test31() {
 
         long visitorId = 1L;
         long artworkId = 10L;
@@ -684,7 +809,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should delete visitor")
-    public void test29() {
+    public void test32() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.of(visitor));
 
@@ -697,7 +822,7 @@ class VisitorServiceTest {
 
     @Test
     @DisplayName("Should throw exception when deleting non-existing visitor")
-    public void test30() {
+    public void test33() {
 
         when(visitorRepository.findById(1L)).thenReturn(Optional.empty());
 
