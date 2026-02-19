@@ -1,7 +1,7 @@
 import './NewArtwork.css';
 import axios from "axios";
 import {useForm} from "react-hook-form";
-import {useContext, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
 import removeSquare from "../../assets/x-square-fill.svg"
@@ -9,16 +9,12 @@ import useImageUpload from "../../customHooks/useImageUpload.jsx";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {AuthContext} from "../../context/AuthContext.js";
 
 function NewArtwork() {
 
     const {register, handleSubmit, setValue, clearErrors, formState: {errors}} = useForm();
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
-
-    // const { auth } = useContext(AuthContext);
-    // const artistId = auth.user.id;
 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-import "./EditArtwork.css";
+import "../newArtwork/NewArtwork.css";
 import {useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
@@ -131,10 +131,6 @@ function EditArtwork() {
         }
     }
 
-    useEffect(() => {
-        console.log("RAW IMAGES STATE:", rawImages);
-    }, [rawImages]);
-
     if (loading) {
         return (
             <Spinner size="default" text="Kunstwerk wordt geladen"/>
@@ -148,8 +144,6 @@ function EditArtwork() {
             </div>
         );
     }
-
-    console.log("IMAGES STATE:", images);
 
     return (
         <div className="new-artwork-container">

@@ -1,5 +1,5 @@
 import './UserDashboard.css';
-import {useContext, useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
@@ -107,33 +107,34 @@ function UserVisitor({id}) {
     return (
         <div className="user-container">
             <section className="user-wrapper">
-                <div className="profile-picture">
-                    <img className="user-image"
-                         src={preview || `http://localhost:8080/uploads/${visitor.profilePicture}`}
-                         alt={visitor.username}/>
-                    <div className="image-change-wrapper" onClick={openFilePicker}>
-                        <img src={profilePicture} alt="change-picture"/>
+                <div className="user-main-visitor">
+                    <div className="profile-picture">
+                        <img className="user-image"
+                             src={preview || `http://localhost:8080/uploads/${visitor.profilePicture}`}
+                             alt={visitor.username}/>
+                        <div className="image-change-wrapper" onClick={openFilePicker}>
+                            <img src={profilePicture} alt="change-picture"/>
+                        </div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={onFileChange}
+                            hidden
+                        />
+
+                        {file && (
+                            <button onClick={upload} disabled={uploadLoading}>
+                                {uploadLoading ? "Uploaden..." : "Opslaan"}
+                            </button>
+                        )}
                     </div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={onFileChange}
-                        hidden
-                    />
-
-                    {file && (
-                        <button onClick={upload} disabled={uploadLoading}>
-                            {uploadLoading ? "Uploaden..." : "Opslaan"}
-                        </button>
-                    )}
+                    <article className="user-details">
+                        <h2>{visitor.name}</h2>
+                        <h3>{visitor.username}</h3>
+                        <p>Hier sinds {visitor.dateOfRegistration}</p>
+                    </article>
                 </div>
-                <article className="user-details">
-                    <h2>{visitor.name}</h2>
-                    <h3>{visitor.username}</h3>
-                    <p>Hier sinds {visitor.dateOfRegistration}</p>
-                </article>
-
                 <aside className="user-sidebar">
                     <Button className="button-default button-tertiary"
                             type="button"
