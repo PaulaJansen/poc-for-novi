@@ -16,7 +16,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
 
 ## Benodigdheden
 ### Voor de backend
---------------------------------------------------
+...................................................
 * PostgreSQL
   * PostgreSQL is een databasemanagementsysteem om databases te creeëren en beheren.
   * Minimale versie: 14.20
@@ -34,7 +34,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * Minimale versie 11.80.0
 
 ### Voor de frontend
---------------------------------------------------
+...................................................
 * Node.js
   * Node.js is een runtime environment waarin JavaScript-applicaties kunnen draaien. 
   * Minimale versie: 22.15.0
@@ -111,7 +111,7 @@ Deze applicatie bestaat uit een frontend en een backend applicatie. De frontend 
 De tests in the API kunnen gedraaid worden met Maven. Ga hiervoor in de terminal naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) en gebruik het commando `mvn test`.
 
 ### Testgebruikers
---------------------------------------------------
+...................................................
 Bij het runnen van de API wordt ook standaarddata in dde database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
 * Henkie Jansen
   * Gebruikersnaam: henkie123
