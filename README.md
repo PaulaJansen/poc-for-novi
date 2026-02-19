@@ -1,11 +1,10 @@
 # A Lot Of Art
-***
+
 GitHub repository: https://github.com/PaulaJansen/poc-for-novi
 
 API Documentatie:
 
 ## Inhoudsopgave
-***
 * Inleiding
 * Benodigdheden
 * Projectstructuur
@@ -13,11 +12,9 @@ API Documentatie:
 * Testing
 
 ## Inleiding
-***
 De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framework. De frontend applicatie is gebouwd met React. ALOA is een gemakkelijke etalage voor kunstenaars om hun werken de wereld in te sturen en een winkel voor bezoekers die geïnteresseerd zijn in toegankelijke kunst. Zij kunnen hier zoeken naar werk dat het aanspreekt en dit uiteindelijk ook kopen en/of huren. 
 
 ## Benodigdheden
-***
 ### Voor de backend
 ***
 * PostgreSQL
@@ -52,11 +49,9 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * Minimale versie: 19.1.16
 
 ## Projectstructuur
-***
 Deze applicatie bestaat uit een frontend en een backend applicatie. De frontend is geschreven in JavaScript en gebouwd met de JavaScript library React. De backend  is geschreven in Java en gebouwd met het Spring Framework.
 
 ## Project starten
-***
 1. Clone bovenstaande GitHub-repository naar je eigen systeem.
 2. Installeer PostgreSQL als je dit nog niet eerder hebt gedaan:
    * https://www.postgresql.org/download/
@@ -113,11 +108,9 @@ Deze applicatie bestaat uit een frontend en een backend applicatie. De frontend 
     * Als de regel  `➜  Local:   http://localhost:5173/` verschijnt, dan is de applicatie succesvol gestart. Voer het adres in in de browser of klik hem aan vanuit de terminal om de applicatie te openen in de browser. 
 
 ## Testing
-***
 De tests in the API kunnen gedraaid worden met Maven. Ga hiervoor in de terminal naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) en gebruik het commando `mvn test`.
 
 ### Testgebruikers
-***
 Bij het runnen van de API wordt ook standaarddata in dde database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
 * Henkie Jansen
   * Gebruikersnaam: henkie123
