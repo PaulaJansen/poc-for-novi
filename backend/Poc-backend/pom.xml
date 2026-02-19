@@ -10,7 +10,7 @@
     </parent>
     <groupId>nl.novi.endassignment</groupId>
     <artifactId>Poc-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Poc-backend</name>
     <description>Poc-backend</description>
     <url/>
