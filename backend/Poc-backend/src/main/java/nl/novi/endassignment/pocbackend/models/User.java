@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -48,6 +47,10 @@ public abstract class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "notification_settings_id", referencedColumnName = "id")
+    private NotificationSettings notificationSettings;
 
     // Domain constructor
     public User(String username, String email, String password) {
