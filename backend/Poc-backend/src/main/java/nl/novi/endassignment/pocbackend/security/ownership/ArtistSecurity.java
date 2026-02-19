@@ -4,7 +4,7 @@ import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("artistSecurity")
 public class ArtistSecurity {
 
     private final ArtistRepository artistRepository;

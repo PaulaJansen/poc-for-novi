@@ -6,19 +6,23 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class FileStorageService {
 
-    private final Path uploadDirectory = Paths.get("uploads");
+    private final Path uploadDirectory;
+
+    public FileStorageService(Path uploadDirectory) {
+        this.uploadDirectory = uploadDirectory;
+    }
 
     public String saveFile(MultipartFile file, String subfolder) throws IOException {
         Path folderPath = uploadDirectory.resolve(subfolder);
         Files.createDirectories(folderPath);
 
-        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = folderPath.resolve(filename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
