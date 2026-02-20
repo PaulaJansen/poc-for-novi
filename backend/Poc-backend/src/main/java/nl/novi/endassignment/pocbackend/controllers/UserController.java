@@ -40,4 +40,10 @@ public class UserController {
         UserResponseDto user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable long id) {
+        String message = userService.deleteUser(id);
+        return ResponseEntity.ok(message);
+    }
 }

@@ -1,11 +1,14 @@
 package nl.novi.endassignment.pocbackend.services;
 
+import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.UserResponseDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.exceptions.UsernameNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.UserMapper;
 import nl.novi.endassignment.pocbackend.models.User;
+import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,5 +44,15 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RecordNotFoundException("Gebruiker met e-mailadres " + email + " niet gevonden!"));
         return userMapper.toDto(user);
+    }
+
+    @PreAuthorize("@userSecurity.isOwner(#id)")
+    @Transactional
+    public String deleteUser(long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("Gebruiker met id " + id + " niet gevonden!"));
+
+        userRepository.delete(existingUser);
+        return ("Gebruiker met id " + id + " is verwijderd.");
     }
 }
