@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
 import nl.novi.endassignment.pocbackend.dtos.VisitorResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.VisitorUpdateDto;
 import nl.novi.endassignment.pocbackend.services.VisitorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,9 +49,15 @@ public class VisitorController {
         return new ResponseEntity<>(newVisitor, HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<VisitorResponseDto> updateVisitor(@PathVariable long id, @ModelAttribute VisitorInputDto visitorInputDto) throws IOException {
-        VisitorResponseDto updatedVisitor = visitorService.updateVisitor(id, visitorInputDto);
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<VisitorResponseDto> updateVisitor(@PathVariable long id, @RequestBody VisitorUpdateDto visitorUpdateDto) throws IOException {
+        VisitorResponseDto updatedVisitor = visitorService.updateVisitor(id, visitorUpdateDto);
+        return ResponseEntity.ok(updatedVisitor);
+    }
+
+    @PatchMapping(value = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<VisitorResponseDto> updateVisitorProfilePicture(@PathVariable long id, @RequestParam MultipartFile profilePicture) throws IOException {
+        VisitorResponseDto updatedVisitor = visitorService.updateVisitorProfilePicture(id, profilePicture);
         return ResponseEntity.ok(updatedVisitor);
     }
 

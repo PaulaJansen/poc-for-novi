@@ -1,10 +1,13 @@
 import './Artwork.css';
 import axios from "axios";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import Breadcrumbs from "../../components/breadCrumbs/BreadCrumbs.jsx";
 import {toast} from "react-toastify";
+import {FavoritesContext} from "../../context/FavoritesContext.js";
+import {AuthContext} from "../../context/AuthContext.js";
+import FavoriteButton from "../../components/favoriteButton/FavoriteButton.jsx";
 
 function Artwork() {
 
@@ -17,6 +20,13 @@ function Artwork() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(null);
+
+    const {favoriteIds, toggleFavorite} = useContext(FavoritesContext);
+    const {auth} = useContext(AuthContext);
+
+    const isVisitor = auth?.user?.roleNames?.includes("VISITOR");
+    const artworkId = Number(id);
+    const isFavorite = favoriteIds.includes(artworkId);
 
     useEffect(() => {
         if (!editedToastShown.current) {
@@ -91,12 +101,11 @@ function Artwork() {
     const images = artwork.images || [];
 
     return (
-
         <div className="artwork-container">
             <Breadcrumbs lastLabel={artwork.title}/>
-            <h2 className="artwork-details-title">{artwork.title}</h2>
             <section className="artwork-details-wrapper">
                 <div className="artwork-gallery">
+                    <h2 className="artwork-details-title">{artwork.title}</h2>
                     {activeImage && (
                         <div className="main-image-wrapper">
                             <img
@@ -104,6 +113,13 @@ function Artwork() {
                                 alt={artwork.title}
                                 className="main-image"
                             />
+                            {isVisitor && (
+                                <FavoriteButton
+                                    isFavorite={isFavorite}
+                                    onToggle={() => toggleFavorite(artworkId)}
+                                    favoriteClassName="favorite-artwork-page"
+                                />
+                            )}
                         </div>
                     )}
                     {images.length > 1 && (

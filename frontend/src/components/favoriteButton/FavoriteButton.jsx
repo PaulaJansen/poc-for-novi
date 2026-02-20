@@ -2,9 +2,9 @@ import "./FavoriteButton.css";
 import favorite from "../../assets/heart-fill.svg";
 import noFavorite from "../../assets/heart-duotone.svg";
 
-function FavoriteButton({isFavorite, onToggle}) {
+function FavoriteButton({isFavorite, onToggle, favoriteClassName}) {
     return (
-        <button className="favorite-button"
+        <button className={`favorite-button ${favoriteClassName}`}
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

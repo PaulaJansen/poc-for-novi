@@ -4,7 +4,7 @@ import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("visitorSecurity")
 public class VisitorSecurity {
 
     private final VisitorRepository visitorRepository;

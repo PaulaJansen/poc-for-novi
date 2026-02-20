@@ -3,6 +3,7 @@ package nl.novi.endassignment.pocbackend.controllers;
 import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtistUpdateDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.services.ArtistService;
 import nl.novi.endassignment.pocbackend.services.ArtworkService;
@@ -41,7 +42,9 @@ public class ArtistController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ArtistResponseDto>> getArtistByName(@RequestParam String firstName, String lastName) {
+    public ResponseEntity<List<ArtistResponseDto>> getArtistByName(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) {
         List<ArtistResponseDto> artist = artistService.getArtistByName(firstName, lastName);
         return ResponseEntity.ok(artist);
     }
@@ -59,8 +62,8 @@ public class ArtistController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ArtistResponseDto> updateArtistInfo(@PathVariable long id, @RequestBody ArtistInputDto artistInputDto) throws IOException {
-        ArtistResponseDto updatedArtist = artistService.updateArtistInfo(id, artistInputDto);
+    public ResponseEntity<ArtistResponseDto> updateArtistInfo(@PathVariable long id, @RequestBody ArtistUpdateDto artistUpdateDto) throws IOException {
+        ArtistResponseDto updatedArtist = artistService.updateArtistInfo(id, artistUpdateDto);
         return ResponseEntity.ok(updatedArtist);
     }
 

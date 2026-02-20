@@ -5,12 +5,13 @@
 .artist-wrapper {
     display: flex;
     justify-content: center;
-    gap: 12rem;
+    gap: 10%;
     margin: 4rem auto;
 }
 
 .artist-image {
     width: 20%;
+    min-width: 10rem;
     height: auto;
     object-fit: contain;
     border-radius: 5%;

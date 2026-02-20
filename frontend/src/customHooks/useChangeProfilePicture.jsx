@@ -2,7 +2,7 @@ import {useRef, useState} from "react";
 import axios from "axios";
 import {toast} from "react-toastify";
 
-export function useChangeProfilePicture(artistId, initialImage) {
+export function useChangeProfilePicture(entityType, entityId, initialImage) {
 
     const fileInputRef = useRef(null);
     const [file, setFile] = useState(null);
@@ -19,7 +19,10 @@ export function useChangeProfilePicture(artistId, initialImage) {
         if (!selectedFile) return;
 
         setFile(selectedFile);
-        setPreview(URL.createObjectURL(selectedFile));
+        const previewURL = URL.createObjectURL(selectedFile);
+        setPreview(previewURL);
+
+        return () => URL.revokeObjectURL(previewURL);
     };
 
     const upload = async () => {
@@ -29,11 +32,11 @@ export function useChangeProfilePicture(artistId, initialImage) {
         setError(null);
 
         const formData = new FormData();
-        formData.append("profilePictureFile", file);
+        formData.append("profilePicture", file);
 
         try {
             await axios.patch(
-                `http://localhost:8080/artists/${artistId}/profile-picture`,
+                `http://localhost:8080/${entityType}/${entityId}/profile-picture`,
                 formData,
                 {withCredentials: true}
             );

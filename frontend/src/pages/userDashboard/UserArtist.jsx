@@ -73,10 +73,9 @@ function UserArtist({id}) {
         onFileChange,
         upload,
     } = useChangeProfilePicture(
-        id,
-        artist
-            ? `http://localhost:8080/uploads/${artist.profilePicture}`
-            : null
+        "artists",
+        artist.id,
+        artist.profilePicture
     );
 
     async function handleFormSubmit(data) {
@@ -125,35 +124,37 @@ function UserArtist({id}) {
     return (
         <div className="user-container">
             <section className="user-wrapper">
-                <div className="profile-picture">
-                    <img className="user-image"
-                         src={preview || `http://localhost:8080/uploads/${artist.profilePicture}`}
-                         alt={artist.username}/>
-                    <div className="image-change-wrapper" onClick={openFilePicker}>
-                        <img src={profilePicture} alt="change-picture"/>
-                    </div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        onChange={onFileChange}
-                        hidden
-                    />
+                <div className="user-main">
+                    <div className="profile-picture">
+                        <img className="user-image"
+                             src={preview || `http://localhost:8080/uploads/${artist.profilePicture}`}
+                             alt={artist.username}/>
+                        <div className="image-change-wrapper" onClick={openFilePicker}>
+                            <img src={profilePicture} alt="change-picture"/>
+                        </div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={onFileChange}
+                            hidden
+                        />
 
-                    {file && (
-                        <button onClick={upload} disabled={uploadLoading}>
-                            {uploadLoading ? "Uploaden..." : "Opslaan"}
-                        </button>
-                    )}
+                        {file && (
+                            <button onClick={upload} disabled={uploadLoading}>
+                                {uploadLoading ? "Uploaden..." : "Opslaan"}
+                            </button>
+                        )}
+                    </div>
+                    <article className="user-details">
+                        <h2>{artist.firstName} {artist.lastName}</h2>
+                        <h3>{artist.username}</h3>
+                        <p className="art-tag">{artist.typeOfArt}</p>
+                        <p>{artist.city}</p>
+                        <p>Hier sinds {artist.dateOfRegistration}</p>
+                        <p>{artist.biography}</p>
+                    </article>
                 </div>
-                <article className="user-details">
-                    <h2>{artist.firstName} {artist.lastName}</h2>
-                    <h3>{artist.username}</h3>
-                    <p className="art-tag">{artist.typeOfArt}</p>
-                    <p>{artist.city}</p>
-                    <p>Hier sinds {artist.dateOfRegistration}</p>
-                    <p className="user-biography">{artist.biography}</p>
-                </article>
                 <aside className="user-sidebar">
                     <Button className="button-default button-tertiary"
                             type="button"
@@ -218,7 +219,6 @@ function UserArtist({id}) {
                         </div>
                     </div>
                 )}
-
             </section>
             <section className="user-artworks-wrapper">
                 <h2 className="user-artworks-header">Kunstwerken</h2>

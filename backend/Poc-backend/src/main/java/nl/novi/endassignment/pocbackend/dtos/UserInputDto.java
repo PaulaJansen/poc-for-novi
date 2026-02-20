@@ -29,8 +29,6 @@ public class UserInputDto {
             message = "Wachtwoord moet minstens één letter, één cijfer en één speciaal teken bevatten"
     )
     private String password;
-
     private String profilePicture;
-
     private MultipartFile profilePictureFile;
 }

@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkUpdateDto;
+import nl.novi.endassignment.pocbackend.models.AvailabilityType;
 import nl.novi.endassignment.pocbackend.services.ArtworkService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,7 +47,7 @@ public class ArtworkController {
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) List<String> genres,
-            @RequestParam(required = false) List<String> availabilities) {
+            @RequestParam(required = false) List<AvailabilityType> availabilities) {
 
         List<ArtworkResponseDto> artworks = artworkService.filterArtworks(title, artistFirstName, artistLastName, minPrice, maxPrice, genres, availabilities);
         return ResponseEntity.ok(artworks);

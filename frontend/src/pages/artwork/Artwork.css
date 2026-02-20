@@ -1,46 +1,56 @@
 .artwork-container {
     position: relative;
-}
-
-.artwork-details-title {
-    padding: 2rem 0 1rem 9rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
 }
 
 .artwork-details-wrapper {
     display: flex;
-    margin: 2rem 8rem;
-    gap: 6rem;
+    flex-wrap: wrap;
+    margin: 3rem 5rem;
+    padding: 2rem;
+    gap: 8%;
+    width: 100%;
 }
 
 .artwork-gallery {
-    width: 40vw;
-    height: 25rem;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2rem;
-}
-
-.main-image-wrapper {
-    width: 300%;
-    height: 100%;
-}
-
-.main-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 5%;
-
-}
-
-.thumbnail-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    flex: 0 0 auto;
+    gap: 2rem;
+    max-width: 20rem;
+    margin: 0 10%;
+}
+
+.main-image-wrapper {
+    width: 100%;
+    height: 20rem;
+    border-radius: 5%;
+    position: relative;
+    display: inline-block;
+}
+
+.main-image {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 5%;
+    display: block;
+}
+
+.favorite-artwork-page {
+    top: 0.5rem;
+    left: 0.5rem;
+}
+
+.thumbnail-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 0.5rem;
+    max-width: 20rem;
 }
 
 .thumbnail-wrapper button {
@@ -48,7 +58,8 @@
 }
 
 .thumbnail-image {
-    width: 40%;
+    width: 6rem;
+    height: 6rem;
     object-fit: cover;
     border-radius: 5%;
     cursor: pointer;
@@ -56,11 +67,15 @@
 }
 
 .artwork-details {
+    height: 35rem;
+    max-width: 35rem;
+    min-width: 20rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1rem;
+    justify-content: center;
+    gap: 2rem;
     font-size: 1rem;
+    flex: 1 1 auto;
 }
 
 .price-availability-wrapper {
