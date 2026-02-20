@@ -97,10 +97,14 @@ INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length
 SELECT 'No.2', 550.00, 'AVAILABLE', id, 40, 50, 2 FROM artists WHERE first_name='Paula';
 
 INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
-SELECT 'No.3', 450.00, 'SOLD', id, 35, 25, 2 FROM artists WHERE first_name='Paula';
+SELECT 'No.3', 450.00, 'AVAILABLE', id, 40, 30, 2 FROM artists WHERE first_name='Paula';
 
 INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
-SELECT 'No.4', 450.00, 'SOLD', id, 35, 25, 2 FROM artists WHERE first_name='Paula';
+SELECT 'No.4', 650.00, 'SOLD', id, 40, 80, 2 FROM artists WHERE first_name='Paula';
+
+INSERT INTO artworks (title, price, availability, artist_id, width_in_cm, length_in_cm, height_in_cm)
+SELECT 'No.5', 650.00, 'AVAILABLE', id, 40, 80, 2 FROM artists WHERE first_name='Paula';
+
 
 -- Joined table artwork_images
 INSERT INTO artwork_images (artwork_id, image)
@@ -169,6 +173,10 @@ INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no1-2.jpg' FROM artworks a WHERE a.title='No.1';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no1-3.jpg' FROM artworks a WHERE a.title='No.1';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no1-4.jpg' FROM artworks a WHERE a.title='No.1';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no1-5.jpg' FROM artworks a WHERE a.title='No.1';
 
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no2-1.jpg' FROM artworks a WHERE a.title='No.2';
@@ -176,10 +184,6 @@ INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no2-2.jpg' FROM artworks a WHERE a.title='No.2';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no2-3.jpg' FROM artworks a WHERE a.title='No.2';
-INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/no2-4.jpg' FROM artworks a WHERE a.title='No.2';
-INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/no2-5.jpg' FROM artworks a WHERE a.title='No.2';
 
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no3-1.jpg' FROM artworks a WHERE a.title='No.3';
@@ -196,6 +200,19 @@ INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no4-2.jpg' FROM artworks a WHERE a.title='No.4';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/no4-3.jpg' FROM artworks a WHERE a.title='No.4';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-4.jpg' FROM artworks a WHERE a.title='No.4';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-5.jpg' FROM artworks a WHERE a.title='No.4';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no4-6.jpg' FROM artworks a WHERE a.title='No.4';
+
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no5-1.jpg' FROM artworks a WHERE a.title='No.5';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no5-2.jpg' FROM artworks a WHERE a.title='No.5';
+INSERT INTO artwork_images (artwork_id, image)
+SELECT a.id, 'artworks/no5-3.jpg' FROM artworks a WHERE a.title='No.5';
 
 -- Joined table artworks_genres
 INSERT INTO artworks_genres (artwork_id, genre_id)
