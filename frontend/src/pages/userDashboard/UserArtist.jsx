@@ -73,10 +73,9 @@ function UserArtist({id}) {
         onFileChange,
         upload,
     } = useChangeProfilePicture(
-        id,
-        artist
-            ? `http://localhost:8080/uploads/${artist.profilePicture}`
-            : null
+        "artists",
+        artist.id,
+        artist.profilePicture
     );
 
     async function handleFormSubmit(data) {

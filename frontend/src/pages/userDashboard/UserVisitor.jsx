@@ -66,10 +66,9 @@ function UserVisitor({id}) {
         onFileChange,
         upload,
     } = useChangeProfilePicture(
-        id,
-        visitor
-            ? `http://localhost:8080/uploads/${visitor.profilePicture}`
-            : null
+        "visitors",
+        visitor.id,
+        visitor.profilePicture
     );
 
     async function handleFormSubmit(data) {
