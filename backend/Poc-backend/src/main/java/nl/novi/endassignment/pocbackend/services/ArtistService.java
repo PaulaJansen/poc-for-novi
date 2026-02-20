@@ -3,6 +3,7 @@ package nl.novi.endassignment.pocbackend.services;
 import jakarta.transaction.Transactional;
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
+import nl.novi.endassignment.pocbackend.dtos.ArtistUpdateDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtistMapper;
 import nl.novi.endassignment.pocbackend.models.Artist;
@@ -89,17 +90,18 @@ public class ArtistService {
 
     @PreAuthorize("@artistSecurity.isOwner(#id)")
     @Transactional
-    public ArtistResponseDto updateArtistInfo(long id, ArtistInputDto artistInputDto) throws IOException {
+    public ArtistResponseDto updateArtistInfo(long id, ArtistUpdateDto artistUpdateDto) throws IOException {
         Artist existingArtist = artistRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstenaar met id " + id + " niet gevonden!"));
 
-        if (artistInputDto.getFirstName() != null) existingArtist.setFirstName(artistInputDto.getFirstName());
-        if (artistInputDto.getLastName() != null) existingArtist.setLastName(artistInputDto.getLastName());
-        if (artistInputDto.getEmail() != null) existingArtist.setEmail(artistInputDto.getEmail());
-        if (artistInputDto.getUsername() != null) existingArtist.setUsername(artistInputDto.getUsername());
-        if (artistInputDto.getCity() != null) existingArtist.setCity(artistInputDto.getCity());
-        if (artistInputDto.getTypeOfArt() != null) existingArtist.setTypeOfArt(artistInputDto.getTypeOfArt());
-        if (artistInputDto.getBiography() != null) existingArtist.setBiography(artistInputDto.getBiography());
+        if (artistUpdateDto.getFirstName() != null) existingArtist.setFirstName(artistUpdateDto.getFirstName());
+        if (artistUpdateDto.getLastName() != null) existingArtist.setLastName(artistUpdateDto.getLastName());
+        if (artistUpdateDto.getEmail() != null) existingArtist.setEmail(artistUpdateDto.getEmail());
+        if (artistUpdateDto.getUsername() != null) existingArtist.setUsername(artistUpdateDto.getUsername());
+        if (artistUpdateDto.getPassword() != null) existingArtist.setPassword(passwordEncoder.encode(artistUpdateDto.getPassword()));
+        if (artistUpdateDto.getCity() != null) existingArtist.setCity(artistUpdateDto.getCity());
+        if (artistUpdateDto.getTypeOfArt() != null) existingArtist.setTypeOfArt(artistUpdateDto.getTypeOfArt());
+        if (artistUpdateDto.getBiography() != null) existingArtist.setBiography(artistUpdateDto.getBiography());
 
         Artist savedArtist = artistRepository.save(existingArtist);
 

@@ -19,6 +19,7 @@ public class Role {
     @EqualsAndHashCode.Include
     private long id;
 
+    @Column(unique = true, nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleType roleName;
 
