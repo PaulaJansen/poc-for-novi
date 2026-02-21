@@ -2,7 +2,6 @@
 
 GitHub repository: https://github.com/PaulaJansen/poc-for-novi
 
-API Documentatie:
 
 ## Inhoudsopgave
 * Inleiding
