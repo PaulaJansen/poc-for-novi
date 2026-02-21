@@ -92,12 +92,12 @@ Deze applicatie bestaat uit een frontend en een backend applicatie. De frontend 
      * Voeg je wachtwoord als omgevingsvariabele toe aan via de terminal:
        * Ga naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) van het project met het command `cd <adres-waarnaar-je-het-project-hebt-gecloned>\FullstackPocNovi\backend\Poc-backend`. Gebruik het command `setx POSTGRESQL_PASSWORD "jouw-wachtwoord"` (Windows) of `export POSTGRESQL_PASSWORD="jouw-wachtwoord"` (MacOS/Linux) om je wachtwoord toe te voegen. 
      * Voeg de omgevingsvariabelen toe in je IDE:
-      * Voeg de waarde `POSTGRESQL_PASSWORD=[jouw wachtwoord]` toe.
-        * Wil je geen omgevingsvariabelen gebruiken? Voer dan achter de lijn `spring.datasource.password=` jouw wachtwoord in.
+        * Voeg de waarde `POSTGRESQL_PASSWORD=[jouw wachtwoord]` toe.
+     * Wil je geen omgevingsvariabelen gebruiken? Voer dan achter de lijn `spring.datasource.password=` jouw wachtwoord in.
 10. Draai de backend applicatie:
     * Open een nieuwe terminal en navigeer naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) van het project met het command `cd <adres-waarnaar-je-het-project-hebt-gecloned>\FullstackPocNovi\backend\Poc-backend`.
     * Voeg nog een omgevingsvariabele voor de JWT-key toe:
-      * Gebruik het command `setx JWT_SECRET  WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (Windows) of `export JWT_SECRET=WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (MacOS/Linux). Je mag ook een andere key van tenminste 32 bytes invoeren. 
+      * Gebruik het command `setx JWT_SECRET  WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (Windows) of `export JWT_SECRET=WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (MacOS/Linux). Je mag ook een andere waarde van tenminste 32 bytes invoeren. 
     * Sluit deze terminal en open een nieuwe. Navigeer weer naar de root map.
     *  Voer het commando `mvn spring-boot:run` uit.
     * Als hij klaar is loggen en de laatste regel zegt  Started PocBackendApplication in..., dan is de applicatie succesvol gestart.
