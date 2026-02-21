@@ -30,7 +30,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * pgADdmin is een beheerplatform voor PostgreSQL-database dat een GUI biedt voor een database. In pgAdmin kun je data uit de database uitlezen en queries uitvoeren. PostgreSQL draait ook zonder pgAdmin en is te gebruiken via de command line. pgAdmin biedt echter een sterk verbeterde en visuele ervaring voor databasebeheer.   
   * Minimale versie: 9.6
 * Postman (niet essentieel)
-  * Postman is een tool om API's te testen door middel van het versturen van HTTP-requests naar de API, zonder dat er een werkende frontend nodig is. In dit project kan de frontend ook gebruikt worden om endpoint ste triggeren, in plaats van Postman.
+  * Postman is een tool om API's te testen door middel van het versturen van HTTP-requests naar de API, zonder dat er een werkende frontend nodig is. In dit project kan de frontend ook gebruikt worden om endpoints te triggeren, in plaats van Postman.
   * Minimale versie 11.80.0
 
 ### Voor de frontend
@@ -39,7 +39,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * Node.js is een runtime environment waarin JavaScript-applicaties kunnen draaien. 
   * Minimale versie: 22.15.0
 * npm
-  * npm (node package manager) is beheersoftware voor packages voor Node.js en biedt commando's o.a om de frontendapplicatie te draaien. 
+  * npm (node package manager) is beheersoftware voor packages voor Node.js en biedt commando's onder andere om de frontendapplicatie te draaien. 
   * Minimale versie: 10.9.2
 * Vite
   * Vite is een bundler en ontwikkelserver voor frontendontwikkeling. 
@@ -113,7 +113,7 @@ De tests in the API kunnen gedraaid worden met Maven. Ga hiervoor in de terminal
 ### Testgebruikers
 ...........................................................................................
 
-Bij het runnen van de API wordt ook standaarddata in dde database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
+Bij het runnen van de API wordt ook standaarddata in de database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
 * Henkie Jansen
   * Gebruikersnaam: henkie123
   * Wachtwoord: password123
