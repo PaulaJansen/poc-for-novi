@@ -2,7 +2,6 @@
 
 GitHub repository: https://github.com/PaulaJansen/poc-for-novi
 
-API Documentatie:
 
 ## Inhoudsopgave
 * Inleiding
@@ -30,7 +29,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * pgADdmin is een beheerplatform voor PostgreSQL-database dat een GUI biedt voor een database. In pgAdmin kun je data uit de database uitlezen en queries uitvoeren. PostgreSQL draait ook zonder pgAdmin en is te gebruiken via de command line. pgAdmin biedt echter een sterk verbeterde en visuele ervaring voor databasebeheer.   
   * Minimale versie: 9.6
 * Postman (niet essentieel)
-  * Postman is een tool om API's te testen door middel van het versturen van HTTP-requests naar de API, zonder dat er een werkende frontend nodig is. In dit project kan de frontend ook gebruikt worden om endpoint ste triggeren, in plaats van Postman.
+  * Postman is een tool om API's te testen door middel van het versturen van HTTP-requests naar de API, zonder dat er een werkende frontend nodig is. In dit project kan de frontend ook gebruikt worden om endpoints te triggeren, in plaats van Postman.
   * Minimale versie 11.80.0
 
 ### Voor de frontend
@@ -39,7 +38,7 @@ De A Lot Of Artwork (ALOA) web-API is gebouwd met gebruik van het Spring Framewo
   * Node.js is een runtime environment waarin JavaScript-applicaties kunnen draaien. 
   * Minimale versie: 22.15.0
 * npm
-  * npm (node package manager) is beheersoftware voor packages voor Node.js en biedt commando's o.a om de frontendapplicatie te draaien. 
+  * npm (node package manager) is beheersoftware voor packages voor Node.js en biedt commando's onder andere om de frontendapplicatie te draaien. 
   * Minimale versie: 10.9.2
 * Vite
   * Vite is een bundler en ontwikkelserver voor frontendontwikkeling. 
@@ -92,12 +91,12 @@ Deze applicatie bestaat uit een frontend en een backend applicatie. De frontend 
      * Voeg je wachtwoord als omgevingsvariabele toe aan via de terminal:
        * Ga naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) van het project met het command `cd <adres-waarnaar-je-het-project-hebt-gecloned>\FullstackPocNovi\backend\Poc-backend`. Gebruik het command `setx POSTGRESQL_PASSWORD "jouw-wachtwoord"` (Windows) of `export POSTGRESQL_PASSWORD="jouw-wachtwoord"` (MacOS/Linux) om je wachtwoord toe te voegen. 
      * Voeg de omgevingsvariabelen toe in je IDE:
-      * Voeg de waarde `POSTGRESQL_PASSWORD=[jouw wachtwoord]` toe.
-        * Wil je geen omgevingsvariabelen gebruiken? Voer dan achter de lijn `spring.datasource.password=` jouw wachtwoord in.
+        * Voeg de waarde `POSTGRESQL_PASSWORD=[jouw wachtwoord]` toe.
+     * Wil je geen omgevingsvariabelen gebruiken? Voer dan achter de lijn `spring.datasource.password=` jouw wachtwoord in.
 10. Draai de backend applicatie:
     * Open een nieuwe terminal en navigeer naar de [backend root map](C:\Users\paula\FullstackPocNovi\backend\Poc-backend) van het project met het command `cd <adres-waarnaar-je-het-project-hebt-gecloned>\FullstackPocNovi\backend\Poc-backend`.
     * Voeg nog een omgevingsvariabele voor de JWT-key toe:
-      * Gebruik het command `setx JWT_SECRET  WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (Windows) of `export JWT_SECRET=WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (MacOS/Linux). Je mag ook een andere key van tenminste 32 bytes invoeren. 
+      * Gebruik het command `setx JWT_SECRET  WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (Windows) of `export JWT_SECRET=WhenthepawnhitstheconflictshethinkslikeakingWhatheknowsthr0wsthebl0ws` (MacOS/Linux). Je mag ook een andere waarde van tenminste 32 bytes invoeren. 
     * Sluit deze terminal en open een nieuwe. Navigeer weer naar de root map.
     *  Voer het commando `mvn spring-boot:run` uit.
     * Als hij klaar is loggen en de laatste regel zegt  Started PocBackendApplication in..., dan is de applicatie succesvol gestart.
@@ -113,7 +112,7 @@ De tests in the API kunnen gedraaid worden met Maven. Ga hiervoor in de terminal
 ### Testgebruikers
 ...........................................................................................
 
-Bij het runnen van de API wordt ook standaarddata in dde database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
+Bij het runnen van de API wordt ook standaarddata in de database geladen. Deze data is te vinden in [data.sql](C:\Users\paula\FullstackPocNovi\backend\Poc-backend\src\main\resources\data.sql). Hierin staat onder andere een aantal gebruikers om mee te testen. Hieronder een overzicht van hun inloggegevens en rollen:
 * Henkie Jansen
   * Gebruikersnaam: henkie123
   * Wachtwoord: password123
