@@ -2,9 +2,9 @@ import "./Register.css";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import axios from "axios";
 import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
+import API from "../../helpers/api.js";
 
 function RegisterVisitor() {
     const [error, setError] = useState(null);
@@ -13,10 +13,15 @@ function RegisterVisitor() {
 
     async function handleFormSubmit(data) {
         try {
-            await axios.post(`http://localhost:8080/visitors/register`, data);
+            await API.post(`/visitors/register`, data,
+                {
+                    headers: {"Content-Type": "application/json"}
+                }
+            );
             console.log("Bezoeker is geregistreerd!");
             navigate("/login");
         } catch (e) {
+            console.error(e);
             setError("Registreren niet gelukt");
         }
     }
@@ -58,10 +63,11 @@ function RegisterVisitor() {
                 />
             </form>
             <p className="navigate-register">
-                Liever registreren als kunstenaar? <Link className="link-register" to="/register-artist">Dat doe je hier {">>"}</Link>
+                Liever registreren als kunstenaar? <Link className="link-register" to="/register-artist">Dat doe je
+                hier {">>"}</Link>
             </p>
             {error && (
-                <p className="error">{error}</p>
+                <p className="error-message">{error}</p>
             )}
         </div>
     )

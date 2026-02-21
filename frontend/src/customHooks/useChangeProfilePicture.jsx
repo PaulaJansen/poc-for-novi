@@ -5,7 +5,6 @@ import {toast} from "react-toastify";
 export function useChangeProfilePicture(entityType, entityId, initialImage) {
 
     const fileInputRef = useRef(null);
-    const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(initialImage);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,49 +13,52 @@ export function useChangeProfilePicture(entityType, entityId, initialImage) {
         fileInputRef.current?.click();
     };
 
-    const onFileChange = (e) => {
+    const onFileChange = async (e) => {
         const selectedFile = e.target.files[0];
         if (!selectedFile) return;
 
-        setFile(selectedFile);
         const previewURL = URL.createObjectURL(selectedFile);
         setPreview(previewURL);
 
-        return () => URL.revokeObjectURL(previewURL);
-    };
-
-    const upload = async () => {
-        if (!file) return;
+        if (!entityId) {
+            toast.error("Kan profielfoto nog niet uploaden, probeer opnieuw!");
+            return;
+        }
 
         setLoading(true);
         setError(null);
 
         const formData = new FormData();
-        formData.append("profilePicture", file);
+        formData.append("profilePicture", selectedFile);
 
         try {
             await axios.patch(
                 `http://localhost:8080/${entityType}/${entityId}/profile-picture`,
                 formData,
-                {withCredentials: true}
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
+                    withCredentials: true,
+                }
             );
 
-            setFile(null);
-            toast.success("Profielfoto succesvol veranderd!",
-                {
-                    duration: 3000,
-                    position: "top-center",
-                });
-        } catch (e) {
-            setError(e);
-            toast.error("Foto uploaden mislukt, probeer opnieuw!",
-                {
-                    duration: 3000,
-                    position: "top-center",
-                })
+            toast.success("Profielfoto succesvol veranderd!", {
+                duration: 3000,
+                position: "top-center",
+            });
+        } catch (err) {
+            setError(err);
+            toast.error("Foto uploaden mislukt, probeer opnieuw!", {
+                duration: 3000,
+                position: "top-center",
+            });
         } finally {
             setLoading(false);
         }
+
+        return () => URL.revokeObjectURL(previewURL);
     };
 
     return {
@@ -66,6 +68,5 @@ export function useChangeProfilePicture(entityType, entityId, initialImage) {
         error,
         openFilePicker,
         onFileChange,
-        upload,
     };
 }

@@ -1,23 +1,23 @@
 import "../newArtwork/NewArtwork.css";
+import "./EditArtwork.css";
 import {useNavigate, useParams} from "react-router-dom";
 import {useContext, useEffect, useRef, useState} from "react";
 import {useForm} from "react-hook-form";
-import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
-import InputField from "../../components/inputField/InputField.jsx";
 import removeSquare from "../../assets/x-square-fill.svg";
 import placeholder from "../../assets/art-gallery.jpg";
 import Button from "../../components/button/Button.jsx";
 import useImageUpload from "../../customHooks/useImageUpload.jsx";
 import {AuthContext} from "../../context/AuthContext.js";
 import {toast} from "react-toastify";
+import API from "../../helpers/api.js";
 
 function EditArtwork() {
 
     const {id} = useParams();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
-    const {register, handleSubmit, reset, setValue} = useForm();
+    const {register, handleSubmit, reset} = useForm();
     const {auth} = useContext(AuthContext);
 
     const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ function EditArtwork() {
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/artworks/${id}`);
+                const response = await API.get(`/artworks/${id}`);
                 const data = response.data;
 
                 if (auth.user.id !== data.artistId) {
@@ -58,12 +58,12 @@ function EditArtwork() {
 
                 reset({
                     title: data.title,
-                    price: data.price,
+                    price: parseFloat(data.price),
                     availability: data.availability,
                     widthInCm: data.widthInCm,
                     lengthInCm: data.lengthInCm,
                     heightInCm: data.heightInCm,
-                    genreNames: [...data.genreNames],
+                    genreNames: data.genreNames?.join(", ") || "",
                 });
 
                 if (data.images?.length) {
@@ -86,38 +86,30 @@ function EditArtwork() {
         setLoading(true);
         try {
             const formData = new FormData();
-
             const artworkData = {
                 title: data.title,
-                price: data.price,
+                price: parseFloat(data.price),
                 availability: data.availability,
                 genreNames: Array.isArray(data.genreNames)
                     ? data.genreNames
                     : data.genreNames
                         ? data.genreNames.split(",").map(g => g.trim())
                         : [],
-                widthInCm: data.widthInCm,
-                lengthInCm: data.lengthInCm,
-                heightInCm: data.heightInCm,
+                widthInCm: parseFloat(data.widthInCm),
+                lengthInCm: parseFloat(data.lengthInCm),
+                heightInCm: parseFloat(data.heightInCm),
                 removeImages: rawImages
                     .filter(img => img.removed && img.dbPath)
                     .map(img => img.dbPath),
             };
 
-            formData.append("artwork",
-                new Blob([JSON.stringify(artworkData)], {type: "application/json"}));
+            formData.append("artwork", JSON.stringify(artworkData));
 
             rawImages
                 .filter(img => img.file && !img.removed)
                 .forEach(img => formData.append("images", img.file));
 
-
-            await axios.patch(`http://localhost:8080/artworks/${id}`,
-                formData, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                });
+            await API.patch(`/artworks/${id}`, formData);
 
             navigate(`/artwork/${id}`, {
                 state: {edited: true}
@@ -126,6 +118,22 @@ function EditArtwork() {
             console.error(e);
             setError("Opslaan niet gelukt");
             toast.error("Opslaan mislukt, probeer opnieuw!");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleDeleteArtwork(id) {
+        if (!window.confirm("Weet je zeker dat je dit kunstwerk wilt verwijderen?")) return;
+
+        try {
+            setLoading(true);
+            await API.delete(`/artworks/${id}`);
+            toast.success("Kunstwerk verwijderd!");
+            navigate("/dashboard");
+        } catch (e) {
+            console.error(e);
+            toast.error("Verwijderen mislukt, probeer opnieuw!");
         } finally {
             setLoading(false);
         }
@@ -147,139 +155,101 @@ function EditArtwork() {
 
     return (
         <div className="new-artwork-container">
+            <Button
+                className="button-default button-delete"
+                type="button"
+                label="Kunstwerk verwijderen"
+                onClick={() => handleDeleteArtwork(id)}
+            />
             <h2 className="new-artwork-header">Kunstwerk bewerken</h2>
-            <form className="new-artwork-form"
+            <form className="edit-artwork-form"
                   onSubmit={handleSubmit(handleFormSubmit)}
                   style={{opacity: loading ? 0.6 : 1}}
             >
-                <div className="new-artwork-wrapper">
-                    <InputField as="input"
-                                type="text"
-                                labelClassName="label-quinary"
-                                label="Titel: "
-                                name="title"
-                                id="title"
-                                register={register}
-                                required
-                    />
-                    <InputField as="input"
-                                type="text"
-                                labelClassName="label-quinary"
-                                label="Genres (scheid genres met komma's: "
-                                name="genreNames"
-                                id="genreNames"
-                                register={register}
-                                placeholder="bijv. schilderij, abstract, modern"
-                                multiple
-                                required
-                    />
-                    <InputField as="input"
-                                type="number"
-                                labelClassName="label-quinary"
-                                label="Prijs: "
-                                name="price"
-                                id="price"
-                                register={register}
-                                min="0"
-                                step="0.01"
-                                placeholder="€"
-                                required
-                    />
-                    <InputField as="select"
-                                labelClassName="label-quinary"
-                                label="Beschikbaarheid: "
-                                name="availability"
-                                id="availability"
-                                register={register}
-                                required
-                                options={[
-                                    {value: "AVAILABLE", label: "Beschikbaar"},
-                                    {value: "AVAILABLETOBUY", label: "Te koop"},
-                                    {value: "AVAILABLETOLOAN", label: "Te huur"},
-                                    {value: "SOLD", label: "Verkocht"},
-                                    {value: "ONLOAN", label: "Verhuurd"}
-                                ]}
-                    />
-                </div>
-                <div className="new-artwork-dimensions">
-                    <InputField as="input"
-                                type="number"
-                                labelClassName="label-quinary"
-                                label="Breedte (cm): "
-                                name="widthInCm"
-                                id="widthInCm"
-                                register={register}
-                                required
-                    />
-                    <InputField as="input"
-                                type="number"
-                                labelClassName="label-quinary"
-                                label="Lengte (cm): "
-                                name="lengthInCm"
-                                id="lengthInCm"
-                                register={register}
-                                required
-                    />
-                    <InputField as="input"
-                                type="number"
-                                labelClassName="label-quinary"
-                                label="Hoogte (cm): "
-                                name="heightInCm"
-                                id="heightInCm"
-                                register={register}
-                                required
-                    />
-                </div>
-                <div className="image-dropzone"
-                     onClick={() => fileInputRef.current.click()}
-                     onDrop={handleDrop}
-                     onDragOver={handleDragOver}
-                >
-                    Sleep afbeeldingen hierheen of klik om te kiezen
-                </div>
-                <InputField as="input"
-                            type="file"
-                            className="file-input-hidden"
-                            name="images"
-                            id="images"
-                            register={register}
-                            multiple
-                            accept="image/*"
-                            ref={fileInputRef}
-                            onChange={(e) => handleFileInput(e.target.files)}
-                />
-                <div className="image-preview-grid">
-                    {images.length === 0 && <p>⚠️ Geen afbeeldingen toegevoegd</p>}
-                    {images.map((img) => (
-                        <div key={img.id}
-                             className="image-preview-item"
-                             draggable
-                             onDragStart={() => handleDragStart(img.id)}
-                             onDragEnter={() => handleDragEnter(img.id)}
-                             onDragEnd={handleDragEnd}
-                        >
-                            <img className="image-preview"
-                                 src={
-                                     img.file
-                                         ? URL.createObjectURL(img.file)
-                                         : img.url
+                <div className="edit-artwork-wrapper">
+                    <label className="label-quinary">Titel:
+                        <input className="input-field" {...register("title", {required: true})} />
+                    </label>
+                    <label className="label-primary label-quinary">Genres (scheid genres met komma's):
+                        <input className="input-field" {...register("genreNames")} />
+                    </label>
 
-                                 }
-                                 alt="preview"
-                                 onError={(e) => {
-                                     e.target.src = placeholder
-                                 }}
-                            />
-                            <div className="remove-image">
-                                <img src={removeSquare}
-                                     alt="verwijder afbeelding"
-                                     onClick={() => {
-                                         removeImage(img.id);
+                    <label className="label-quinary">Prijs:
+                        <input className="input-field" type="number" step="0.01" min="0"
+                               placeholder="€" {...register("price", {required: true})} />
+                    </label>
+
+                    <label className="label-quinary">Beschikbaarheid:
+                        <select className="input-field" {...register("availability", {required: true})}>
+                            <option value="AVAILABLE">Beschikbaar</option>
+                            <option value="AVAILABLETOBUY">Te koop</option>
+                            <option value="AVAILABLETOLOAN">Te huur</option>
+                            <option value="SOLD">Verkocht</option>
+                            <option value="ONLOAN">Verhuurd</option>
+                        </select>
+                    </label>
+                </div>
+                <div className="edit-artwork-dimensions">
+                    <label className="label-quinary">Breedte (cm):
+                        <input className="input-field" type="number" {...register("widthInCm")} />
+                    </label>
+                    <label className="label-quinary">Lengte (cm):
+                        <input className="input-field" type="number" {...register("lengthInCm")} />
+                    </label>
+                    <label className="label-quinary">Hoogte (cm):
+                        <input className="input-field" type="number" {...register("heightInCm")} />
+                    </label>
+                </div>
+                <div className="edit-artwork-images">
+                    <div className="image-dropzone"
+                         onClick={() => fileInputRef.current.click()}
+                         onDrop={handleDrop}
+                         onDragOver={handleDragOver}
+                    >
+                        Sleep afbeeldingen hierheen of klik om te kiezen
+                    </div>
+                    <input
+                        type="file"
+                        className="file-input-hidden"
+                        id="images"
+                        multiple
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={(e) => handleFileInput(e.target.files)}
+                    />
+                    <div className="image-preview-grid">
+                        {images.length === 0 && <p>⚠️ Geen afbeeldingen toegevoegd</p>}
+                        {images.map((img) => (
+                            <div key={img.id}
+                                 className="image-preview-item"
+                                 draggable
+                                 onDragStart={() => handleDragStart(img.id)}
+                                 onDragEnter={() => handleDragEnter(img.id)}
+                                 onDragEnd={handleDragEnd}
+                            >
+                                <img className="image-preview"
+                                     src={
+                                         img.file
+                                             ? URL.createObjectURL(img.file)
+                                             : img.url
+
+                                     }
+                                     alt="preview"
+                                     onError={(e) => {
+                                         e.target.src = placeholder
                                      }}
                                 />
+                                <div className="remove-image">
+                                    <img src={removeSquare}
+                                         alt="verwijder afbeelding"
+                                         onClick={() => {
+                                             removeImage(img.id);
+                                         }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
                 <div className="button-form">
                     <Button className="button-default button-tertiary-reverse"

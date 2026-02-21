@@ -1,6 +1,5 @@
 import './Overview.css';
 import {useEffect, useState, useRef} from "react";
-import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
@@ -8,6 +7,7 @@ import {buildFilterQuery} from "../../helpers/buildFilterQuery.js";
 import InputField from "../../components/inputField/InputField.jsx";
 import PriceSlider from "../../components/priceSlider/PriceSlider.jsx";
 import Button from "../../components/button/Button.jsx";
+import API from "../../helpers/api.js";
 
 function Overview() {
 
@@ -69,11 +69,12 @@ function Overview() {
     async function fetchFilteredArtworks() {
         try {
             const query = buildFilterQuery(filters);
-            const response = await axios.get(`http://localhost:8080/artworks/filter?${query}`);
+            const response = await API.get(`/artworks/filter?${query}`);
 
             let data = response.data;
             setArtworks(Array.isArray(data) ? data : []);
         } catch (e) {
+            console.error(e);
             setError("Kunstwerken filteren mislukt")
             setArtworks([]);
         } finally {

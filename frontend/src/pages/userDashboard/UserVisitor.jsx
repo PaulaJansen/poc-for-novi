@@ -1,6 +1,5 @@
 import './UserDashboard.css';
 import {useContext, useEffect, useState} from "react";
-import axios from "axios";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture.jsx";
 import profilePicture from "../../assets/user-switch.svg";
@@ -11,6 +10,7 @@ import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import ArtworkCard from "../../components/artworkCard/ArtworkCard.jsx";
 import {FavoritesContext} from "../../context/FavoritesContext.js";
+import API from "../../helpers/api.js";
 
 function UserVisitor({id}) {
 
@@ -18,63 +18,73 @@ function UserVisitor({id}) {
 
     const {setFavoriteIds, toggleFavorite} = useContext(FavoritesContext);
 
-    const [visitor, setVisitor] = useState(null);
+    const [visitor, setVisitor] = useState({visitor: null});
     const [artworks, setArtworks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [changeProfile, setChangeProfile] = useState(false);
 
-    useEffect(() => {
-        async function fetchVisitorAndFavorites() {
-            try {
-                const [visitorResponse, favoritesResponse] = await Promise.all([
-                    axios.get(`http://localhost:8080/visitors/${id}`),
-                    axios.get(`http://localhost:8080/visitors/${id}/favorites`)
-                ]);
+    async function fetchVisitorAndFavorites() {
+        if (!id) return;
 
-                const visitorData = visitorResponse.data;
-                const favoritesData = favoritesResponse.data;
+        try {
+            const [visitorResponse, favoritesResponse] = await Promise.all([
+                API.get(`/visitors/${id}`),
+                API.get(`/visitors/${id}/favorites`)
+            ]);
 
-                setVisitor(visitorData);
-                setArtworks(favoritesData || []);
+            const visitorData = visitorResponse.data;
+            const favoritesData = favoritesResponse.data;
 
-                if (visitorData.favoritesIds) {
-                    setFavoriteIds(visitorData.favoritesIds.map(id => Number(id)));
-                }
+            setVisitor(visitorData);
+            setArtworks(favoritesData || []);
 
-                reset({
-                    name: visitorData.name,
-                    email: visitorData.email,
-                });
-            } catch (e) {
-                console.error(e);
-                setError("Gegevens ophalen mislukt");
-            } finally {
-                setLoading(false);
+            if (visitorData.favoritesIds) {
+                setFavoriteIds(visitorData.favoritesIds.map(id => Number(id)));
             }
-        }
 
-        fetchVisitorAndFavorites();
-    }, [id, reset, setFavoriteIds]);
+            reset({
+                name: visitorData.name,
+                email: visitorData.email,
+            });
+        } catch (e) {
+            console.error(e);
+            setError("Gegevens ophalen mislukt");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    useEffect(() => {
+        fetchVisitorAndFavorites()
+    }, [visitor?.user?.id]);
+
 
     const {
         fileInputRef,
         preview,
-        file,
-        loading: uploadLoading,
         openFilePicker,
         onFileChange,
-        upload,
     } = useChangeProfilePicture(
         "visitors",
-        visitor.id,
-        visitor.profilePicture
+        visitor?.id,
+        visitor?.profilePicture
     );
 
     async function handleFormSubmit(data) {
         try {
-            await axios.patch(`http://localhost:8080/visitors/${id}`, data);
+            const response = await API.patch(`/visitors/${id}`, data);
+
             console.log("Gegevens zijn opgeslagen!");
+            setVisitor(prev => ({
+                ...prev,
+                visitor: {
+                    ...prev.visitor,
+                    ...response.data,
+                }
+            }));
+            fetchVisitorAndFavorites();
             setChangeProfile(false);
         } catch (e) {
             console.error(e);
@@ -122,11 +132,7 @@ function UserVisitor({id}) {
                             hidden
                         />
 
-                        {file && (
-                            <button onClick={upload} disabled={uploadLoading}>
-                                {uploadLoading ? "Uploaden..." : "Opslaan"}
-                            </button>
-                        )}
+                        {loading && <span>Uploaden...</span>}
                     </div>
                     <article className="user-details">
                         <h2>{visitor.name}</h2>

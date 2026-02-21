@@ -5,7 +5,7 @@ import {jwtDecode} from "jwt-decode";
 import isTokenValid from "../helpers/isTokenValid.js";
 import {toast} from "react-toastify";
 import Spinner from "../components/spinner/Spinner.jsx";
-import API from "../helpers/api.js";
+import axios from "axios";
 
 export default function AuthContextProvider({children}) {
 
@@ -38,7 +38,7 @@ export default function AuthContextProvider({children}) {
         async (userId, token, redirectUrl = null) => {
 
             try {
-                const response = await API.get(`http://localhost:8080/users/id/${userId}`,
+                const response = await axios.get(`http://localhost:8080/users/${userId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -65,17 +65,17 @@ export default function AuthContextProvider({children}) {
         async (token) => {
             try {
                 if (!token) throw new Error("Token ontbreekt");
+
                 localStorage.setItem("token", token);
 
                 const decodedToken = jwtDecode(token);
-
                 if (!isTokenValid(decodedToken)) throw new Error("Token is verlopen");
 
                 const userId = decodedToken.userId;
-
                 if (!userId) throw new Error("Token heeft geen userId");
 
                 await fetchUserInformation(userId, token, "/");
+
                 console.log("Gebruiker is ingelogd");
                 toast.success("Je bent ingelogd!");
             } catch (e) {
@@ -87,6 +87,7 @@ export default function AuthContextProvider({children}) {
         [fetchUserInformation, logout]
     );
 
+    // Auto-login
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return resetAuthState();

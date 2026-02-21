@@ -13,7 +13,6 @@ import Login from "./pages/login/Login.jsx";
 import logo from "./assets/logo-aloa-nbg.png";
 import logoSmall from "./assets/logo-aloa-small.png";
 import NavLinkItem from "./components/navLinkItem/NavLinkItem.jsx";
-import profile from "./assets/user-icon.svg";
 import {getCurrentYear} from "./helpers/getCurrentYear.js";
 import Button from "./components/button/Button.jsx";
 import {ToastContainer} from "react-toastify";

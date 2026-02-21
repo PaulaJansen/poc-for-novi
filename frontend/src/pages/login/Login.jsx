@@ -1,12 +1,12 @@
 import "../register/Register.css";
 import {useContext, useState} from "react";
 import {useForm} from "react-hook-form";
-import axios from "axios";
 import InputField from "../../components/inputField/InputField.jsx";
 import Button from "../../components/button/Button.jsx";
 import {AuthContext} from "../../context/AuthContext.js";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import API from "../../helpers/api.js";
 
 function Login() {
 
@@ -17,7 +17,7 @@ function Login() {
 
     const handleFormSubmit = async (data) => {
         try {
-            const response = await axios.post("http://localhost:8080/auth", data);
+            const response = await API.post("/auth", data);
             const token = response.data.token;
 
             if (!token) {

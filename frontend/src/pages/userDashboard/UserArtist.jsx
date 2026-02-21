@@ -1,6 +1,5 @@
 import './UserDashboard.css';
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import defaultImage from "../../assets/art-gallery.jpg";
@@ -11,6 +10,7 @@ import {useChangeProfilePicture} from "../../customHooks/useChangeProfilePicture
 import Button from "../../components/button/Button.jsx";
 import InputField from "../../components/inputField/InputField.jsx";
 import {useForm} from "react-hook-form";
+import API from "../../helpers/api.js";
 
 function UserArtist({id}) {
 
@@ -31,13 +31,13 @@ function UserArtist({id}) {
         async function fetchArtistAndArtworks() {
             try {
                 const [artistResponse, artworkResponse] = await Promise.all([
-                    axios.get(`http://localhost:8080/artists/${id}`),
-                    axios.get(`http://localhost:8080/artists/${id}/artworks`),
+                    API.get(`/artists/${id}`),
+                    API.get(`/artists/${id}/artworks`),
                 ]);
+
                 const artistData = artistResponse.data;
                 const artworkData = artworkResponse.data;
-                console.log(artistData);
-                console.log(artworkData);
+
                 setArtist(artistData);
                 setArtworks(artworkData);
             } catch (e) {
@@ -57,6 +57,7 @@ function UserArtist({id}) {
             reset({
                 firstName: artist.firstName,
                 lastName: artist.lastName,
+                typeOfArt: artist.typeOfArt,
                 city: artist.city,
                 biography: artist.biography,
                 email: artist.email,
@@ -64,40 +65,26 @@ function UserArtist({id}) {
         }
     }, [artist, reset]);
 
+
     const {
         fileInputRef,
         preview,
-        file,
-        loading: uploadLoading,
         openFilePicker,
         onFileChange,
-        upload,
     } = useChangeProfilePicture(
         "artists",
-        artist.id,
-        artist.profilePicture
+        artist?.id,
+        artist?.profilePicture
     );
 
     async function handleFormSubmit(data) {
         try {
-            await axios.patch(`http://localhost:8080/artists/${id}`, data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                }
-            );
+            await API.patch(`/artists/${id}`, data);
+
             console.log("Gegevens zijn opgeslagen!");
             setChangeProfile(false);
 
-            const artistResponse = await axios.get(
-                `http://localhost:8080/artists/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
-                    }
-                }
-            );
+            const artistResponse = await API.get(`/artists/${id}`);
 
             setArtist(artistResponse.data);
         } catch
@@ -140,11 +127,7 @@ function UserArtist({id}) {
                             hidden
                         />
 
-                        {file && (
-                            <button onClick={upload} disabled={uploadLoading}>
-                                {uploadLoading ? "Uploaden..." : "Opslaan"}
-                            </button>
-                        )}
+                        {loading && <span>Uploaden...</span>}
                     </div>
                     <article className="user-details">
                         <h2>{artist.firstName} {artist.lastName}</h2>
@@ -190,6 +173,14 @@ function UserArtist({id}) {
                                             id="lastName"
                                             register={register}
                                 />
+                                <InputField as="input"
+                                            type="text"
+                                            label="Soort kunst: "
+                                            name="typeOfArt"
+                                            id="typeOfArt"
+                                            register={register}
+                                            />
+
                                 <InputField as="input"
                                             type="text"
                                             label="Plaats: "

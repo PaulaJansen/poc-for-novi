@@ -2,9 +2,9 @@ import './Register.css';
 import InputField from "../../components/inputField/InputField.jsx";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import axios from "axios";
 import {useForm} from "react-hook-form";
 import Button from "../../components/button/Button.jsx";
+import API from "../../helpers/api.js";
 
 function RegisterArtist() {
 
@@ -14,7 +14,10 @@ function RegisterArtist() {
 
     async function handleFormSubmit(data) {
         try {
-            await axios.post(`http://localhost:8080/artists/register`, data);
+            await API.post(`/artists/register`, data,
+                {
+                    headers: { "Content-Type": "application/json" }
+            });
             console.log("Kunstenaar is geregistreerd!");
             navigate("/login");
         } catch (e) {
@@ -63,7 +66,7 @@ function RegisterArtist() {
                 Liever registreren als artlover? <Link className="link-register" to="/register-artlover">Dat doe je hier {">>"}</Link>
             </p>
             {error && (
-                <p className="error">{error}</p>
+                <p className="error-message">{error}</p>
             )}
         </div>
     )

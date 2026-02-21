@@ -4,7 +4,7 @@ import {forwardRef} from "react";
 const InputField = forwardRef(function InputField({
                                                       label,
                                                       as = "input",
-                                                      type,
+                                                      type = "text",
                                                       className,
                                                       labelClassName,
                                                       name,
@@ -26,13 +26,14 @@ const InputField = forwardRef(function InputField({
         const registerProps =
             typeof register === "function" ? register(name, {required}) : {};
 
-    const combinedRef = (el) => {
-        if (ref) {
-            if (typeof ref === "function") ref(el);
-            else ref.current = el;
-        }
-        if (registerProps?.ref) registerProps.ref(el);
-    };
+        const combinedRef = (el) => {
+            if (ref) {
+                if (typeof ref === "function") ref(el);
+                else ref.current = el;
+            }
+            if (registerProps?.ref) registerProps.ref(el);
+        };
+
 
         if (as === "select") {
             return (

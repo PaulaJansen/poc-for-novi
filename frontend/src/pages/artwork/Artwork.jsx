@@ -1,5 +1,4 @@
 import './Artwork.css';
-import axios from "axios";
 import {useContext, useEffect, useRef, useState} from "react";
 import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
@@ -8,6 +7,7 @@ import {toast} from "react-toastify";
 import {FavoritesContext} from "../../context/FavoritesContext.js";
 import {AuthContext} from "../../context/AuthContext.js";
 import FavoriteButton from "../../components/favoriteButton/FavoriteButton.jsx";
+import API from "../../helpers/api.js";
 
 function Artwork() {
 
@@ -57,7 +57,7 @@ function Artwork() {
     useEffect(() => {
         async function fetchArtwork() {
             try {
-                const artworkResponse = await axios.get(`http://localhost:8080/artworks/${id}`);
+                const artworkResponse = await API.get(`/artworks/${id}`);
                 const artworkData = artworkResponse.data;
                 console.log(artworkData);
                 setArtwork(artworkData);

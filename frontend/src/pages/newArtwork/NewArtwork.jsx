@@ -1,5 +1,4 @@
 import './NewArtwork.css';
-import axios from "axios";
 import {useForm} from "react-hook-form";
 import {useRef, useState} from "react";
 import InputField from "../../components/inputField/InputField.jsx";
@@ -9,6 +8,7 @@ import useImageUpload from "../../customHooks/useImageUpload.jsx";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
+import API from "../../helpers/api.js";
 
 function NewArtwork() {
 
@@ -39,8 +39,9 @@ function NewArtwork() {
             formData.append("availability", data.availability);
 
             const genres = data.genreNames
-                ?.split(",")
-                .map(g => g.trim());
+                ? data.genreNames.split(",")
+                .map(g => g.trim())
+            : [];
 
             genres?.forEach(g =>
                 formData.append("genreNames", g)
@@ -56,14 +57,7 @@ function NewArtwork() {
             formData.append("lengthInCm", data.lengthInCm || 0);
             formData.append("heightInCm", data.heightInCm || 0);
 
-            const response = await axios.post(`http://localhost:8080/artworks`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    }
-                }
-            );
+            const response = await API.post(`/artworks`, formData);
 
             navigate(`/artwork/${response.data.id}`, {
                 state: {created: true}
@@ -97,8 +91,8 @@ function NewArtwork() {
                                 label="Titel: "
                                 name="title"
                                 id="title"
-                                register={register("title", {required: "Voeg een titel toe"})}
-                                required
+                                register={register}
+                                required={{required: "Voeg een titel toe"}}
                                 onChange={() => clearErrors("title")}
                     />
 
@@ -109,7 +103,8 @@ function NewArtwork() {
                                 label="Genres (scheid genres met komma's: "
                                 name="genreNames"
                                 id="genreNames"
-                                register={register("genreNames", {required: "Voeg tenminste 1 genre toe"})}
+                                register={register}
+                                required={{required: "Voeg tenminste 1 genre toe"}}
                                 placeholder="bijv. schilderij, abstract, modern"
                                 onChange={() => clearErrors("genreNames")}
                     />
@@ -121,10 +116,11 @@ function NewArtwork() {
                                 label="Prijs: "
                                 name="price"
                                 id="price"
-                                register={register("price", {
+                                register={register}
+                                required={{
                                     required: "Voeg een prijs toe",
                                     min: {value: 0, message: "Prijs moet €0,01 of hoger zijn"}
-                                })}
+                                }}
                                 step="0.01"
                                 placeholder="€"
                                 onChange={() => clearErrors("price")}

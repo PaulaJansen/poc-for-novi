@@ -3,21 +3,22 @@ import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "./AuthContext.js";
 import {toast} from "react-toastify";
 import axios from "axios";
+import API from "../helpers/api.js";
 
 export default function FavoritesContextProvider({children}) {
 
     const [favoriteIds, setFavoriteIds] = useState([]);
     const {auth} = useContext(AuthContext);
 
-    useEffect(() => {
+        useEffect(() => {
         async function loadFavorites() {
-            if (!auth?.user) {
+            if (!auth?.user || !auth.user.roleNames.includes("VISITOR")) {
                 setFavoriteIds([]);
                 return;
             }
 
             try {
-                const response = await axios.get(`http://localhost:8080/visitors/${auth.user.id}/favorites`,
+                const response = await API.get(`/visitors/${auth.user.id}/favorites`,
                     {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("token")}`,

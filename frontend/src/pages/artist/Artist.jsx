@@ -1,10 +1,10 @@
 import './Artist.css';
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {useParams} from "react-router-dom";
 import Spinner from "../../components/spinner/Spinner.jsx";
 import Breadcrumbs from "../../components/breadCrumbs/BreadCrumbs.jsx";
 import ArtworksSection from "../../components/artworksSection/ArtworksSection.jsx";
+import API from "../../helpers/api.js";
 
 function Artist() {
 
@@ -19,8 +19,8 @@ function Artist() {
         async function fetchArtistAndArtworks() {
             try {
                 const [artistResponse, artworkResponse] = await Promise.all([
-                    axios.get(`http://localhost:8080/artists/${id}`),
-                    axios.get(`http://localhost:8080/artists/${id}/artworks`),
+                    API.get(`/artists/${id}`),
+                    API.get(`/artists/${id}/artworks`),
                 ]);
                 const artistData = artistResponse.data;
                 const artworkData = artworkResponse.data;
