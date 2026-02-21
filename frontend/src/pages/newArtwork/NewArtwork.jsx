@@ -216,7 +216,7 @@ function NewArtwork() {
                         </div>
                     ))}
                 </div>
-                <div className="button-form">
+                <div className="button-form-wrapper">
                     <Button className="button-default button-tertiary-reverse"
                             type="submit"
                             disabled={loading}
