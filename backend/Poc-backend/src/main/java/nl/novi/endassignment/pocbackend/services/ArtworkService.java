@@ -9,12 +9,10 @@ import nl.novi.endassignment.pocbackend.dtos.ArtworkUpdateDto;
 import nl.novi.endassignment.pocbackend.dtos.GenreInputDto;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtworkMapper;
-import nl.novi.endassignment.pocbackend.models.Artist;
-import nl.novi.endassignment.pocbackend.models.Artwork;
-import nl.novi.endassignment.pocbackend.models.AvailabilityType;
-import nl.novi.endassignment.pocbackend.models.Genre;
+import nl.novi.endassignment.pocbackend.models.*;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
+import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.security.ownership.ArtworkSecurity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,8 +38,9 @@ public class ArtworkService {
     private final Path uploadDirectory;
     private final FileStorageService fileStorageService;
     private final ArtworkSecurity artworkSecurity;
+    private final VisitorRepository visitorRepository;
 
-    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, Path uploadDirectory, FileStorageService fileStorageService, ArtworkSecurity artworkSecurity) {
+    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, Path uploadDirectory, FileStorageService fileStorageService, ArtworkSecurity artworkSecurity, VisitorRepository visitorRepository) {
         this.artworkRepository = artworkRepository;
         this.artistRepository = artistRepository;
         this.genreService = genreService;
@@ -49,6 +48,7 @@ public class ArtworkService {
         this.uploadDirectory = uploadDirectory;
         this.fileStorageService = fileStorageService;
         this.artworkSecurity = artworkSecurity;
+        this.visitorRepository = visitorRepository;
     }
 
     @Transactional
@@ -270,6 +270,11 @@ public class ArtworkService {
     public String deleteArtwork(long id) {
         Artwork existingArtwork = artworkRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Kunstwerk met id " + id + " niet gevonden!"));
+
+        visitorRepository.findAll().stream()
+                .filter(visitor -> visitor.getFavorites().contains(existingArtwork))
+                .forEach(visitor -> visitor.getFavorites().remove(existingArtwork));
+
         artworkRepository.delete(existingArtwork);
         return ("Kunstwerk met id " + id + " is verwijderd.");
     }

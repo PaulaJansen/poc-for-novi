@@ -1,7 +1,15 @@
 openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/freelance-9e2/A-Lot-Of-Art/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: https://localhost:8080
 info:
+  version: "1.0.0"
   title: A Lot Of Art API Documentation
-  description: |
+  description: | 
     De A Lot Of Artwork (ALOA) web-API is een gemakkelijke etalage voor kunstenaars om hun werken de wereld in te sturen en een winkel voor bezoekers die geïnteresseerd zijn in toegankelijke kunst. Zij kunnen hier zoeken naar werk dat het aanspreekt en dit uiteindelijk ook kopen en/of huren.
 
     ## Beveiliging
@@ -12,992 +20,1027 @@ info:
     - ARTIST: bedoeld voor gebruikers die als kunstenaar hun kunstwerken op het platform willen plaatsen.
 
     Een gebruiker die een beveiligde endpoint succesvol wil gebruiken moet geautheticeerd worden door in de header van een request een JSON Web Token (JWT) als Bearer token mee te sturen.
-  version: 1.0.0
-servers:
-- url: https://virtserver.swaggerhub.com/freelance-9e2/A-Lot-Of-Art/1.0.0
-  description: SwaggerHub API Auto Mocking
-- url: https://localhost:8080
-  description: SwaggerHub API Auto Mocking
+  
 paths:
   /auth:
     post:
-      tags:
-      - Authentication
       summary: Inloggen
-      description: Logt een gebruiker in en geeft een JWT token terug. Bij dit request moet een username en password meegestuurd worden.
+      description: Logt een gebruiker in en geeft een JWT token terug. Bij dit request moet een username en password meegestuurd worden. 
+      tags:
+        - Authentication 
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/auth_body"
-        required: true
+              type: object
+              required: 
+                - username
+                - password
+              properties:
+                username: 
+                  type: string
+                  example: janedoe
+                password:
+                  type: string
+                  example: janedoespassword
       responses:
-        "200":
+        '200':
           description: Een json object met daarin een jwt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/inline_response_200"
-        "401":
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
           description: Ongeldige gebruikersnaam of wachtwoord.
+
   /roles:
     get:
-      tags:
-      - Roles
       summary: Haal rollen op
       description: Haalt alle beschikbare rollen op.
+      tags: 
+        - Roles
       responses:
-        "200":
+        '200':
           description: Een lijst van alle bestaande rollen.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/RoleResponseDto"
-        "500":
-          description: Interne serverfout.
+                  $ref: '#/components/schemas/RoleResponseDto'
+        '500':
+            description: Interne serverfout.
+
   /roles/{roleName}:
-    get:
-      tags:
-      - Roles
+    get: 
       summary: Haal een rol op
       description: Haalt een rol op naam op.
+      tags:
+        - Roles
       parameters:
       - name: roleName
         in: path
-        description: Naam van de rol
         required: true
+        description: Naam van de rol
         schema:
           type: string
           enum:
-          - VISITOR
-          - ARTIST
+            - VISITOR
+            - ARTIST
       responses:
-        "200":
+        '200':
           description: Een specifieke rol.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleResponseDto"
-        "404":
+                $ref: '#/components/schemas/RoleResponseDto'
+        '404':
           description: Rol niet gevonden.
+  
   /genres:
     get:
-      tags:
-      - Genres
       summary: Haal alle genres op
       description: Vraagt een lijst van alle beschikbare genres op.
+      tags:
+        - Genres
       responses:
-        "200":
+        '200':
           description: Een lijst van genres.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/GenreResponseDto"
-        "500":
+                  $ref: '#/components/schemas/GenreResponseDto'
+        '500':
           description: Interne serverfout
+
   /genres/{genreName}:
     get:
-      tags:
-      - Genres
       summary: Haal een genre op naam
       description: Vraagt een specifiek genre op basis van de naam.
+      tags:
+        - Genres
       parameters:
-      - name: genreName
-        in: path
-        description: Naam van het genre
-        required: true
-        schema:
-          type: string
-          example: Rock
+        - name: genreName
+          in: path
+          required: true
+          description: Naam van het genre
+          schema:
+            type: string
+            example: Rock
       responses:
-        "200":
+        '200':
           description: Het gevraagde genre.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GenreResponseDto"
-        "404":
+                $ref: '#/components/schemas/GenreResponseDto'
+        '404':
           description: Genre niet gevonden
-  /users:
+  
+  /users/search:
     get:
+      summary: Haal gebruikers op
+      description: Geeft een lijst terug van ofwel een gebruiker met een bepaalde gebruikersnaam of e-mailadres of alle geregistreerde gebruikers.
       tags:
-      - Users
-      summary: Haal alle gebruikers op
-      description: Geeft een lijst terug van alle geregistreerde gebruikers.
+        - Users
       responses:
-        "200":
+        '200':
           description: Lijst van gebruikers.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserResponseDto"
-        "500":
+                  $ref: '#/components/schemas/UserResponseDto'
+        '500':
           description: Interne serverfout
-  /users/id/{id}:
+
+  /users/{id}:
     get:
-      tags:
-      - Users
       summary: Haal gebruiker op via ID
       description: Geeft een specifieke gebruiker terug op basis van het ID.
-      parameters:
-      - name: id
-        in: path
-        description: Uniek ID van de gebruiker
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      responses:
-        "200":
-          description: De gewenste gebruiker.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponseDto"
-        "404":
-          description: Gebruiker niet gevonden.
-  /users/username/{username}:
-    get:
       tags:
-      - Users
-      summary: Haal gebruiker op via gebruikersnaam
-      description: Geeft een specifieke gebruiker terug op basis van de gebruikersnaam.
+        - Users
       parameters:
-      - name: username
-        in: path
-        description: Gebruikersnaam van de gebruiker.
-        required: true
-        schema:
-          type: string
-          example: janedoe
+        - name: id
+          in: path
+          required: true
+          description: Uniek ID van de gebruiker
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: De gewenste gebruiker.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserResponseDto"
-        "404":
+                $ref: '#/components/schemas/UserResponseDto'
+        '404':
           description: Gebruiker niet gevonden.
-  /users/email:
-    get:
-      tags:
-      - Users
-      summary: Haal gebruiker op via e-mailadres
-      description: Geeft een specifieke gebruiker terug op basis van het e-mailadres.
-      parameters:
-      - name: email
-        in: query
-        description: E-mailadres van de gebruiker.
-        required: true
-        schema:
-          type: string
-          format: email
-          example: janedoe@email.com
-      responses:
-        "200":
-          description: De gewenste gebruiker.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponseDto"
-        "404":
-          description: Gebruiker niet gevonden.
-  /users/{id}:
+
     delete:
-      tags:
-      - Users
+      operationId: deleteUserById
       summary: Verwijder een gebruiker
       description: Verwijdert een bestaande gebruiker op basis van het ID.
-      operationId: deleteUserById
+      tags:
+        - Users
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de gebruiker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de gebruiker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: Gebruiker succesvol verwijderd.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/inline_response_200_1"
-        "404":
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Gebruiker met ID 1 is verwijderd
+        '404':
           description: Gewenste gebruiker niet gevonden.
-        "403":
+        '403':
           description: Niet geauthoriseerd om gebruiker te verwijderen.
-      security:
-      - BearerAuth: []
+
   /visitors:
     get:
-      tags:
-      - Visitors
       summary: Haal alle bezoekers op
       description: Geeft een lijst terug van alle geregistreerde bezoekers.
+      tags:
+        - Visitors
       responses:
-        "200":
+        '200':
           description: Lijst van alle bezoekers.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/VisitorResponseDto"
-        "500":
+                  $ref: '#/components/schemas/VisitorResponseDto'
+        '500':
           description: Interne serverfout
+
   /visitors/{id}:
     get:
-      tags:
-      - Visitors
+      operationId: getVisitorById
       summary: Haal bezoeker op via ID
       description: Geeft een specifieke bezoeker terug op basis van het ID.
-      operationId: getVisitorById
+      tags:
+        - Visitors
       parameters:
-      - name: id
-        in: path
-        description: Uniek ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: Uniek ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: De gewenste bezoeker.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VisitorResponseDto"
-        "404":
+                $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Bezoeker niet gevonden.
-    delete:
-      tags:
-      - Visitors
-      summary: Verwijder een bezoeker
-      description: Verwijdert een bestaande bezoeker op basis van het ID.
-      operationId: deleteVisitorById
-      parameters:
-      - name: id
-        in: path
-        description: ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      responses:
-        "200":
-          description: Bezoeker succesvol verwijderd.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/inline_response_200_2"
-        "404":
-          description: Gewenste bezoeker niet gevonden.
-        "403":
-          description: Niet geauthoriseerd om bezoeker te verwijderen.
-      security:
-      - BearerAuth: []
+
     patch:
-      tags:
-      - Visitors
+      operationId: updateVisitorById
       summary: Update een bezoeker
       description: Wijzigt een bestaande bezoeker.
-      operationId: updateVisitorById
+      tags:
+        - Visitors
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VisitorUpdateDto"
-        required: true
+              $ref: '#/components/schemas/VisitorUpdateDto'
       responses:
-        "200":
+        '200':
           description: Bezoeker succesvol bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VisitorResponseDto"
-        "404":
+                $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Gewenste bezoeker niet gevonden.
-        "403":
+        '403':
           description: Niet geauthoriseerd om bezoeker te bewerken.
-        "400":
+        '400':
           description: Ongeldige invoer.
+
+    delete:
+      operationId: deleteVisitorById
+      summary: Verwijder een bezoeker
+      description: Verwijdert een bestaande bezoeker op basis van het ID.
+      tags:
+        - Visitors
       security:
-      - BearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Bezoeker succesvol verwijderd.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bezoeker met ID 1 is verwijderd
+        '404':
+          description: Gewenste bezoeker niet gevonden.
+        '403':
+          description: Niet geauthoriseerd om bezoeker te verwijderen.
+
   /visitors/{id}/profile-picture:
     patch:
-      tags:
-      - Visitors
       summary: Update profielfoto van een bezoeker
+      tags:
+        - Visitors
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/id_profilepicture_body"
-        required: true
+              type: object
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
       responses:
-        "200":
+        '200':
           description: Profielfoto succesvol bijgewerkt.
-        "404":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Gewenste bezoeker niet gevonden.
-        "403":
+        '403':
           description: Niet geauthoriseerd om profielfoto van bezoeker te verwijderen.
-      security:
-      - BearerAuth: []
+
   /visitors/search:
     get:
-      tags:
-      - Visitors
       summary: Zoek bezoekers op op naam
       description: Geeft een lijst van bezoekers terug die overeenkomen met de opgegeven naam.
+      tags:
+        - Visitors
       parameters:
-      - name: name
-        in: query
-        description: Naam (of deel van naam) van de bezoeker.
-        required: true
-        schema:
-          type: string
-          example: Jansen
+        - name: name
+          in: query
+          required: true
+          description: Naam (of deel van naam) van de bezoeker.
+          schema:
+            type: string
+            example: Jansen
       responses:
-        "200":
+        '200':
           description: Lijst van gevonden bezoekers.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/VisitorResponseDto"
-        "404":
+                  $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Geen bezoekers gevonden.
+
   /visitors/register:
     post:
-      tags:
-      - Visitors
       summary: Registreer een nieuwe bezoeker
       description: Maakt een nieuwe bezoeker aan via multipart/form-data.
+      tags:
+        - Visitors
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/VisitorInputDto"
-        required: true
+              $ref: '#/components/schemas/VisitorInputDto'
       responses:
-        "201":
+        '201':
           description: Bezoeker succesvol aangemaakt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VisitorResponseDto"
-        "400":
+                $ref: '#/components/schemas/VisitorResponseDto'
+        '400':
           description: Ongeldige invoer.
-        "500":
+        '500':
           description: Interne serverfout.
+  
   /visitors/{id}/favorites:
     get:
-      tags:
-      - Visitors
+      operationId: getVisitorFavorites
       summary: Haal favorieten op van een bezoeker
       description: Geeft een lijst van alle favorieten (artworks) van de opgegeven bezoeker.
-      operationId: getVisitorFavorites
+      tags:
+        - Visitors
       parameters:
-      - name: id
-        in: path
-        description: ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: Lijst van favorieten.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtworkResponseDto"
-        "404":
+                  $ref: '#/components/schemas/ArtworkResponseDto'
+        '404':
           description: Gewenste bezoeker niet gevonden.
+
   /visitors/{id}/favorites/{artworkId}/add:
     patch:
-      tags:
-      - Visitors
+      operationId: addVisitorFavorite
       summary: Voeg een favoriet toe
       description: Voegt een artwork toe aan de favorietenlijst van een bezoeker.
-      operationId: addVisitorFavorite
+      tags:
+        - Visitors
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      - name: artworkId
-        in: path
-        description: ID van het artwork dat toegevoegd moet worden.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 10
+        - name: id
+          in: path
+          required: true
+          description: ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: artworkId
+          in: path
+          required: true
+          description: ID van het artwork dat toegevoegd moet worden.
+          schema:
+            type: integer
+            format: int64
+            example: 10
       responses:
-        "200":
-          description: "Favoriet toegevoegd, visitor response bijgewerkt."
+        '200':
+          description: Favoriet toegevoegd, visitor response bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VisitorResponseDto"
-        "404":
+                $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Bezoeker of artwork niet gevonden.
-        "403":
+        '403':
           description: Niet geauthoriseerd om favoriet toe te voegen.
-      security:
-      - BearerAuth: []
+
   /visitors/{id}/favorites/{artworkId}/remove:
     patch:
-      tags:
-      - Visitors
+      operationId: removeVisitorFavorite
       summary: Verwijder een favoriet
       description: Verwijdert een artwork uit de favorietenlijst van een bezoeker.
-      operationId: removeVisitorFavorite
+      tags:
+        - Visitors
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de bezoeker.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      - name: artworkId
-        in: path
-        description: ID van het artwork dat verwijderd moet worden.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 10
+        - name: id
+          in: path
+          required: true
+          description: ID van de bezoeker.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - name: artworkId
+          in: path
+          required: true
+          description: ID van het artwork dat verwijderd moet worden.
+          schema:
+            type: integer
+            format: int64
+            example: 10
       responses:
-        "200":
-          description: "Favoriet verwijderd, visitor response bijgewerkt."
+        '200':
+          description: Favoriet verwijderd, visitor response bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VisitorResponseDto"
-        "404":
+                $ref: '#/components/schemas/VisitorResponseDto'
+        '404':
           description: Bezoeker of artwork niet gevonden.
-        "403":
+        '403':
           description: Niet geauthoriseerd om favoriet te verwijderen.
-      security:
-      - BearerAuth: []
+
   /artists:
     get:
-      tags:
-      - Artists
+      operationId: getAllArtists
       summary: Haal alle kunstenaars op
       description: Geeft een lijst van alle geregistreerde kunstenaars terug.
-      operationId: getAllArtists
+      tags:
+        - Artists
       responses:
-        "200":
+        '200':
           description: Lijst van kunstenaars.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtistResponseDto"
-        "500":
+                  $ref: '#/components/schemas/ArtistResponseDto'
+        '500':
           description: Interne serverfout.
+
   /artists/{id}:
     get:
-      tags:
-      - Artists
+      operationId: getArtistById
       summary: Haal kunstenaar op via ID
       description: Geeft een specifieke kunstenaar terug op basis van het ID.
-      operationId: getArtistById
+      tags:
+        - Artists
       parameters:
-      - name: id
-        in: path
-        description: Uniek ID van de kunstenaar.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: Uniek ID van de kunstenaar.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: De gewenste kunstenaar.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtistResponseDto"
-        "404":
+                $ref: '#/components/schemas/ArtistResponseDto'
+        '404':
           description: Kunstenaar niet gevonden.
-    delete:
-      tags:
-      - Artists
-      summary: Verwijder een kunstenaar
-      description: Verwijdert een bestaande kunstenaar op basis van ID.
-      operationId: deleteArtist
-      parameters:
-      - name: id
-        in: path
-        description: ID van de kunstenaar.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      responses:
-        "200":
-          description: Kunstenaar succesvol verwijderd.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/inline_response_200_3"
-        "404":
-          description: Kunstenaar niet gevonden.
-        "403":
-          description: Niet geauthoriseerd om kunstenaar te verwijderen.
-      security:
-      - BearerAuth: []
+
     patch:
-      tags:
-      - Artists
+      operationId: updateArtistInfo
       summary: Update informatie van een kunstenaar
       description: Wijzigt de gegevens van een bestaande kunstenaar via JSON.
-      operationId: updateArtistInfo
+      tags:
+        - Artists
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de kunstenaar.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de kunstenaar.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ArtistUpdateDto"
-        required: true
+              $ref: '#/components/schemas/ArtistUpdateDto'
       responses:
-        "200":
+        '200':
           description: Kunstenaar succesvol bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtistResponseDto"
-        "404":
+                $ref: '#/components/schemas/ArtistResponseDto'
+        '404':
           description: Kunstenaar niet gevonden.
-        "400":
+        '400':
           description: Ongeldige invoer.
-        "403":
+        '403':
           description: Niet geauthoriseerd om kunstenaar te bewerken.
+
+    delete:
+      operationId: deleteArtist
+      summary: Verwijder een kunstenaar
+      description: Verwijdert een bestaande kunstenaar op basis van ID.
+      tags:
+        - Artists
       security:
-      - BearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID van de kunstenaar.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Kunstenaar succesvol verwijderd.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Kunstenaar met ID 1 is verwijderd.
+        '404':
+          description: Kunstenaar niet gevonden.
+        '403':
+          description: Niet geauthoriseerd om kunstenaar te verwijderen.
+
   /artists/search:
     get:
-      tags:
-      - Artists
+      operationId: getArtistByName
       summary: Zoek kunstenaars op naam
       description: Geeft een lijst van kunstenaars terug op basis van voornaam en/of achternaam.
-      operationId: getArtistByName
+      tags:
+        - Artists
       parameters:
-      - name: firstName
-        in: query
-        description: Voornaam van de kunstenaar.
-        required: false
-        schema:
-          type: string
-          example: Henkie
-      - name: lastName
-        in: query
-        description: Achternaam van de kunstenaar.
-        required: false
-        schema:
-          type: string
-          example: Jansen
+        - name: firstName
+          in: query
+          required: false
+          description: Voornaam van de kunstenaar.
+          schema:
+            type: string
+            example: Henkie
+        - name: lastName
+          in: query
+          required: false
+          description: Achternaam van de kunstenaar.
+          schema:
+            type: string
+            example: Jansen
       responses:
-        "200":
+        '200':
           description: Lijst van gevonden kunstenaars.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtistResponseDto"
-        "404":
+                  $ref: '#/components/schemas/ArtistResponseDto'
+        '404':
           description: Geen kunstenaars gevonden.
+
   /artists/{id}/artworks:
     get:
-      tags:
-      - Artists
+      operationId: getArtworksByArtistId
       summary: Haal alle kunstwerken van een kunstenaar op
       description: Geeft een lijst van kunstwerken die bij een specifieke kunstenaar horen.
-      operationId: getArtworksByArtistId
+      tags:
+        - Artists
       parameters:
-      - name: id
-        in: path
-        description: ID van de kunstenaar.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de kunstenaar.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: Lijst van kunstwerken van de kunstenaar.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtworkResponseDto"
-        "404":
+                  $ref: '#/components/schemas/ArtworkResponseDto'
+        '404':
           description: Kunstenaar niet gevonden.
+  
   /artists/register:
     post:
-      tags:
-      - Artists
+      operationId: createArtist
       summary: Registreer een nieuwe kunstenaar
       description: Maakt een nieuwe kunstenaar aan via multipart/form-data.
-      operationId: createArtist
+      tags:
+        - Artists
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/ArtistInputDto"
-        required: true
+              $ref: '#/components/schemas/ArtistInputDto'
       responses:
-        "201":
+        '201':
           description: Kunstenaar succesvol aangemaakt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtistResponseDto"
-        "400":
+                $ref: '#/components/schemas/ArtistResponseDto'
+        '400':
           description: Ongeldige invoer.
-        "500":
-          description: Interne serverfout.
+        '500':
+          description: Interne serverfout.    
+
   /artists/{id}/profile-picture:
     patch:
-      tags:
-      - Artists
+      operationId: updateArtistProfilePicture
       summary: Update profielfoto van een kunstenaar
       description: Wijzigt de profielfoto van een kunstenaar via multipart/form-data.
-      operationId: updateArtistProfilePicture
+      tags:
+        - Artists
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van de kunstenaar.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van de kunstenaar.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/id_profilepicture_body_1"
-        required: true
+              type: object
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+                  description: Nieuwe profielfoto.
       responses:
-        "200":
+        '200':
           description: Profielfoto succesvol bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtistResponseDto"
-        "404":
+                $ref: '#/components/schemas/ArtistResponseDto'
+        '404':
           description: Kunstenaar niet gevonden.
-        "400":
+        '400':
           description: Ongeldige invoer.
-        "403":
+        '403':
           description: Niet geauthoriseerd om profielfoto van deze kunstenaar te bewerken.
-      security:
-      - BearerAuth: []
+    
   /artworks:
     get:
-      tags:
-      - Artworks
+      operationId: getAllArtworks
       summary: Haal alle kunstwerken op
       description: Geeft een lijst van alle kunstwerken terug.
-      operationId: getAllArtworks
+      tags:
+        - Artworks
       responses:
-        "200":
+        '200':
           description: Lijst van kunstwerken.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtworkResponseDto"
-        "500":
+                  $ref: '#/components/schemas/ArtworkResponseDto'
+        '500':
           description: Interne serverfout.
+
     post:
-      tags:
-      - Artworks
+      operationId: createArtwork
       summary: Maak een nieuw kunstwerk aan
       description: Creëert een nieuw kunstwerk via multipart/form-data.
-      operationId: createArtwork
+      tags:
+        - Artworks
+      security:
+        - BearerAuth: []
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/ArtworkInputDto"
-        required: true
+              $ref: '#/components/schemas/ArtworkInputDto'
       responses:
-        "201":
+        '201':
           description: Kunstwerk succesvol aangemaakt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtworkResponseDto"
-        "400":
+                $ref: '#/components/schemas/ArtworkResponseDto'
+        '400':
           description: Ongeldige invoer.
-        "403":
-          description: Niet bevoegd om een kunstwerk toe te voegen.
-        "404":
+        '403':
+            description: Niet bevoegd om een kunstwerk toe te voegen.
+        '404':
           description: Kunstenaar niet gevonden.
-        "500":
+        '500':
           description: Interne serverfout.
-      security:
-      - BearerAuth: []
+
   /artworks/{id}:
     get:
-      tags:
-      - Artworks
+      operationId: getArtworkById
       summary: Haal kunstwerk op via ID
       description: Geeft een specifiek kunstwerk terug op basis van het ID.
-      operationId: getArtworkById
+      tags:
+        - Artworks
       parameters:
-      - name: id
-        in: path
-        description: ID van het kunstwerk.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van het kunstwerk.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
-        "200":
+        '200':
           description: Het gevraagde kunstwerk.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtworkResponseDto"
-        "404":
+                $ref: '#/components/schemas/ArtworkResponseDto'
+        '404':
           description: Kunstwerk niet gevonden.
-    delete:
-      tags:
-      - Artworks
-      summary: Verwijder een kunstwerk
-      description: Verwijdert een bestaand kunstwerk op basis van ID.
-      operationId: deleteArtwork
-      parameters:
-      - name: id
-        in: path
-        description: ID van het kunstwerk.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      responses:
-        "200":
-          description: Kunstwerk succesvol verwijderd.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/inline_response_200_4"
-        "404":
-          description: Kunstwerk niet gevonden.
-        "403":
-          description: Niet geauthoriseerd om kunstwerk te verwijderen.
-      security:
-      - BearerAuth: []
+
     patch:
-      tags:
-      - Artworks
+      operationId: updateArtwork
       summary: Update een bestaand kunstwerk
       description: Wijzigt gegevens van een bestaand kunstwerk via multipart/form-data.
-      operationId: updateArtwork
+      tags:
+        - Artworks
+      security:
+        - BearerAuth: []
       parameters:
-      - name: id
-        in: path
-        description: ID van het kunstwerk.
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - name: id
+          in: path
+          required: true
+          description: ID van het kunstwerk.
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/artworks_id_body"
-        required: true
+              type: object
+              properties:
+                artwork:
+                  type: string
+                  description: JSON-string van ArtworkUpdateDto.
+                  example: '{"title":"Nieuwe titel","price":3000.0}'
+                images:
+                  type: array
+                  description: Optionele extra afbeeldingen.
+                  items:
+                    type: string
+                    format: binary
       responses:
-        "200":
+        '200':
           description: Kunstwerk succesvol bijgewerkt.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ArtworkResponseDto"
-        "404":
+                $ref: '#/components/schemas/ArtworkResponseDto'
+        '404':
           description: Kunstwerk niet gevonden.
-        "400":
+        '400':
           description: Ongeldige invoer.
-        "403":
+        '403':
           description: Niet geauthoriseerd om kunstwerk te bewerken.
+
+    delete:
+      operationId: deleteArtwork
+      summary: Verwijder een kunstwerk
+      description: Verwijdert een bestaand kunstwerk op basis van ID.
+      tags:
+        - Artworks
       security:
-      - BearerAuth: []
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID van het kunstwerk.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Kunstwerk succesvol verwijderd.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Kunstwerk met ID 1 is verwijderd.
+        '404':
+          description: Kunstwerk niet gevonden.
+        '403':
+          description: Niet geauthoriseerd om kunstwerk te verwijderen.
+
   /artworks/filter:
     get:
-      tags:
-      - Artworks
-      summary: Filter kunstwerken
-      description: "Filtert kunstwerken op basis van titel, kunstenaar, prijs, genres en beschikbaarheid."
       operationId: filterArtworks
+      summary: Filter kunstwerken
+      description: Filtert kunstwerken op basis van titel, kunstenaar, prijs, genres en beschikbaarheid.
+      tags:
+        - Artworks
       parameters:
-      - name: title
-        in: query
-        description: Titel van het kunstwerk (of deel daarvan).
-        required: false
-        schema:
-          type: string
-          example: Zonsondergang
-      - name: artistFirstName
-        in: query
-        description: Voornaam van de kunstenaar.
-        required: false
-        schema:
-          type: string
-          example: Henkie
-      - name: artistLastName
-        in: query
-        description: Achternaam van de kunstenaar.
-        required: false
-        schema:
-          type: string
-          example: Jansen
-      - name: minPrice
-        in: query
-        description: Minimale prijs filter.
-        required: false
-        schema:
-          type: number
-          format: double
-          example: 100
-      - name: maxPrice
-        in: query
-        description: Maximale prijs filter.
-        required: false
-        schema:
-          type: number
-          format: double
-          example: 500
-      - name: genres
-        in: query
-        description: Genres om op te filteren.
-        required: false
-        schema:
-          type: array
-          example:
-          - Schilderij
-          - Landschap
-          items:
+        - name: title
+          in: query
+          required: false
+          description: Titel van het kunstwerk (of deel daarvan).
+          schema:
             type: string
-      - name: availabilities
-        in: query
-        description: Beschikbaarheid van het kunstwerk.
-        required: false
-        schema:
-          type: array
-          example:
-          - AVAILABLE
-          - SOLD
-          items:
+            example: Zonsondergang
+        - name: artistFirstName
+          in: query
+          required: false
+          description: Voornaam van de kunstenaar.
+          schema:
             type: string
-            enum:
-            - AVAILABLE
-            - AVAILABLETOBUY
-            - AVAILABLETOLOAN
-            - SOLD
-            - ONLOAN
+            example: Henkie
+        - name: artistLastName
+          in: query
+          required: false
+          description: Achternaam van de kunstenaar.
+          schema:
+            type: string
+            example: Jansen
+        - name: minPrice
+          in: query
+          required: false
+          description: Minimale prijs filter.
+          schema:
+            type: number
+            format: double
+            example: 100.00
+        - name: maxPrice
+          in: query
+          required: false
+          description: Maximale prijs filter.
+          schema:
+            type: number
+            format: double
+            example: 500.00
+        - name: genres
+          in: query
+          required: false
+          description: Genres om op te filteren.
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - Schilderij
+              - Landschap
+        - name: availabilities
+          in: query
+          required: false
+          description: Beschikbaarheid van het kunstwerk.
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - AVAILABLE
+                - AVAILABLETOBUY
+                - AVAILABLETOLOAN
+                - SOLD
+                - ONLOAN
+            example:
+              - AVAILABLE
+              - SOLD
       responses:
-        "200":
+        '200':
           description: Lijst van gefilterde kunstwerken.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ArtworkResponseDto"
-        "404":
+                  $ref: '#/components/schemas/ArtworkResponseDto'
+        '404':
           description: Geen kunstwerken gevonden.
+
 components:
   schemas:
     RoleResponseDto:
-      required:
-      - roleName
       type: object
+      description: Response DTO voor een rol.
       properties:
         id:
           type: integer
-          description: Unieke identifier van de rol.
           format: int64
+          description: Unieke identifier van de rol.
           example: 1
         roleName:
           type: string
           description: Naam van de rol.
-          example: ARTIST
           enum:
-          - VISITOR
-          - ARTIST
-      description: Response DTO voor een rol.
-    GenreResponseDto:
+            - VISITOR
+            - ARTIST
+          example: ARTIST
       required:
-      - name
+        - roleName
+        
+    GenreResponseDto:
       type: object
+      description: Response DTO voor een genre.
       properties:
         id:
           type: integer
-          description: Unieke identifier van het genre.
           format: int64
+          description: Unieke identifier van het genre.
           example: 1
         name:
           type: string
@@ -1008,13 +1051,12 @@ components:
           description: Kunstwerken met dit genre.
           items:
             type: string
-      description: Response DTO voor een genre.
-    UserInputDto:
       required:
-      - email
-      - password
-      - username
+        - name
+    
+    UserInputDto:
       type: object
+      description: Basis input DTO voor een gebruiker.
       properties:
         username:
           type: string
@@ -1024,12 +1066,12 @@ components:
           format: email
           example: janedoe@email.com
         password:
-          maxLength: 64
-          minLength: 8
-          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
           type: string
-          description: "Wachtwoord moet tussen 8 en 64 tekens zijn en minstens één letter, één cijfer en één speciaal teken bevatten."
           format: password
+          description: Wachtwoord moet tussen 8 en 64 tekens zijn en minstens één letter, één cijfer en één speciaal teken bevatten.
+          minLength: 8
+          maxLength: 64
+          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
           example: Wachtwoord123!
         profilePicture:
           type: string
@@ -1037,20 +1079,21 @@ components:
           example: profile.jpg
         profilePictureFile:
           type: string
-          description: Upload van een profielfoto.
           format: binary
-      description: Basis input DTO voor een gebruiker.
-    UserResponseDto:
+          description: Upload van een profielfoto.
       required:
-      - email
-      - id
-      - username
+        - username
+        - email
+        - password
+        
+    UserResponseDto:
       type: object
+      description: Bais response DTO voor een gebruiker.
       properties:
         id:
           type: integer
-          description: Unieke identifier van de gebruiker.
           format: int64
+          description: Unieke identifier van de gebruiker.
           example: 1
         username:
           type: string
@@ -1058,13 +1101,13 @@ components:
           example: janedoe
         email:
           type: string
-          description: E-mailadres van de gebruiker.
           format: email
+          description: E-mailadres van de gebruiker.
           example: janedoe@email.com
         dateOfRegistration:
           type: string
-          description: Datum dat de gebruiker zich heeft geregistreerd (dd-mm-yyyy).
           format: date
+          description: Datum dat de gebruiker zich heeft geregistreerd (dd-mm-yyyy).
         profilePicture:
           type: string
           description: URL of bestandsnaam van profielfoto van de gebruiker.
@@ -1072,26 +1115,31 @@ components:
         roleNames:
           type: array
           description: Lijst van rollen van de gebruiker
-          example:
-          - VISITOR
           items:
             type: string
             enum:
+              - VISITOR
+              - ARTIST
+          example:
             - VISITOR
-            - ARTIST
-      description: Bais response DTO voor een gebruiker.
+      required:
+        - id
+        - username
+        - email
+    
     VisitorInputDto:
       allOf:
-      - $ref: "#/components/schemas/UserInputDto"
-      - required:
-        - name
-        type: object
-        properties:
-          name:
-            type: string
-            description: Naam van de bezoeker
-            example: Jane Doe
-        description: Input DTO voor het registreren of bijwerken van een bezoeker.
+        - $ref: '#/components/schemas/UserInputDto'
+        - type: object
+          description: Input DTO voor het registreren of bijwerken van een bezoeker.
+          properties:
+            name:
+              type: string
+              description: Naam van de bezoeker
+              example: Jane Doe
+          required:
+            - name
+        
     VisitorUpdateDto:
       type: object
       properties:
@@ -1103,17 +1151,20 @@ components:
           description: Nieuwe username.
         email:
           type: string
-          description: Nieuw e-mailadres.
           format: email
+          description: Nieuw e-mailadres.
         password:
-          maxLength: 64
-          minLength: 8
-          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
           type: string
           description: Nieuw wachtwoord.
+          minLength: 8
+          maxLength: 64
+          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
+
     VisitorResponseDto:
-      required:
-      - name
+      allOf:
+        - $ref: '#/components/schemas/UserResponseDto'
+        - type: object
+      description: Response DTO van een bezoeker.
       properties:
         name:
           type: string
@@ -1121,50 +1172,51 @@ components:
           example: Jane Doe
         favoritesIds:
           type: array
-          description: Lijst van IDs van de favoriete kunstwerken van de bezoeker.
+          description: Lijst van IDs van de favoriete kunstwerken van de bezoeker. 
           items:
             type: integer
             format: int64
-      description: Response DTO van een bezoeker.
-      allOf:
-      - $ref: "#/components/schemas/UserResponseDto"
-      - type: object
+      required:
+        - name
+        
     ArtistInputDto:
       allOf:
-      - $ref: "#/components/schemas/UserInputDto"
-      - required:
-        - biography
-        - city
-        - firstName
-        - lastName
-        - typeOfArt
-        type: object
-        properties:
-          firstName:
-            type: string
-            description: Voornaam van de kunstenaar.
-            example: Henkie
-          lastName:
-            type: string
-            description: Achternaam van de kunstenaar.
-            example: Jansen
-          city:
-            type: string
-            description: Stad waar de kunstenaar actief is.
-            example: Amsterdam
-          typeOfArt:
-            type: string
-            description: Soort kunst die de artiest maakt.
-            example: Schilderijen
-          biography:
-            maxLength: 250
-            minLength: 20
-            type: string
-            description: Korte biografie van de kunstenaar.
-            example: "Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en..."
-        description: Input DTO voor een kunstenaar.
+        - $ref: '#/components/schemas/UserInputDto'
+        - type: object
+          description: Input DTO voor een kunstenaar.
+          properties:
+            firstName:
+              type: string
+              description: Voornaam van de kunstenaar.
+              example: Henkie
+            lastName:
+              type: string
+              description: Achternaam van de kunstenaar.
+              example: Jansen
+            city:
+              type: string
+              description: Stad waar de kunstenaar actief is.
+              example: Amsterdam
+            typeOfArt:
+              type: string
+              description: Soort kunst die de artiest maakt.
+              example: Schilderijen
+            biography:
+              type: string
+              description: Korte biografie van de kunstenaar.
+              minLength: 20
+              maxLength: 250
+              example: "Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en..."
+          required:
+            - firstName
+            - lastName
+            - city
+            - typeOfArt
+            - biography
+
     ArtistUpdateDto:
       type: object
+      description: Update DTO voor het gedeeltelijk updaten van een artist.
       properties:
         username:
           type: string
@@ -1174,10 +1226,10 @@ components:
           format: email
           example: artist@example.com
         password:
-          maxLength: 64
-          minLength: 8
-          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
           type: string
+          minLength: 8
+          maxLength: 64
+          pattern: "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!]).*$"
           example: Nieuw123!
         firstName:
           type: string
@@ -1192,48 +1244,44 @@ components:
           type: string
           example: Schilderijen
         biography:
-          maxLength: 250
-          minLength: 20
           type: string
-          example: "Ik ben een moderne kunstenaar die experimenteert met kleur, vorm en expressie."
-      description: Update DTO voor het gedeeltelijk updaten van een artist.
+          minLength: 20
+          maxLength: 250
+          example: Ik ben een moderne kunstenaar die experimenteert met kleur, vorm en expressie.
+
     ArtistResponseDto:
       allOf:
-      - $ref: "#/components/schemas/UserResponseDto"
-      - type: object
-        properties:
-          firstName:
-            type: string
-            example: Henkie
-          lastName:
-            type: string
-            example: Jansen
-          city:
-            type: string
-            example: Amsterdam
-          typeOfArt:
-            type: string
-            example: Schilderijen
-          biography:
-            type: string
-            example: "Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en..."
-          portfolioTitles:
-            type: array
-            description: Lijst van titels van kunstwerken in het portfolio van de kunstenaar.
-            example:
-            - Zonsondergang
-            - Zonsopgang
-            items:
+        - $ref: '#/components/schemas/UserResponseDto'
+        - type: object
+          description: Response DTO van een kunstenaar.
+          properties:
+            firstName:
               type: string
-        description: Response DTO van een kunstenaar.
+              example: Henkie
+            lastName:
+              type: string
+              example: Jansen
+            city:
+              type: string
+              example: Amsterdam
+            typeOfArt:
+              type: string
+              example: Schilderijen
+            biography:
+              type: string
+              example: "Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en..."
+            portfolioTitles:
+              type: array
+              description: Lijst van titels van kunstwerken in het portfolio van de kunstenaar.
+              items:
+                type: string
+              example:
+                - Zonsondergang 
+                - Zonsopgang
+                 
     ArtworkInputDto:
-      required:
-      - availability
-      - genreNames
-      - images
-      - price
-      - title
       type: object
+      description: Input DTO voor het aanmaken van een nieuw kunstwerk.
       properties:
         title:
           type: string
@@ -1248,16 +1296,16 @@ components:
         genreNames:
           type: array
           description: Lijst van genres gekoppeld aan het kunstwerk.
-          example:
-          - Schilderij
-          - Landschap
           items:
             type: string
+          example:
+            - Schilderij
+            - Landschap
         price:
           type: number
-          description: Prijs van het kunstwerk.
           format: double
-          example: 250
+          description: Prijs van het kunstwerk.
+          example: 250.00
         availability:
           type: string
           description: Beschikbaarheid van het kunstwerk.
@@ -1274,9 +1322,16 @@ components:
           type: integer
           description: Hoogte van het kunstwerk in cm.
           example: 2
-      description: Input DTO voor het aanmaken van een nieuw kunstwerk.
+      required:
+        - title
+        - images
+        - genreNames
+        - price
+        - availability
+
     ArtworkUpdateDto:
       type: object
+      description: Input DTO voor het bijwerken van een kunstwerk.
       properties:
         title:
           type: string
@@ -1294,9 +1349,9 @@ components:
             type: string
         price:
           type: number
-          description: Bijgewerkte prijs.
           format: double
-          example: 300
+          description: Bijgewerkte prijs.
+          example: 300.00
         availability:
           type: string
           description: Bijgewerkte beschikbaarheid.
@@ -1313,9 +1368,10 @@ components:
           type: integer
           description: Bijgewerkte hoogte in cm.
           example: 2
-      description: Input DTO voor het bijwerken van een kunstwerk.
+
     ArtworkResponseDto:
       type: object
+      description: Response DTO van een kunstwerk.
       properties:
         id:
           type: integer
@@ -1327,22 +1383,22 @@ components:
         images:
           type: array
           description: Lijst van afbeeldingsbestanden (namen of URLs).
-          example:
-          - image1.jpg
-          - image2.jpg
           items:
             type: string
+          example:
+            - image1.jpg
+            - image2.jpg
         genreNames:
           type: array
-          example:
-          - Schilderij
-          - Landschap
           items:
             type: string
+          example:
+            - Schilderij
+            - Landschap
         price:
           type: number
           format: double
-          example: 250
+          example: 250.00
         availability:
           type: string
           example: AVAILABLE
@@ -1365,75 +1421,7 @@ components:
         heightInCm:
           type: integer
           example: 2
-      description: Response DTO van een kunstwerk.
-    auth_body:
-      required:
-      - password
-      - username
-      type: object
-      properties:
-        username:
-          type: string
-          example: janedoe
-        password:
-          type: string
-          example: janedoespassword
-    inline_response_200:
-      type: object
-      properties:
-        token:
-          type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-    inline_response_200_1:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Gebruiker met ID 1 is verwijderd
-    inline_response_200_2:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Bezoeker met ID 1 is verwijderd
-    id_profilepicture_body:
-      type: object
-      properties:
-        profilePicture:
-          type: string
-          format: binary
-    inline_response_200_3:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Kunstenaar met ID 1 is verwijderd.
-    id_profilepicture_body_1:
-      type: object
-      properties:
-        profilePicture:
-          type: string
-          description: Nieuwe profielfoto.
-          format: binary
-    inline_response_200_4:
-      type: object
-      properties:
-        message:
-          type: string
-          example: Kunstwerk met ID 1 is verwijderd.
-    artworks_id_body:
-      type: object
-      properties:
-        artwork:
-          type: string
-          description: JSON-string van ArtworkUpdateDto.
-          example: "{\"title\":\"Nieuwe titel\",\"price\":3000.0}"
-        images:
-          type: array
-          description: Optionele extra afbeeldingen.
-          items:
-            type: string
-            format: binary
+
   securitySchemes:
     BearerAuth:
       type: http

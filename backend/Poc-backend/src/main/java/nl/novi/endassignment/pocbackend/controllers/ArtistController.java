@@ -55,8 +55,8 @@ public class ArtistController {
         return ResponseEntity.ok(artworks);
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArtistResponseDto> createArtist(@Valid @ModelAttribute ArtistInputDto artistInputDto) throws IOException {
+    @PostMapping(value = "/register")
+    public ResponseEntity<ArtistResponseDto> createArtist(@Valid @RequestBody ArtistInputDto artistInputDto) throws IOException {
         ArtistResponseDto newArtist = artistService.createArtist(artistInputDto);
         return new ResponseEntity<>(newArtist, HttpStatus.CREATED);
     }
@@ -68,7 +68,7 @@ public class ArtistController {
     }
 
     @PatchMapping(value = "/{id}/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ArtistResponseDto> updateArtistProfilePicture(@PathVariable long id, @RequestParam MultipartFile profilePicture) throws IOException {
+    public ResponseEntity<ArtistResponseDto> updateArtistProfilePicture(@PathVariable long id, @RequestParam("profilePicture") MultipartFile profilePicture) throws IOException {
         ArtistResponseDto updatedArtist = artistService.updateArtistProfilePicture(id, profilePicture);
         return ResponseEntity.ok(updatedArtist);
     }

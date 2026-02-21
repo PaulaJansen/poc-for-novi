@@ -17,27 +17,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<UserResponseDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponseDto>> getUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email
+    ) {
+        if (username != null) {
+            return ResponseEntity.ok(
+                    List.of(userService.getUserByUsername(username))
+            );
+        }
+
+        if (email != null) {
+            return ResponseEntity.ok(
+                    List.of(userService.getUserByEmail(email))
+            );
+        }
+
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable long id) {
         UserResponseDto user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable String username) {
-        UserResponseDto user = userService.getUserByUsername(username);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/email")
-    public ResponseEntity<UserResponseDto> getUserByEmail(@RequestParam String email) {
-        UserResponseDto user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 

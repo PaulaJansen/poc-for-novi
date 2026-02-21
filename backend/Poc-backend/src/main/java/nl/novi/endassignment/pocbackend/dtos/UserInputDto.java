@@ -6,10 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.novi.endassignment.pocbackend.models.Role;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor

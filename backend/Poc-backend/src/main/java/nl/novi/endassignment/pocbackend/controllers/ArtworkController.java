@@ -69,6 +69,7 @@ public class ArtworkController {
         ArtworkUpdateDto artworkUpdateDto = mapper.readValue(artworkJson, ArtworkUpdateDto.class);
 
         ArtworkResponseDto updatedArtwork = artworkService.updateArtwork(id, artworkUpdateDto, images);
+
         return ResponseEntity.ok(updatedArtwork);
     }
 

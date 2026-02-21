@@ -1,48 +1,80 @@
+CREATE SEQUENCE IF NOT EXISTS user_seq START 1;
+
+ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('user_seq');
+
 -- Roles
 INSERT INTO roles (role_name)
 VALUES ('VISITOR'),
        ('ARTIST');
 
 -- Artists
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (1, 'henkie123', 'henkie@example.com', '$2a$10$5o//Br13HThXamXA7W93Nu0Ey5EtaKkFzvVy0EEqBmg8tZ8DLQYG2', CURRENT_DATE, 'profile/henkie.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('henkie123', 'henkie@example.com', '$2a$10$5o//Br13HThXamXA7W93Nu0Ey5EtaKkFzvVy0EEqBmg8tZ8DLQYG2', CURRENT_DATE, 'profile/henkie.jpg')
+    RETURNING id
+    )
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
-VALUES (1, 'Henkie', 'Jansen', 'Amsterdam', 'Schilderijen',
-        'Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en experiment. Mijn werk ontstaat vaak intuïtief: ik laat me leiden door gevoel en moment, en probeer dat vast te leggen op het doek. Ik werk voornamelijk met acryl- en olieverf en ben niet bang om te spelen met contrasten. Naast vrij werk sta ik ook open voor commissies en samenwerkingen.');
+SELECT id, 'Henkie', 'Jansen', 'Amsterdam', 'Schilderijen',
+       'Hallo, Henkie hier. Ik ben een beginnend abstract schilder met een grote liefde voor kleur, beweging en experiment. Mijn werk ontstaat vaak intuïtief: ik laat me leiden door gevoel en moment, en probeer dat vast te leggen op het doek. Ik werk voornamelijk met acryl- en olieverf en ben niet bang om te spelen met contrasten. Naast vrij werk sta ik ook open voor commissies en samenwerkingen.'
+FROM inserted_user;
 
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (2, 'anne123', 'anne@example.com', '$2a$10$o2.a9U2vLLkJ5l8UvGcKZu3thpjyGxHpO0ZxUvgjHEWeqDPYoSATO', CURRENT_DATE, 'profile/anne.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('anne123', 'anne@example.com', '$2a$10$o2.a9U2vLLkJ5l8UvGcKZu3thpjyGxHpO0ZxUvgjHEWeqDPYoSATO', CURRENT_DATE, 'profile/anne.jpg')
+    RETURNING id
+    )
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
-VALUES (2, 'Anne', 'de Vries', 'Rotterdam', 'Fotografie',
-        'Ik ben Anne en ik fotografeer inmiddels meer dan tien jaar met veel passie en toewijding. Mijn focus ligt vooral op portretfotografie, waarbij ik probeer de persoonlijkheid en emotie van mijn onderwerp vast te leggen. Daarnaast werk ik graag met dieren en natuurlijke omgevingen. Mijn stijl is vaak ingetogen en zwart-wit, zodat de aandacht volledig naar het verhaal in het beeld gaat.');
+SELECT id, 'Anne', 'de Vries', 'Rotterdam', 'Fotografie',
+       'Ik ben Anne en ik fotografeer inmiddels meer dan tien jaar met veel passie en toewijding. Mijn focus ligt vooral op portretfotografie, waarbij ik probeer de persoonlijkheid en emotie van mijn onderwerp vast te leggen. Daarnaast werk ik graag met dieren en natuurlijke omgevingen. Mijn stijl is vaak ingetogen en zwart-wit, zodat de aandacht volledig naar het verhaal in het beeld gaat.'
+FROM inserted_user;
 
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (3, 'claudia123', 'claudia@example.com', '$2a$10$QBIQ/J/vhp1prik.SXKprOE9CS.oQutZEwEavjnR8Igr.jhTIQus6', CURRENT_DATE, 'profile/claudia.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('claudia123', 'claudia@example.com', '$2a$10$QBIQ/J/vhp1prik.SXKprOE9CS.oQutZEwEavjnR8Igr.jhTIQus6', CURRENT_DATE, 'profile/claudia.jpg')
+    RETURNING id
+    )
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
-VALUES (3,'Claudia', 'Bos', 'Utrecht', 'Beeldhouwen',
-        'Als beeldhouwer werk ik voornamelijk met marmer en zeepsteen, materialen die mij uitdagen om geduld en precisie te combineren. Mijn beelden zijn vaak geïnspireerd op de menselijke vorm en klassieke thema’s, maar krijgen altijd een moderne interpretatie. Ik geloof dat een sculptuur van alle kanten iets anders mag vertellen en nodig de kijker uit om letterlijk om het werk heen te bewegen.');
+SELECT id,'Claudia', 'Bos', 'Utrecht', 'Beeldhouwen',
+       'Als beeldhouwer werk ik voornamelijk met marmer en zeepsteen, materialen die mij uitdagen om geduld en precisie te combineren. Mijn beelden zijn vaak geïnspireerd op de menselijke vorm en klassieke thema’s, maar krijgen altijd een moderne interpretatie. Ik geloof dat een sculptuur van alle kanten iets anders mag vertellen en nodig de kijker uit om letterlijk om het werk heen te bewegen.'
+FROM inserted_user;
 
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (7, 'PaulaMarijke', 'paula@example.com', '$2a$10$Tl2hNeEKYNS5IDxqNs4fJ.yuN3zYgjN5UOXu.zaq5OyjwKANZrMrq', CURRENT_DATE, 'profile/paula.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('PaulaMarijke', 'paula@example.com', '$2a$10$Tl2hNeEKYNS5IDxqNs4fJ.yuN3zYgjN5UOXu.zaq5OyjwKANZrMrq', CURRENT_DATE, 'profile/paula.jpg')
+    RETURNING id
+    )
 INSERT INTO artists (id, first_name, last_name, city, type_of_art, biography)
-VALUES (7,'Paula', 'Jansen', 'Zwolle', 'Schilderijen',
-        'Wat maakt mijn schilderijen echt van mij? Je weet het wanneer je het ziet. In mijn abstracte werken nodig ik de kijker uit om zelf betekenis te ontdekken en persoonlijke associaties te maken. Emotie, dynamiek en het spel tussen licht en donker vormen de kern van mijn werk. Ik werk in lagen en laat het proces zichtbaar, zodat elk schilderij blijft veranderen naarmate je er langer naar kijkt.');
+SELECT id,'Paula', 'Jansen', 'Zwolle', 'Schilderijen',
+       'Wat maakt mijn schilderijen echt van mij? Je weet het wanneer je het ziet. In mijn abstracte werken nodig ik de kijker uit om zelf betekenis te ontdekken en persoonlijke associaties te maken. Emotie, dynamiek en het spel tussen licht en donker vormen de kern van mijn werk. Ik werk in lagen en laat het proces zichtbaar, zodat elk schilderij blijft veranderen naarmate je er langer naar kijkt.'
+FROM inserted_user;
 
 -- Visitors
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (4, 'pietjelovesart', 'pietje@example.com', '$2a$10$IGvGc9xnZ38nYp/gJhFIF.wmIIirkFiKR6dA9cuW5GKNW4nxH1i4C', CURRENT_DATE, 'profile/pietje.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('pietjelovesart', 'pietje@example.com', '$2a$10$IGvGc9xnZ38nYp/gJhFIF.wmIIirkFiKR6dA9cuW5GKNW4nxH1i4C', CURRENT_DATE, 'profile/pietje.jpg')
+    RETURNING id
+    )
 INSERT INTO visitors (id, name)
-VALUES (4, 'Pietje');
+SELECT id, 'Pietje'
+FROM inserted_user;
 
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (5,'artlover', 'susan@example.com', '$2a$10$yA60NwrZjzkt8.gG9RDI..6GpWfVC0gsEy5oZpMX7IX89/C9f6aaK', CURRENT_DATE, 'profile/susan.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('artlover', 'susan@example.com', '$2a$10$yA60NwrZjzkt8.gG9RDI..6GpWfVC0gsEy5oZpMX7IX89/C9f6aaK', CURRENT_DATE, 'profile/susan.jpg')
+    RETURNING id
+    )
 INSERT INTO visitors (id, name)
-VALUES (5, 'Susan');
+SELECT id, 'Susan'
+FROM inserted_user;
 
-INSERT INTO users (id, username, email, password, date_of_registration, profile_picture)
-VALUES (6, 'jaapiejaap', 'jaap@example.com', '$2a$10$A67gTJBDB0SCgsrrA5LwpOKLVbkTikSw5QYrcuCKTcL7pRoQn4CL6', CURRENT_DATE, 'profile/jaap.jpg');
+WITH inserted_user AS (
+INSERT INTO users (username, email, password, date_of_registration, profile_picture)
+VALUES ('jaapiejaap', 'jaap@example.com', '$2a$10$A67gTJBDB0SCgsrrA5LwpOKLVbkTikSw5QYrcuCKTcL7pRoQn4CL6', CURRENT_DATE, 'profile/jaap.jpg')
+    RETURNING id
+    )
 INSERT INTO visitors (id, name)
-VALUES (6,'Jaap');
+SELECT id, 'Jaap'
+FROM inserted_user;
 
 -- Joined table user_role
 INSERT INTO user_role (user_id, role_id)
@@ -113,7 +145,7 @@ INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/sunset3.jpg' FROM artworks a WHERE a.title='Zonsopgang bij de rivier';
 
 INSERT INTO artwork_images (artwork_id, image)
-SELECT a.id, 'artworks/sundown1.jpg' FROM artworks a WHERE a.title='Zonsondergang blauw';
+SELECT a.id, 'artworks/sundown1.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
 INSERT INTO artwork_images (artwork_id, image)
 SELECT a.id, 'artworks/sundown2.png' FROM artworks a WHERE a.title='Zonsondergang blauw';
 INSERT INTO artwork_images (artwork_id, image)

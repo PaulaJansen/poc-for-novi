@@ -43,8 +43,8 @@ public class VisitorController {
         return ResponseEntity.ok(visitors);
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<VisitorResponseDto> createVisitor(@Valid @ModelAttribute VisitorInputDto visitorInputDto) throws IOException {
+    @PostMapping(value = "/register")
+    public ResponseEntity<VisitorResponseDto> createVisitor(@Valid @RequestBody VisitorInputDto visitorInputDto) throws IOException {
         VisitorResponseDto newVisitor = visitorService.createVisitor(visitorInputDto);
         return new ResponseEntity<>(newVisitor, HttpStatus.CREATED);
     }

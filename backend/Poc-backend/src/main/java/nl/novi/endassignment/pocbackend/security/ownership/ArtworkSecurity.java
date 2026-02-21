@@ -1,5 +1,6 @@
 package nl.novi.endassignment.pocbackend.security.ownership;
 
+import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,5 +22,11 @@ public class ArtworkSecurity {
                 .getName();
 
         return artwork.getArtist().getUsername().equals(loggedInUsername);
+    }
+
+    public boolean isOwner(Long artworkId) {
+        Artwork artwork = artworkRepository.findById(artworkId)
+                .orElseThrow(() -> new RecordNotFoundException("Kunstwerk niet gevonden"));
+        return isOwner(artwork);
     }
 }
