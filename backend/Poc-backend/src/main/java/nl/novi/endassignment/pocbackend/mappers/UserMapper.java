@@ -1,8 +1,6 @@
 package nl.novi.endassignment.pocbackend.mappers;
 
-import nl.novi.endassignment.pocbackend.dtos.UserInputDto;
 import nl.novi.endassignment.pocbackend.dtos.UserResponseDto;
-import nl.novi.endassignment.pocbackend.dtos.VisitorInputDto;
 import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.User;
 import nl.novi.endassignment.pocbackend.models.Visitor;

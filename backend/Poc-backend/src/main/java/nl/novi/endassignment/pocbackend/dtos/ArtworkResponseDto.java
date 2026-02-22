@@ -3,9 +3,6 @@ package nl.novi.endassignment.pocbackend.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.novi.endassignment.pocbackend.models.Artwork;
-import nl.novi.endassignment.pocbackend.models.AvailabilityType;
-import nl.novi.endassignment.pocbackend.models.Genre;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

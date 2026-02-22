@@ -2,9 +2,7 @@ package nl.novi.endassignment.pocbackend.mappers;
 
 import nl.novi.endassignment.pocbackend.dtos.ArtistInputDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtistResponseDto;
-import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.models.Artist;
-import nl.novi.endassignment.pocbackend.models.Artwork;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

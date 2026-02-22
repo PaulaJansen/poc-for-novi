@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,17 +34,15 @@ public class ArtworkService {
     private final ArtistRepository artistRepository;
     private final GenreService genreService;
     private final ArtworkMapper artworkMapper;
-    private final Path uploadDirectory;
     private final FileStorageService fileStorageService;
     private final ArtworkSecurity artworkSecurity;
     private final VisitorRepository visitorRepository;
 
-    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, Path uploadDirectory, FileStorageService fileStorageService, ArtworkSecurity artworkSecurity, VisitorRepository visitorRepository) {
+    public ArtworkService(ArtworkRepository artworkRepository, ArtistRepository artistRepository, GenreService genreService, ArtworkMapper artworkMapper, FileStorageService fileStorageService, ArtworkSecurity artworkSecurity, VisitorRepository visitorRepository) {
         this.artworkRepository = artworkRepository;
         this.artistRepository = artistRepository;
         this.genreService = genreService;
         this.artworkMapper = artworkMapper;
-        this.uploadDirectory = uploadDirectory;
         this.fileStorageService = fileStorageService;
         this.artworkSecurity = artworkSecurity;
         this.visitorRepository = visitorRepository;

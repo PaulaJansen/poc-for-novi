@@ -7,7 +7,6 @@ import nl.novi.endassignment.pocbackend.dtos.ArtistUpdateDto;
 import nl.novi.endassignment.pocbackend.dtos.ArtworkResponseDto;
 import nl.novi.endassignment.pocbackend.services.ArtistService;
 import nl.novi.endassignment.pocbackend.services.ArtworkService;
-import org.hibernate.sql.ast.tree.from.TableAliasResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

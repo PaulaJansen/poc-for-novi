@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +26,13 @@ public class ArtistService {
     private final ArtistMapper artistMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Path uploadDirectory;
     private final FileStorageService fileStorageService;
 
-    public ArtistService(ArtistRepository artistRepository, ArtistMapper artistMapper, RoleRepository roleRepository, PasswordEncoder passwordEncoder, Path uploadDirectory, FileStorageService fileStorageService) {
+    public ArtistService(ArtistRepository artistRepository, ArtistMapper artistMapper, RoleRepository roleRepository, PasswordEncoder passwordEncoder, FileStorageService fileStorageService) {
         this.artistRepository = artistRepository;
         this.artistMapper = artistMapper;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.uploadDirectory = uploadDirectory;
         this.fileStorageService = fileStorageService;
     }
 

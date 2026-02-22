@@ -16,8 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,16 +81,21 @@ class ArtistControllerIntegrationTest {
                 "test image".getBytes()
         );
 
-        mockMvc.perform(multipart("/artists/register")
-                        .file(profilePicture)
-                        .param("username", "janiedoee")
-                        .param("email", "jane@example.nl")
-                        .param("password", "Password@456")
-                        .param("firstName", "Jane")
-                        .param("lastName", "Doe")
-                        .param("biography", "Ik ben Jane en ik schilder.")
-                        .param("city", "Amsterdam")
-                        .param("typeOfArt", "Schilderijen"))
+        mockMvc.perform(post("/artists/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                     {
+                                         "username": "janiedoee",
+                                         "email": "jane@example.nl",
+                                         "password": "Password@456",
+                                         "firstName": "Jane",
+                                         "lastName": "Doe",
+                                         "biography": "Ik ben Jane en ik schilder.",
+                                         "city": "Amsterdam",
+                                         "typeOfArt": "Schilderijen",
+                                         "roles": []
+                                     }
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username").value("janiedoee"))
                 .andExpect(jsonPath("$.email").value("jane@example.nl"))

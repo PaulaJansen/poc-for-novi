@@ -9,9 +9,8 @@ import nl.novi.endassignment.pocbackend.mappers.ArtworkMapper;
 import nl.novi.endassignment.pocbackend.models.*;
 import nl.novi.endassignment.pocbackend.repositories.ArtistRepository;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
-import nl.novi.endassignment.pocbackend.repositories.GenreRepository;
+import nl.novi.endassignment.pocbackend.repositories.VisitorRepository;
 import nl.novi.endassignment.pocbackend.security.ownership.ArtworkSecurity;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,11 +25,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
 import java.util.*;
 
 import static nl.novi.endassignment.pocbackend.models.AvailabilityType.AVAILABLE;
@@ -62,6 +59,9 @@ class ArtworkServiceTest {
     @Mock
     private ArtworkSecurity artworkSecurity;
 
+    @Mock
+    private VisitorRepository visitorRepository;
+
     @InjectMocks
     ArtworkService artworkService;
 
@@ -70,11 +70,9 @@ class ArtworkServiceTest {
     private ArtworkUpdateDto artworkUpdateDto;
     private ArtworkResponseDto artworkDto;
     private Artist artist;
-    private java.nio.file.Path testUploadDirectory;
 
     @BeforeEach
     void setUp() throws IOException {
-        testUploadDirectory = java.nio.file.Files.createTempDirectory("test-uploads");
         artworkInputDto = new ArtworkInputDto();
         artworkUpdateDto = new ArtworkUpdateDto();
         artist = new Artist();
@@ -89,24 +87,7 @@ class ArtworkServiceTest {
             artworkDto.setWidthInCm(100);
             artworkDto.setLengthInCm(100);
             artworkDto.setHeightInCm(2);
-        artworkService = new ArtworkService(artworkRepository, artistRepository, genreService, artworkMapper, testUploadDirectory, fileStorageService, artworkSecurity);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        if (testUploadDirectory != null && Files.exists(testUploadDirectory)) {
-            try (var paths = Files.walk(testUploadDirectory)) {
-                paths.sorted(Comparator.reverseOrder())
-                        .forEach(p -> {
-                            try {
-                                Files.delete(p);
-                            } catch (IOException e) {
-                                System.err.println("Could not delete: " + p);
-                                e.printStackTrace();
-                            }
-                        });
-            }
-        }
+        artworkService = new ArtworkService(artworkRepository, artistRepository, genreService, artworkMapper, fileStorageService, artworkSecurity, visitorRepository);
     }
 
     @Test
@@ -1251,7 +1232,7 @@ class ArtworkServiceTest {
         List<MultipartFile> images = List.of(emptyFile);
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
-        when(artworkSecurity.isOwner(any())).thenReturn(true);
+        when(artworkSecurity.isOwner((Artwork) any())).thenReturn(true);
         when(artworkRepository.save(any())).thenReturn(artwork);
         when(artworkMapper.toDtoForEdit(any())).thenReturn(new ArtworkResponseDto());
 
@@ -1300,6 +1281,7 @@ class ArtworkServiceTest {
     public void test57() {
 
         when(artworkRepository.findById(1L)).thenReturn(Optional.of(artwork));
+        when(visitorRepository.findAll()).thenReturn(Collections.emptyList());
 
         String result = artworkService.deleteArtwork(1L);
 

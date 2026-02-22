@@ -5,7 +5,6 @@ import nl.novi.endassignment.pocbackend.dtos.*;
 import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.ArtworkMapper;
 import nl.novi.endassignment.pocbackend.mappers.VisitorMapper;
-import nl.novi.endassignment.pocbackend.models.Artist;
 import nl.novi.endassignment.pocbackend.models.Artwork;
 import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.ArtworkRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 

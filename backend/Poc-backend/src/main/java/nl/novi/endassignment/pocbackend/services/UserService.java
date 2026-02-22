@@ -6,7 +6,6 @@ import nl.novi.endassignment.pocbackend.exceptions.RecordNotFoundException;
 import nl.novi.endassignment.pocbackend.exceptions.UsernameNotFoundException;
 import nl.novi.endassignment.pocbackend.mappers.UserMapper;
 import nl.novi.endassignment.pocbackend.models.User;
-import nl.novi.endassignment.pocbackend.models.Visitor;
 import nl.novi.endassignment.pocbackend.repositories.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
