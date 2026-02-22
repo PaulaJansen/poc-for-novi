@@ -35,7 +35,7 @@ function App() {
                 <ul className="navbar-menu">
                     <NavLinkItem to={"/"} title="Home"/>
                     <NavLinkItem to={"/overview"} title="All Art"/>
-                    <NavLinkItem to={"/register-artlover"} title="Register"/>
+                    <NavLinkItem to={"/register-artlover"} title="Registreren"/>
                     <NavbarProfileMenu/>
                 </ul>
             </nav>
@@ -89,7 +89,7 @@ function App() {
                     <Button className="button-default button-tertiary-reverse footer-navlink-wrapper"
                             type="button"
                             onClick={() => navigate("/register-artist")}
-                            label="Register als kunstenaar"
+                            label="Registreer als kunstenaar"
                     />
                 </div>
                 <div className="circle-small"></div>
